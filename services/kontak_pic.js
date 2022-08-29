@@ -17,7 +17,16 @@ const kontak_pic = (db) => {
     
         return query;
       };
+      
+      const findone_status_pic = (status_pic) => {
+        const query = db.one(
+          "SELECT * FROM kontak_pic WHERE status_pic = $1 AND is_deleted = 0",
+          [status_pic]
+        );
     
+        return query;
+      };
+
       const create = (nama, telepon, created_by) => {
         const query = db.one(
           "INSERT INTO kontak_pic ( nama, telepon, status_pic, is_deleted, created_by) VALUES ($1, $2, 0, 0, $3) RETURNING id",
@@ -54,6 +63,7 @@ const kontak_pic = (db) => {
         create,
         find,
         findone,
+        findone_status_pic,
         update,
         update_pic,
         del,

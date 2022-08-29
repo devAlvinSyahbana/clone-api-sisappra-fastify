@@ -101,6 +101,56 @@ module.exports = async function (fastify, opts) {
     }
   );
 
+  fastify.get(
+    "/findone-status-pic/:status_pic",
+    {
+      schema: {
+        description: "This is an endpoint for fetching a kontak pic by id",
+        tags: ["kontak pic"],
+        params: {
+          description: "Find one kontak pic by id",
+          type: "object",
+          properties: {
+            status_pic: { type: "number" },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+              data: {
+                type: "object",
+                properties: {
+                  id: { type: "number" },
+                  nama: { type: "string" },
+                  telepon: { type: "string" },
+                  status_pic: { type: "number" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { status_pic } = request.params;
+      const exec = await fastify.kontak_pic.findone_status_pic(status_pic);
+
+      try {
+        if (exec) {
+          reply.send({ message: "success", code: 200, data: exec });
+        } else {
+          reply.send({ message: "success", code: 204 });
+        }
+      } catch (error) {
+        reply.send({ message: error, code: 500});
+      }
+    }
+  );
+
   fastify.post(
     "/create",
     {
