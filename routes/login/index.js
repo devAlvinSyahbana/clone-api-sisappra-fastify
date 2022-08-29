@@ -7,23 +7,70 @@ module.exports = async function (fastify, opts) {
   fastify.register(bcrypt, {
     saltWorkFactor: 10,
   });
-
   fastify.register(jwtToken, {
     secret: '8ziQ3!S6gnFZ'
   });
 
   fastify.get(
-    "/findone",
+    "/find",
     {
       schema: {
-        description: "This is an endpoint for fetching a login by no_pegawai",
+        description:
+          "This is an endpoint for fetching all pengguna login",
+        tags: ["login"],
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+              data:{
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: { type: "number" },
+                    id_pegawai: { type: "string" },
+                    no_pegawai: { type: "string" },
+                    email: { type: "string" },
+                    hak_akses: { type: "string" },
+                    status_pengguna: { type: "string" },
+                  },
+                }
+              }
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const exec = await fastify.login.find();
+
+      try {
+        if (exec) {
+          reply.send({ message: "success", code: 200, data: exec });
+        }else{
+          reply.send({ message: "success", code: 204});
+        }
+
+      } catch (error) {
+        reply.send({ message: error.message, code: 500 });
+      }     
+    }
+  );
+
+  fastify.get(
+    "/findone/:id",
+    {
+      schema: {
+        description: "This is an endpoint for fetching a login id",
         tags: ["login"],
         params: {
-          description: "Find one login by no_pegawai",
+          description: "Find one login id",
           type: "object",
           properties: {
-            no_pegawai: { type: "number" },
-            kata_sandi: { type: "string" },
+            id: { type: "number" },
           },
         },
         response: {
@@ -50,12 +97,12 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { no_pegawai, kata_sandi } = request.params;
-      const exec = await fastify.login.findone(no_pegawai);
+      const { id } = request.params;
+      const exec = await fastify.login.findone(id);
 
       try {
-        if (await fastify.bcrypt.compare(kata_sandi, exec.kata_sandi)) {
-          reply.send({ message: "success", code: 200, data: { ...exec } });
+        if (exec) {
+          reply.send({ message: "success", code: 200, data: exec });
         } else {
           reply.send({ message: "success", code: 204 });
         }
@@ -69,13 +116,13 @@ module.exports = async function (fastify, opts) {
     "/sign-in",
     {
       schema: {
-        description: "This is an endpoint for creating a login",
+        description: "This is an endpoint for sign-in a login acount",
         tags: ["login"],
         body: {
-          description: "Payload for creating a login",
+          description: "Payload for sign-in a login acount",
           type: "object",
           properties: {
-            no_pegawai: { type: "number" },
+            no_pegawai: { type: "string" },
             kata_sandi: { type: "string" },
           },
         },
@@ -89,6 +136,7 @@ module.exports = async function (fastify, opts) {
               data: {
                 type: "object",
                 properties: {
+                  id: { type: "number" },
                   id_pegawai: { type: "string" },
                   no_pegawai: { type: "string" },
                   email: { type: "string" },
@@ -104,15 +152,10 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { no_pegawai, kata_sandi } = request.body;
-      const exec = await fastify.login.findone(no_pegawai);
-
-     
-   
-      console.log(kata_sandi)
-      console.log(exec.kata_sandi)
-      console.log(exec.id_pegawai)
+      const exec = await fastify.login.findone_sign_in(no_pegawai);
 
       const objres = {
+        id: exec.id,
         id_pegawai: exec.id_pegawai,
         no_pegawai: exec.no_pegawai,
         email: exec.email,
@@ -124,7 +167,7 @@ module.exports = async function (fastify, opts) {
         if (await fastify.bcrypt.compare(kata_sandi, exec.kata_sandi)) {
           try {
             let token = fastify.jwt.sign({ foo: 'bar' })
-            await fastify.login.create_token(exec.id_pegawai, exec.id_pegawai, token);
+            await fastify.login.create_token(exec.id, token);
 
             reply.send({ message: "success", code: 200, data: objres, api_token: token });
           } catch (error) {
@@ -154,6 +197,7 @@ module.exports = async function (fastify, opts) {
             kata_sandi: { type: "string" },
             email: { type: "string" },
             hak_akses: { type: "string" },
+            created_by: { type: "number" },
           },
         },
         response: {
@@ -169,70 +213,27 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { id_pegawai, no_pegawai, kata_sandi, email, hak_akses } = request.body;
+      const { id_pegawai, no_pegawai, kata_sandi, email, hak_akses, created_by } = request.body;
       const bycript_pass = await fastify.bcrypt.hash(kata_sandi);
 
-      try {
-        await fastify.login.create(
-          id_pegawai,
-          no_pegawai,
-          bycript_pass,
-          email,
-          hak_akses
-        );
-        reply.send({ message: "success", code: 200 });
-      } catch (error) {
-        reply.send({ message: error.message, code: 500 });
-      }
-    }
-  );
-
-  fastify.put(
-    "/update/:no_pegawai",
-    {
-      schema: {
-        description: "This is an endpoint for updating an existing login",
-        tags: ["login"],
-        params: {
-          description: "login by Id and no_pegawai",
-          type: "object",
-          properties: {
-            id: { type: "number" },
-            no_pegawai: { type: "number" },
-          },
-        },
-        body: {
-          description: "Payload for updating a login",
-          type: "object",
-          properties: {
-            kata_sandi: { type: "string" },
-            update_by: { type: "string" },
-          },
-        },
-        response: {
-          200: {
-            description: "Success Response",
-            type: "object",
-            properties: {
-              message: { type: "string" },
-              code: { type: "string" },
-            },
-          },
-        },
-      },
-    },
-    async (request, reply) => {
-      const { no_pegawai } = request.params;
-      const { kata_sandi, update_by } = request.body;
-      const bycript_pass = await fastify.bcrypt.hash(kata_sandi);
+      const exec = await fastify.login.findone_no_pegawai(no_pegawai);
 
       try {
-        await fastify.login.update_password(
-          no_pegawai,
-          bycript_pass,
-          update_by
-        );
-        reply.send({ message: "success", code: 200 });
+        if (!exec) {
+          await fastify.login.create(
+            id_pegawai,
+            no_pegawai,
+            bycript_pass,
+            email,
+            hak_akses,
+            created_by
+          );
+
+          reply.send({ message: "success", code: 200 });
+        } else {
+          reply.send({ message: "Already Reported", code: 208 });
+        }
+        
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
       }
@@ -243,10 +244,10 @@ module.exports = async function (fastify, opts) {
     "/verify_token",
     {
       schema: {
-        description: "This is an endpoint for creating a login",
+        description: "This is an endpoint for verify token a login",
         tags: ["login"],
         body: {
-          description: "Payload for creating a login",
+          description: "Payload for verify token a login",
           type: "object",
           properties: {
             api_token: { type: "string" },
@@ -262,8 +263,7 @@ module.exports = async function (fastify, opts) {
               data: {
                 type: "object",
                 properties: {
-                  id_pegawai: { type: "string" },
-                  no_pegawai: { type: "string" },
+                  id_penguna: { type: "string" },
                   token: { type: "string" },
                 },
               },
@@ -283,85 +283,166 @@ module.exports = async function (fastify, opts) {
           reply.send({ message: "success", code: 204 });
         }
       } catch (error) {
-        reply.send({ message: error, code: 500});
+        reply.send({ message: error.message, code: 500});
       }
     }
   );
 
-  //   fastify.put(
-  //     "/update/:id",
-  //     {
-  //       schema: {
-  //         description:
-  //           "This is an endpoint for updating an existing master area dampak risiko",
-  //         tags: ["master area dampak risiko"],
-  //         params: {
-  //           description: "Master area dampak risiko by Id",
-  //           type: "object",
-  //           properties: {
-  //             id: { type: "number" },
-  //           },
-  //         },
-  //         body: {
-  //           description: "Payload for updating a master area dampak risiko",
-  //           type: "object",
-  //           properties: {
-  //             area_dampak_risiko_spbe: { type: "string" },
-  //           },
-  //         },
-  //         response: {
-  //           200: {
-  //             description: "Success Response",
-  //             type: "object",
-  //             properties: {
-  //               id: { type: "number" },
-  //               kode: { type: "string" },
-  //               area_dampak_risiko_spbe: { type: "string" },
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //     async (request, reply) => {
-  //       const { id } = request.params;
-  //       const { area_dampak_risiko_spbe } = request.body;
+  fastify.put(
+    "/update/:id",
+    {
+      schema: {
+        description:
+          "This is an endpoint for updating an existing login",
+        tags: ["login"],
+        params: {
+          description: "update login by Id",
+          type: "object",
+          properties: {
+            id: { type: "number" },
+          },
+        },
+        body: {
+          description: "Payload for updating a login",
+          type: "object",
+          properties: {
+            id_pegawai: { type: "string" },
+            no_pegawai: { type: "string" },
+            email: { type: "string" },
+            hak_akses: { type: "string" },
+            status_pengguna: { type: "string" },
+            updated_by: { type: "number" },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+      const { id_pegawai, no_pegawai, email, hak_akses, status_pengguna, updated_by } = request.body;
 
-  //       const exec = await fastify.master_area_dampak_risiko.update(
-  //         id,
-  //         area_dampak_risiko_spbe
-  //       );
+      try {
+        await fastify.login.update(
+          id,
+          id_pegawai,
+          no_pegawai,
+          email, 
+          hak_akses, 
+          status_pengguna,
+          updated_by
+        );
+  
+        reply.send({ message: "success", code: 200 });
+      } catch (error) {
+        reply.send({ message: error.message, code: 500 });
+      }
+    }
+  );
 
-  //       return exec;
-  //     }
-  //   );
+  fastify.put(
+    "/update-password/:id",
+    {
+      schema: {
+        description:
+          "This is an endpoint for updating password an existing login",
+        tags: ["login"],
+        params: {
+          description: "update password login by Id",
+          type: "object",
+          properties: {
+            id: { type: "number" },
+          },
+        },
+        body: {
+          description: "Payload for updating password a login",
+          type: "object",
+          properties: {
+            kata_sandi: { type: "string" },
+            updated_by: { type: "number" },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+      const { kata_sandi, updated_by } = request.body;
+      const bycript_pass = await fastify.bcrypt.hash(kata_sandi);
+      try {
+        await fastify.login.update_password(
+          id,
+          bycript_pass,
+          updated_by
+        );
+  
+        reply.send({ message: "success", code: 200 });
+      } catch (error) {
+        reply.send({ message: error.message, code: 500 });
+      }
+    }
+  );
 
-  //   fastify.delete(
-  //     "/delete/:id",
-  //     {
-  //       schema: {
-  //         description:
-  //           "This is an endpoint for DELETING an existing master area dampak risiko.",
-  //         tags: ["master area dampak risiko"],
-  //         params: {
-  //           description: "Master area dampak risiko by Id",
-  //           type: "object",
-  //           properties: {
-  //             id: { type: "number" },
-  //           },
-  //         },
-  //         response: {
-  //           204: {
-  //             type: "string",
-  //             default: "No Content",
-  //           },
-  //         },
-  //       },
-  //     },
-  //     async (request, reply) => {
-  //       const { id } = request.params;
-  //       await fastify.master_area_dampak_risiko.del(id);
+  fastify.delete(
+    "/delete/:id",
+    {
+      schema: {
+        description:
+          "This is an endpoint for DELETING an existing login.",
+        tags: ["login"],
+        params: {
+          description: "login by Id",
+          type: "object",
+          properties: {
+            id: { type: "number" },
+          },
+        },
+        body: {
+          description: "Payload for deleted data login",
+          type: "object",
+          properties: {
+            deleted_by: { type: "number" },
+          },
+        },
+        response: {
+          204: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+      const { deleted_by } = request.body;
 
-  //       reply.status(204);
-  //     }
-  //   );
+      try {
+        await fastify.login.del(id, deleted_by);
+        reply.send({ message: "success", code: 204 });
+      } catch (error) {
+        reply.send({ message: error.message, code: 500 });
+      }
+    }
+  );
 };
