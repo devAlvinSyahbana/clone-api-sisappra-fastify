@@ -33,6 +33,14 @@ const kepegawaian = (db) => {
         return query;
     };
 
+
+    const get_eselon = () => {
+        const query = db.any(
+            "SELECT pendidikan_terakhir, COUNT(pendidikan_terakhir) FROM dashboard_kepegawaian GROUP BY pendidikan_terakhir;"
+        );
+        return query;
+    };
+
     // const get_total_pegawai_kecamatan = () => {
     //     const query = db.one(
     //         "SELECT COUNT(id_pegawai) as jumlah FROM kepegawaian WHERE is_deleted = 0"
