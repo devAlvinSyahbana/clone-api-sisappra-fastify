@@ -20,7 +20,7 @@ const laporan_ppns = (db) => {
 
     const findone = (id) => {
         const query = db.one(
-            "SELECT id, id_nama, nip, golongan, sekep_ppns, tempat_tugas, tahun_diklat, keterangantanggal FROM laporan_ppns WHERE id = $1 AND is_deleted = 0",
+            "SELECT id, id_nama, nip, golongan, sekep_ppns, tempat_tugas, tahun_diklat, keterangan FROM laporan_ppns WHERE id = $1 AND is_deleted = 0",
             [id]
         );
 
@@ -29,7 +29,7 @@ const laporan_ppns = (db) => {
 
     const update = (id, id_nama, nip, golongan, sekep_ppns, tempat_tugas, tahun_diklat, keterangan) => {
         db.one(
-            "UPDATE laporan_ppns SET id_nama = $1, nip = $2, golongan = $3, sekep_ppns $4, tempat_tugas = $5, tahun_diklat = $6, keterangan = $7 updated_at = CURRENT_TIMESTAMP WHERE id = $8 RETURNING id",
+            "UPDATE laporan_ppns SET id_nama = $1, nip = $2, golongan = $3, sekep_ppns = $4, tempat_tugas = $5, tahun_diklat = $6, keterangan = $7, updated_at = CURRENT_TIMESTAMP WHERE id = $8 RETURNING id",
             [id_nama, nip, golongan, sekep_ppns, tempat_tugas, tahun_diklat, keterangan, id]
         );
     };
