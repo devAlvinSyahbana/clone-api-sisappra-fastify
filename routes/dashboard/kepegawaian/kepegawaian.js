@@ -184,18 +184,18 @@ module.exports = async function (fastify, opts) {
         }
     );
 
-    // ^ eselon
+    // ^ golongan
     fastify.get(
-        "/sum-eselon", {
+        "/sum-golongan", {
             schema: {
-                description: "This is an endpoint for fetching all kepegawaian per eselon",
+                description: "This is an endpoint for fetching all kepegawaian per golongan",
                 tags: ["kepegawaian"],
                 response: {
                     200: {
                         description: "Success Response",
                         type: "array",
                         properties: {
-                            pendidikan_terakhir: {
+                            golongan: {
                                 type: "string"
                             },
                             count: {
@@ -207,7 +207,35 @@ module.exports = async function (fastify, opts) {
             },
         },
         async (request, reply) => {
-            const exec = await fastify.kepegawaian.get_pendidikan_terakhir();
+            const exec = await fastify.kepegawaian.get_golongan();
+            reply.code(200).send(exec);
+        }
+    );
+
+    // ^ eselon
+    fastify.get(
+        "/sum-eselon", {
+            schema: {
+                description: "This is an endpoint for fetching all kepegawaian per eselon",
+                tags: ["kepegawaian"],
+                response: {
+                    200: {
+                        description: "Success Response",
+                        type: "array",
+                        properties: {
+                            eselon: {
+                                type: "string"
+                            },
+                            count: {
+                                type: "number"
+                            }
+                        },
+                    },
+                },
+            },
+        },
+        async (request, reply) => {
+            const exec = await fastify.kepegawaian.get_eselon();
             reply.code(200).send(exec);
         }
     );

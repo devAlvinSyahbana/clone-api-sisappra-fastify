@@ -33,10 +33,16 @@ const kepegawaian = (db) => {
         return query;
     };
 
+    const get_golongan = () => {
+        const query = db.any(
+            "SELECT golongan, COUNT( golongan) FROM dashboard_kepegawaian GROUP BY golongan;"
+        );
+        return query;
+    };
 
     const get_eselon = () => {
         const query = db.any(
-            "SELECT pendidikan_terakhir, COUNT(pendidikan_terakhir) FROM dashboard_kepegawaian GROUP BY pendidikan_terakhir;"
+            "SELECT eselon, COUNT( eselon) FROM dashboard_kepegawaian GROUP BY eselon;"
         );
         return query;
     };
@@ -79,7 +85,9 @@ const kepegawaian = (db) => {
         create,
         get_total_pegawai_provinsi,
         get_status_kepegawaian,
-        get_pendidikan_terakhir
+        get_pendidikan_terakhir,
+        get_golongan,
+        get_eselon
         // findone,
         // update,
         // del,

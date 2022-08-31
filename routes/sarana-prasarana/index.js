@@ -6,8 +6,7 @@ module.exports = async function (fastify, opts) {
   fastify.register(fileUpload);
 
   fastify.get(
-    "/find",
-    {
+    "/find", {
       schema: {
         description: "This is an endpoint for fetching all sarana_prasarana",
         tags: ["sarana_prasarana"],
@@ -48,7 +47,7 @@ module.exports = async function (fastify, opts) {
     }
   );
 
-  
+
   // fastify.get(
   //   "/findone/:id",
   //   {
@@ -125,8 +124,7 @@ module.exports = async function (fastify, opts) {
   // );
 
   fastify.post(
-    "/create",
-    {
+    "/create", {
       schema: {
         description: "This is an endpoint for creating a sample crud",
         tags: ["sarana_prasarana"],
@@ -134,12 +132,24 @@ module.exports = async function (fastify, opts) {
           description: "Payload for creating a sample crud",
           type: "object",
           properties: {
-            jenis_sarana_prasarana: { type: "string" },
-            status_sarana_prasarana: { type: "string" },
-            jumlah: { type: "number" },
-            kondisi: { type: "string" },
-            keterangan: { type: "string" },
-            dokumentasi: { type: "string" },
+            jenis_sarana_prasarana: {
+              type: "string"
+            },
+            status_sarana_prasarana: {
+              type: "string"
+            },
+            jumlah: {
+              type: "number"
+            },
+            kondisi: {
+              type: "string"
+            },
+            keterangan: {
+              type: "string"
+            },
+            dokumentasi: {
+              type: "string"
+            },
           },
         },
         response: {
@@ -147,12 +157,24 @@ module.exports = async function (fastify, opts) {
             description: "Success Response",
             type: "object",
             properties: {
-              jenis_sarana_prasarana: { type: "string" },
-              status_sarana_prasarana: { type: "string" },
-              jumlah: { type: "number" },
-              kondisi: { type: "string" },
-              keterangan: { type: "string" },
-              dokumentasi: { type: "string" },
+              jenis_sarana_prasarana: {
+                type: "string"
+              },
+              status_sarana_prasarana: {
+                type: "string"
+              },
+              jumlah: {
+                type: "number"
+              },
+              kondisi: {
+                type: "string"
+              },
+              keterangan: {
+                type: "string"
+              },
+              dokumentasi: {
+                type: "string"
+              },
             },
           },
         },
@@ -251,33 +273,36 @@ module.exports = async function (fastify, opts) {
 
   fastify.post(
     "/uploadSchema", {
-    schema: {
-      tags: ["sarana_prasarana"],
-      consumes: ["multipart/form-data"],
-      body: {
-        type: "object",
-        properties: {
-          fileName: {
-            type: "array",
-            items: {
-              type: "string",
-              format: "binary",
+      schema: {
+        tags: ["sarana_prasarana"],
+        consumes: ["multipart/form-data"],
+        body: {
+          type: "object",
+          properties: {
+            fileName: {
+              type: "array",
+              items: {
+                type: "string",
+                format: "binary",
+              },
             },
           },
+          required: ["fileName"],
         },
-        required: ["fileName"],
       },
-    },
-    handler: (request, reply) => {
-      const { file} = request.body.file;
-      console.log(file);
-      reply.send({ file });
-    },
-  });
+      handler: (request, reply) => {
+        const {
+          file
+        } = request.body.file;
+        console.log(file);
+        reply.send({
+          file
+        });
+      },
+    });
 
   fastify.put(
-    "/update/:id",
-    {
+    "/update/:id", {
       schema: {
         description: "This is an endpoint for updating an existing sample crud",
         tags: ["sarana_prasarana"],
@@ -285,19 +310,33 @@ module.exports = async function (fastify, opts) {
           description: "Master area dampak risiko by Id",
           type: "object",
           properties: {
-            id: { type: "number" },
+            id: {
+              type: "number"
+            },
           },
         },
         body: {
           description: "Payload for updating a sample crud",
           type: "object",
           properties: {
-            jenis_sarana_prasarana: { type: "string" },
-            status_sarana_prasarana: { type: "string" },
-            jumlah: { type: "number" },
-            kondisi: { type: "string" },
-            keterangan: { type: "string" },
-            dokumentasi: { type: "string" },
+            jenis_sarana_prasarana: {
+              type: "string"
+            },
+            status_sarana_prasarana: {
+              type: "string"
+            },
+            jumlah: {
+              type: "number"
+            },
+            kondisi: {
+              type: "string"
+            },
+            keterangan: {
+              type: "string"
+            },
+            dokumentasi: {
+              type: "string"
+            },
           },
         },
         response: {
@@ -305,24 +344,48 @@ module.exports = async function (fastify, opts) {
             description: "Success Response",
             type: "object",
             properties: {
-              jenis_sarana_prasarana: { type: "string" },
-              status_sarana_prasarana: { type: "string" },
-              jumlah: { type: "number" },
-              kondisi: { type: "string" },
-              keterangan: { type: "string" },
-              dokumentasi: { type: "string" },
+              jenis_sarana_prasarana: {
+                type: "string"
+              },
+              status_sarana_prasarana: {
+                type: "string"
+              },
+              jumlah: {
+                type: "number"
+              },
+              kondisi: {
+                type: "string"
+              },
+              keterangan: {
+                type: "string"
+              },
+              dokumentasi: {
+                type: "string"
+              },
             },
           },
         },
       },
     },
     async (request, reply) => {
-      const { jenis_sarana_prasarana } = request.body;
-      const { status_sarana_prasarana } = request.body;
-      const { jumlah } = request.body;
-      const { kondisi } = request.body;
-      const { keterangan } = request.body;
-      const { dokumentasi } = request.body;
+      const {
+        jenis_sarana_prasarana
+      } = request.body;
+      const {
+        status_sarana_prasarana
+      } = request.body;
+      const {
+        jumlah
+      } = request.body;
+      const {
+        kondisi
+      } = request.body;
+      const {
+        keterangan
+      } = request.body;
+      const {
+        dokumentasi
+      } = request.body;
 
       const exec = await fastify.sarana_prasarana.update(
         jenis_sarana_prasarana,
@@ -338,17 +401,17 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.delete(
-    "/delete/:id",
-    {
+    "/delete/:id", {
       schema: {
-        description:
-          "This is an endpoint for DELETING an existing sample crud.",
+        description: "This is an endpoint for DELETING an existing sample crud.",
         tags: ["sarana_prasarana"],
         params: {
           description: "Master area dampak risiko by Id",
           type: "object",
           properties: {
-            id: { type: "number" },
+            id: {
+              type: "number"
+            },
           },
         },
         response: {
@@ -360,7 +423,9 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { id } = request.params;
+      const {
+        id
+      } = request.params;
       await fastify.sarana_prasarana.del(id);
 
       reply.status(204);
