@@ -30,7 +30,7 @@ const laporan_tamu_daerah = (db) => {
 
   const update = (id, tanggal_kunjungan, waktu_mulai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan) => {
     db.one(
-      "UPDATE laporan_tamu_daerah SET tanggal_kunjungan = $1, waktu_mulai_kunjungan = $2, asal_instansi = $3, jml_pengunjung $4, maksud_dan_tujuan = $5, pejabat_penerima_kunjungan = $6, tempat_kunjungan = $7, updated_at CURRENT_TIMESTAMP WHERE id = $8 RETURNING id",
+      "UPDATE laporan_tamu_daerah SET tanggal_kunjungan = $1, waktu_mulai_kunjungan = $2, asal_instansi = $3, jml_pengunjung = $4, maksud_dan_tujuan = $5, pejabat_penerima_kunjungan = $6, tempat_kunjungan = $7, updated_at CURRENT_TIMESTAMP WHERE id = $8 RETURNING id",
       [tanggal_kunjungan, waktu_mulai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan]
     );
   };

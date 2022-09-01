@@ -1,19 +1,19 @@
 const fp = require("fastify-plugin");
 
 const laporan_pengawasan = (db) => {
-  const create = async (tanggal_pelaporan, id_kota, id_kecamatan, id_kelurahan, deskripsi, id_jenis_pengawasan) => {
+  const create = async (tanggal_pelaporan, deskripsi, id_kota, id_kecamatan, id_kelurahan,  id_jenis_pengawasan) => {
 
     const { id } = await db.one(
-      "INSERT INTO laporan_pengawasan (tanggal_pelaporan, id_kota, id_kecamatan, id_kelurahan, deskripsi, id_jenis_pengawasan) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
-      [tanggal_pelaporan, id_kota, id_kecamatan, id_kelurahan, deskripsi, id_jenis_pengawasan]
+      "INSERT INTO laporan_pengawasan (tanggal_pelaporan, deskripsi, id_kota, id_kecamatan, id_kelurahan,  id_jenis_pengawasan) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+      [tanggal_pelaporan, deskripsi, id_kota, id_kecamatan, id_kelurahan,  id_jenis_pengawasan]
     );
 
-    return {tanggal_pelaporan, id_kota, id_kecamatan, id_kelurahan, deskripsi, id_jenis_pengawasan};
+    return {tanggal_pelaporan, deskripsi, id_kota, id_kecamatan, id_kelurahan,  id_jenis_pengawasan};
   };
 
   const find = () => {
     const query = db.any(
-      "SELECT tanggal_pelaporan, id_kota, id_kecamatan, id_kelurahan, deskripsi, id_jenis_pengawasan FROM laporan_pengawasan WHERE is_deleted = 0 ORDER BY created_at DESC"
+      "SELECT tanggal_pelaporan, tanggal_pelaporan, deskripsi, id_kota, id_kecamatan, id_kelurahan,  id_jenis_pengawasan FROM laporan_pengawasan WHERE is_deleted = 0 ORDER BY created_at DESC"
     );
 
     return query;
@@ -21,17 +21,17 @@ const laporan_pengawasan = (db) => {
 
   const findone = (id) => {
     const query = db.one(
-      "SELECT id, tanggal_pelaporan, id_kota, id_kecamatan, id_kelurahan, deskripsi, id_jenis_pengawasan FROM laporan_pengawasan WHERE id = $1 AND is_deleted = 0",
+      "SELECT id, tanggal_pelaporan, deskripsi, id_kota, id_kecamatan, id_kelurahan,  id_jenis_pengawasan FROM laporan_pengawasan WHERE id = $1 AND is_deleted = 0",
       [id]
     );
 
     return query;
   };
 
-  const update = (id, tanggal_pelaporan, id_kota, id_kecamatan, id_kelurahan, deskripsi, id_jenis_pengawasan) => {
+  const update = (id, tanggal_pelaporan, deskripsi, id_kota, id_kecamatan, id_kelurahan,  id_jenis_pengawasan) => {
     db.one(
-      "UPDATE laporan_pengawasan SET tanggal_pelaporan = $1, id_kota = $2, id_kecamatan = $3, id_kelurahan $4, deskripsi = $5, id_jenis_pengawasan = $6 updated_at = CURRENT_TIMESTAMP WHERE id = $7 RETURNING id",
-      [tanggal_pelaporan, id_kota, id_kecamatan, id_kelurahan, deskripsi, id_jenis_pengawasan, id]
+      "UPDATE laporan_pengawasan SET tanggal_pelaporan = $1, deskripsi = $2, id_kota = $3, id_kecamatan = $4, id_kelurahan = $5, id_jenis_pengawasan = $6, updated_at = CURRENT_TIMESTAMP WHERE id = $7 RETURNING id",
+      [tanggal_pelaporan, deskripsi, id_kota, id_kecamatan, id_kelurahan,  id_jenis_pengawasan, id]
     );
   };
 
