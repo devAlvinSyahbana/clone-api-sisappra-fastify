@@ -1,6 +1,6 @@
 const login = require("../../services/login");
 const bcrypt = require("fastify-bcrypt");
-const jwtToken = require('fastify-jwt');
+const jwtToken = require("@fastify/jwt");
 
 module.exports = async function (fastify, opts) {
   fastify.register(login);
@@ -8,15 +8,14 @@ module.exports = async function (fastify, opts) {
     saltWorkFactor: 10,
   });
   fastify.register(jwtToken, {
-    secret: '8ziQ3!S6gnFZ'
+    secret: "8ziQ3!S6gnFZ",
   });
 
   fastify.get(
     "/find",
     {
       schema: {
-        description:
-          "This is an endpoint for fetching all pengguna login",
+        description: "This is an endpoint for fetching all pengguna login",
         tags: ["login"],
         response: {
           200: {
@@ -25,7 +24,7 @@ module.exports = async function (fastify, opts) {
             properties: {
               message: { type: "string" },
               code: { type: "string" },
-              data:{
+              data: {
                 type: "array",
                 items: {
                   type: "object",
@@ -37,8 +36,8 @@ module.exports = async function (fastify, opts) {
                     hak_akses: { type: "number" },
                     status_pengguna: { type: "number" },
                   },
-                }
-              }
+                },
+              },
             },
           },
         },
@@ -50,13 +49,12 @@ module.exports = async function (fastify, opts) {
       try {
         if (exec) {
           reply.send({ message: "success", code: 200, data: exec });
-        }else{
-          reply.send({ message: "success", code: 204});
+        } else {
+          reply.send({ message: "success", code: 204 });
         }
-
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
-      }     
+      }
     }
   );
 
@@ -107,7 +105,7 @@ module.exports = async function (fastify, opts) {
           reply.send({ message: "success", code: 204 });
         }
       } catch (error) {
-        reply.send({ message: error, code: 500});
+        reply.send({ message: error, code: 500 });
       }
     }
   );
@@ -144,7 +142,7 @@ module.exports = async function (fastify, opts) {
                   status_pengguna: { type: "number" },
                 },
               },
-              api_token: { type: "string"},
+              api_token: { type: "string" },
             },
           },
         },
@@ -166,15 +164,21 @@ module.exports = async function (fastify, opts) {
       try {
         if (await fastify.bcrypt.compare(kata_sandi, exec.kata_sandi)) {
           try {
-            let token = fastify.jwt.sign({ foo: 'bar' })
+            let token = fastify.jwt.sign({ foo: "bar" });
+            console.log('token', token)
             await fastify.login.create_token(exec.id, token);
 
-            reply.send({ message: "success", code: 200, data: objres, api_token: token });
+            reply.send({
+              message: "success",
+              code: 200,
+              data: objres,
+              api_token: token,
+            });
           } catch (error) {
             reply.send({ message: error.message, code: 500 });
-          }     
+          }
         } else {
-          reply.send({ message: "not allowed", code: 204});
+          reply.send({ message: "not allowed", code: 204 });
         }
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -213,13 +217,20 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { id_pegawai, no_pegawai, kata_sandi, email, hak_akses, created_by } = request.body;
+      const {
+        id_pegawai,
+        no_pegawai,
+        kata_sandi,
+        email,
+        hak_akses,
+        created_by,
+      } = request.body;
       const bycript_pass = await fastify.bcrypt.hash(kata_sandi);
 
-      const exec = await fastify.login.findone_no_pegawai(no_pegawai);
+      const { jmlh } = await fastify.login.findone_no_pegawai(no_pegawai);
 
       try {
-        if (!exec) {
+        if (parseInt(jmlh) == 0) {
           await fastify.login.create(
             id_pegawai,
             no_pegawai,
@@ -233,7 +244,6 @@ module.exports = async function (fastify, opts) {
         } else {
           reply.send({ message: "Already Reported", code: 208 });
         }
-        
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
       }
@@ -275,15 +285,15 @@ module.exports = async function (fastify, opts) {
     async (request, reply) => {
       const { api_token } = request.body;
       const exec = await fastify.login.find_token(api_token);
-      
+
       try {
         if (exec) {
-          reply.send({ message: "success", code: 200, data: exec});
+          reply.send({ message: "success", code: 200, data: exec });
         } else {
           reply.send({ message: "success", code: 204 });
         }
       } catch (error) {
-        reply.send({ message: error.message, code: 500});
+        reply.send({ message: error.message, code: 500 });
       }
     }
   );
@@ -292,8 +302,7 @@ module.exports = async function (fastify, opts) {
     "/update/:id",
     {
       schema: {
-        description:
-          "This is an endpoint for updating an existing login",
+        description: "This is an endpoint for updating an existing login",
         tags: ["login"],
         params: {
           description: "update login by Id",
@@ -328,19 +337,26 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const { id_pegawai, no_pegawai, email, hak_akses, status_pengguna, updated_by } = request.body;
+      const {
+        id_pegawai,
+        no_pegawai,
+        email,
+        hak_akses,
+        status_pengguna,
+        updated_by,
+      } = request.body;
 
       try {
         await fastify.login.update(
           id,
           id_pegawai,
           no_pegawai,
-          email, 
-          hak_akses, 
+          email,
+          hak_akses,
           status_pengguna,
           updated_by
         );
-  
+
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -387,12 +403,8 @@ module.exports = async function (fastify, opts) {
       const { kata_sandi, updated_by } = request.body;
       const bycript_pass = await fastify.bcrypt.hash(kata_sandi);
       try {
-        await fastify.login.update_password(
-          id,
-          bycript_pass,
-          updated_by
-        );
-  
+        await fastify.login.update_password(id, bycript_pass, updated_by);
+
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -404,8 +416,7 @@ module.exports = async function (fastify, opts) {
     "/delete/:id",
     {
       schema: {
-        description:
-          "This is an endpoint for DELETING an existing login.",
+        description: "This is an endpoint for DELETING an existing login.",
         tags: ["login"],
         params: {
           description: "login by Id",
