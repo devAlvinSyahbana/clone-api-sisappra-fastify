@@ -1,6 +1,6 @@
 const login = require("../../services/login");
 const bcrypt = require("fastify-bcrypt");
-const jwtToken = require("fastify-jwt");
+const jwtToken = require("@fastify/jwt");
 
 module.exports = async function (fastify, opts) {
   fastify.register(login);
@@ -165,6 +165,7 @@ module.exports = async function (fastify, opts) {
         if (await fastify.bcrypt.compare(kata_sandi, exec.kata_sandi)) {
           try {
             let token = fastify.jwt.sign({ foo: "bar" });
+            console.log('token', token)
             await fastify.login.create_token(exec.id, token);
 
             reply.send({
