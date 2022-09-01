@@ -14,6 +14,106 @@ module.exports = async function (fastify, opts) {
         response: {
           200: {
             description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+              data:{
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    jenis_sarana_prasarana: { type: "string" },
+                    status_sarana_prasarana: { type: "string" },
+                    jumlah: { type: "number" },
+                    kondisi: { type: "string" },
+                    keterangan: { type: "string" },
+                    dokumentasi: { type: "string" },
+                  },
+                }
+              }
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const exec = await fastify.sarana_prasarana.find();
+
+      try {
+        if (exec) {
+          reply.send({ message: "success", code: 200, data: exec });
+        }else{
+          reply.send({ message: "success", code: 204});
+        }
+
+      } catch (error) {
+        reply.send({ message: error.message, code: 500 });
+      }     
+    }
+  );
+
+  
+  fastify.get(
+    "/findone/:id",
+    {
+      schema: {
+        description: "This is an endpoint for fetching a sarana_prasarana by id",
+        tags: ["sarana_prasarana"],
+        params: {
+          description: "Find one sarana_prasarana by id",
+          type: "object",
+          properties: {
+            id: { type: "number" },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+              data: {
+                type: "object",
+                properties: {
+                  id: { type: "number" },
+                  jenis_sarana_prasarana: { type: "string" },
+                  status_sarana_prasarana: { type: "string" },
+                  kondisi: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+      const exec = await fastify.sarana_prasarana.findone(id);
+
+      try {
+        if (exec) {
+          reply.send({ message: "success", code: 200, data: exec });
+        } else {
+          reply.send({ message: "success", code: 204 });
+        }
+      } catch (error) {
+        reply.send({ message: error, code: 500});
+      }
+    }
+  );
+
+
+  fastify.get(
+    "/findFilter",
+    {
+      schema: {
+        description: "This is an endpoint for fetching all sarana_prasarana",
+        tags: ["sarana_prasarana"],
+        response: {
+          200: {
+            description: "Success Response",
             type: "array",
             items: {
               type: "object",
@@ -24,16 +124,7 @@ module.exports = async function (fastify, opts) {
                 status_sarana_prasarana: {
                   type: "string",
                 },
-                jumlah: {
-                  type: "number",
-                },
                 kondisi: {
-                  type: "string",
-                },
-                keterangan: {
-                  type: "string",
-                },
-                dokumentasi: {
                   type: "string",
                 },
               },
@@ -43,86 +134,10 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const exec = await fastify.sarana_prasarana.find();
+      const exec = await fastify.sarana_prasarana.findFilter();
       return exec;
     }
   );
-
-  
-  // fastify.get(
-  //   "/findone/:id",
-  //   {
-  //     schema: {
-  //       description:
-  //         "This is an endpoint for fetching a sample crud by id",
-  //       tags: ["sarana_prasarana"],
-  //       params: {
-  //         description: "Find one sample crud by Id",
-  //         type: "object",
-  //         properties: {
-  //           jenis_sarana_prasarana: { type: "number" },
-  //           status_sarana_prasarana: { type: "string" },
-  //           kondisi: { type: "string" },
-  //         },
-  //       },
-  //       response: {
-  //         200: {
-  //           description: "Success Response",
-  //           type: "object",
-  //           properties: {
-  //             jenis_sarana_prasarana: { type: "number" },
-  //             status_sarana_prasarana: { type: "string" },
-  //             kondisi: { type: "string" },
-  //           },
-  //         },
-  //       },
-  //     },
-  //   },
-  //   async (request, reply) => {
-  //     const { id } = request.params;
-  //     const exec = await fastify.sample_crud.findone(id);
-  //     return exec;
-  //   }
-  // );
-
-
-
-
-
-
-  // fastify.get(
-  //   "/findFilter",
-  //   {
-  //     schema: {
-  //       description: "This is an endpoint for fetching all sarana_prasarana",
-  //       tags: ["sarana_prasarana"],
-  //       response: {
-  //         200: {
-  //           description: "Success Response",
-  //           type: "array",
-  //           items: {
-  //             type: "object",
-  //             properties: {
-  //               jenis_sarana_prasarana: {
-  //                 type: "string",
-  //               },
-  //               status_sarana_prasarana: {
-  //                 type: "string",
-  //               },
-  //               kondisi: {
-  //                 type: "string",
-  //               },
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //   },
-  //   async (request, reply) => {
-  //     const exec = await fastify.sarana_prasarana.findFilter();
-  //     return exec;
-  //   }
-  // );
 
   fastify.post(
     "/create",
@@ -279,17 +294,18 @@ module.exports = async function (fastify, opts) {
     "/update/:id",
     {
       schema: {
-        description: "This is an endpoint for updating an existing sample crud",
+        description:
+          "This is an endpoint for updating an existing sarana_prasarana",
         tags: ["sarana_prasarana"],
         params: {
-          description: "Master area dampak risiko by Id",
+          description: "update sarana_prasarana by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for updating a sample crud",
+          description: "Payload for updating a sarana_prasarana",
           type: "object",
           properties: {
             jenis_sarana_prasarana: { type: "string" },
@@ -298,6 +314,7 @@ module.exports = async function (fastify, opts) {
             kondisi: { type: "string" },
             keterangan: { type: "string" },
             dokumentasi: { type: "string" },
+            updated_by: { type: "number" },
           },
         },
         response: {
@@ -305,35 +322,33 @@ module.exports = async function (fastify, opts) {
             description: "Success Response",
             type: "object",
             properties: {
-              jenis_sarana_prasarana: { type: "string" },
-              status_sarana_prasarana: { type: "string" },
-              jumlah: { type: "number" },
-              kondisi: { type: "string" },
-              keterangan: { type: "string" },
-              dokumentasi: { type: "string" },
+              message: { type: "string" },
+              code: { type: "string" },
             },
           },
         },
       },
     },
     async (request, reply) => {
-      const { jenis_sarana_prasarana } = request.body;
-      const { status_sarana_prasarana } = request.body;
-      const { jumlah } = request.body;
-      const { kondisi } = request.body;
-      const { keterangan } = request.body;
-      const { dokumentasi } = request.body;
+      const { id } = request.params;
+      const { jenis_sarana_prasarana,status_sarana_prasarana,jumlah,kondisi,keterangan,dokumentasi, updated_by } = request.body;
 
-      const exec = await fastify.sarana_prasarana.update(
-        jenis_sarana_prasarana,
-        status_sarana_prasarana,
-        jumlah,
-        kondisi,
-        keterangan,
-        dokumentasi
-      );
-
-      return exec;
+      try {
+        await fastify.sarana_prasarana.update(
+          id,
+          jenis_sarana_prasarana,
+          status_sarana_prasarana,
+          jumlah, 
+          kondisi, 
+          keterangan,
+          dokumentasi,
+          updated_by
+        );
+  
+        reply.send({ message: "success", code: 200 });
+      } catch (error) {
+        reply.send({ message: error.message, code: 500 });
+      }
     }
   );
 
@@ -342,28 +357,44 @@ module.exports = async function (fastify, opts) {
     {
       schema: {
         description:
-          "This is an endpoint for DELETING an existing sample crud.",
+          "This is an endpoint for DELETING an existing sarana_prasarana",
         tags: ["sarana_prasarana"],
         params: {
-          description: "Master area dampak risiko by Id",
+          description: "sarana_prasarana by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
+        body: {
+          description: "Payload for deleted data sarana_prasarana",
+          type: "object",
+          properties: {
+            deleted_by: { type: "number" },
+          },
+        },
         response: {
           204: {
-            type: "number",
-            default: "No Content",
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+            },
           },
         },
       },
     },
     async (request, reply) => {
       const { id } = request.params;
-      await fastify.sarana_prasarana.del(id);
+      const { deleted_by } = request.body;
 
-      reply.status(204);
+      try {
+        await fastify.login.del(id, deleted_by);
+        reply.send({ message: "success", code: 204 });
+      } catch (error) {
+        reply.send({ message: error.message, code: 500 });
+      }
     }
   );
 };

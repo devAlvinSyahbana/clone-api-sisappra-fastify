@@ -21,25 +21,33 @@ const sarana_prasarana = (db) => {
   
   const find = () => {
     const query = db.any(
-        "SELECT * FROM sarana_prasarana ORDER BY created_at DESC"
+        "SELECT  sp.id, jsp.jenis_sarana_prasarana, ssp.status_sarana_prasarana, sp.jumlah, ksp.kondisi, sp.keterangan, sp.dokumentasi FROM sarana_prasarana sp ORDER BY created_at DESC"
     );
     return query;
   };
+  const findone = (id) => {
+    const query = db.one(
+      "SELECT * FROM sarana_prasarana WHERE id = $1 AND is_deleted = 0",
+      [id]
+    );
 
-  const update = (jenis_sarana_prasarana, status_sarana_prasarana, jumlah, kondisi, keterangan, dokumentasi) => {
+    return query;
+  };
+
+  const update = (id,jenis_sarana_prasarana, status_sarana_prasarana, jumlah, kondisi, keterangan, dokumentasi, updated_by) => {
     db.one(
-      "UPDATE jenis_sarana_prasarana,status_sarana_prasarana, jumlah, kondisi, keterangan, dokumentasi = $1, $2, $3, $4, $5, $6 updated_at = CURRENT_TIMESTAMP WHERE id= $7 RETURNING id",
-      [jenis_sarana_prasarana, status_sarana_prasarana, jumlah, kondisi, keterangan, dokumentasi]
+      "UPDATE sarana_prasarana SET jenis_sarana_prasarana = $1, status_sarana_prasarana =$2, jumlah =$3, kondisi =$4, keterangan =$5, dokumentasi =$6 updated_at = CURRENT_TIMESTAMP WHERE id = $7 RETURNING id",
+      [jenis_sarana_prasarana, status_sarana_prasarana, jumlah, kondisi, keterangan, dokumentasi, updated_by, id]
     );
   };
 
   
   
   
-  const del = async (id) => {
+  const del = async (id, deleted_by) => {
     await db.one(
-      "UPDATE sarana_prasarana SET is_deleted = 1, deleted_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id",
-      [id]
+      "UPDATE sarana_prasarana SET is_deleted = 1, deleted_by = $2, deleted_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id",
+      [id, deleted_by]
     );
 
     return { id };
@@ -52,11 +60,6 @@ const sarana_prasarana = (db) => {
     return query;
   };
 
-  // const findone = (id) => {
-  //   const query = db.one(
-  //     "SELECT jenis_sarana_prasarana, status_sarana_prasarana, kondisi FROM sample_crud WHERE id = $1 AND is_deleted = 0",
-  //     [jenis_sarana_prasarana, status_sarana_prasarana, kondisi]
-  //   );
   
   
   return {
@@ -64,7 +67,7 @@ const sarana_prasarana = (db) => {
     update,
     del,
     find,
-    // findone,  
+    findone,
     findFilter,
     post,
     
