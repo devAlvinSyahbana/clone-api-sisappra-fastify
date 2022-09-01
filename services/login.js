@@ -30,7 +30,7 @@ const login = (db) => {
 
   const findone_no_pegawai = (no_pegawai) => {
     const query = db.one(
-      "SELECT * FROM pengguna WHERE no_pegawai = $1 AND is_deleted = 0",
+      "SELECT count(id) as jmlh FROM pengguna WHERE no_pegawai = $1 AND is_deleted = 0",
       [no_pegawai]
     );
 
