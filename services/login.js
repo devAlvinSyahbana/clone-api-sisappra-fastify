@@ -4,7 +4,7 @@ const login = (db) => {
 
   const find_token = (token) => {
     const query = db.any(
-      "SELECT id_pengguna, token FROM auth_token WHERE token = $1",
+      "SELECT id_pegawai, token FROM auth_token WHERE token = $1",
       [token]
     );
 
@@ -84,7 +84,9 @@ const login = (db) => {
       [id, deleted_by]
     );
 
-    return { id };
+    return {
+      id
+    };
   };
 
   return {
