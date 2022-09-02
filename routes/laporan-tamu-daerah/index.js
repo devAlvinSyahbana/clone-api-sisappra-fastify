@@ -8,8 +8,8 @@ module.exports = async function (fastify, opts) {
     {
       schema: {
         description:
-          "API untuk mengambil seluruh Laporan tamu_daerah",
-        tags: ["laporan tamu_daerah"],
+          "API untuk mengambil seluruh Laporan tamu daerah",
+        tags: ["laporan tamu daerah"],
         response: {
           200: {
             description: "Berhasil Bro!",
@@ -34,7 +34,7 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const exec = await fastify.laporan_tamu_daerah.find();
-      console.log("string", exec)
+      console.log("string",exec)
       return exec;
     }
   );
@@ -84,7 +84,7 @@ module.exports = async function (fastify, opts) {
     {
       schema: {
         description:
-          "API membuat laporan tamu_daerah",
+          "API membuat laporan tamu daerah",
         tags: ["laporan tamu daerah"],
         body: {
           description: "Payload for creating a laporan tamu daerah",
@@ -133,8 +133,8 @@ module.exports = async function (fastify, opts) {
     {
       schema: {
         description:
-          "API mengubah laporan tamu_daerah",
-        tags: ["laporan tamu_daerah"],
+          "API mengubah laporan tamu daerah",
+        tags: ["laporan tamu daerah"],
         params: {
           description: "Master area dampak risiko by Id",
           type: "object",
@@ -191,8 +191,8 @@ module.exports = async function (fastify, opts) {
     {
       schema: {
         description:
-          "This is an endpoint for DELETING an existing laporan tamu_daerah .",
-        tags: ["laporan tamu_daerah"],
+          "This is an endpoint for DELETING an existing laporan tamu daerah .",
+        tags: ["laporan tamu daerah"],
         params: {
           description: "Master area dampak risiko by Id",
           type: "object",

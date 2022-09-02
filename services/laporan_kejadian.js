@@ -30,7 +30,7 @@ const laporan_kejadian = (db) => {
 
   const update = (id, id_kota, id_kelurahan, id_kecamatan, kejadian, tanggal) => {
     db.one(
-      "UPDATE laporan_kejadian SET id_kota = $1, id_kelurahan = $2, id_kecamatan = $3, kejadian $4, tanggal = $5, updated_at = CURRENT_TIMESTAMP WHERE id = $6 RETURNING id",
+      "UPDATE laporan_kejadian SET id_kota = $1, id_kelurahan = $2, id_kecamatan = $3, kejadian = $4, tanggal = $5, updated_at = CURRENT_TIMESTAMP WHERE id = $6 RETURNING id",
       [id_kota, id_kelurahan, id_kecamatan, kejadian, tanggal, id]
     );
   };

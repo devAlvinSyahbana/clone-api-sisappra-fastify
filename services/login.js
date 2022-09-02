@@ -4,7 +4,7 @@ const login = (db) => {
 
   const find_token = (token) => {
     const query = db.any(
-      "SELECT id_pegawai, token FROM auth_token WHERE token = $1",
+      "SELECT id_pengguna, token FROM auth_token WHERE token = $1",
       [token]
     );
 
@@ -30,7 +30,7 @@ const login = (db) => {
 
   const findone_no_pegawai = (no_pegawai) => {
     const query = db.one(
-      "SELECT * FROM pengguna WHERE no_pegawai = $1 AND is_deleted = 0",
+      "SELECT count(id) as jmlh FROM pengguna WHERE no_pegawai = $1 AND is_deleted = 0",
       [no_pegawai]
     );
 
