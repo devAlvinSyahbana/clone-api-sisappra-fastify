@@ -21,7 +21,7 @@ const sarana_prasarana = (db) => {
   
   const find = () => {
     const query = db.any(
-        "SELECT  sp.id, jsp.jenis_sarana_prasarana, ssp.status_sarana_prasarana, sp.jumlah, ksp.kondisi, sp.keterangan, sp.dokumentasi FROM sarana_prasarana sp ORDER BY created_at DESC"
+        "SELECT * FROM sarana_prasarana ORDER BY created_at DESC"
     );
     return query;
   };
