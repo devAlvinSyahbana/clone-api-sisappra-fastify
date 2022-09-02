@@ -7,7 +7,7 @@ module.exports = async function (fastify, opts) {
     fastify.get(
         "/sum-jenis-sarana_prasarana", {
             schema: {
-                description: "This is an endpoint for fetching all sarana prasarana per jenis sarana_prasarana",
+                description: "This is an endpoint for fetching all sarana prasarana per jenis",
                 tags: ["jenis_sarana_prasarana"],
                 response: {
                     200: {
