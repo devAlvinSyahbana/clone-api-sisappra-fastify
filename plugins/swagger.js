@@ -6,8 +6,8 @@ module.exports = fp(async function (fastify, opts) {
     routePrefix: "/documentation",
     swagger: {
       info: {
-        title: "Manrisk API",
-        description: "Manrisk API Documentation",
+        title: "SISAPPRA API",
+        description: "SISAPPRA API Documentation",
         version: "0.1.0",
       },
       host: "localhost:3000",
