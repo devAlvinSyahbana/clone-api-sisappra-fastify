@@ -14,11 +14,37 @@ const kepegawaian_non_pns = (db) => {
     return query;
   };
 
+  const filter = (limit, offset, status, qwhere) => {
+    const query = db.any(
+      "SELECT kpns.id, kpns.nama, kpns.tempat_lahir, to_char(kpns.tgl_lahir, 'dd Mon YYYY') AS tgl_lahir, CASE WHEN kpns.jenis_kelamin = 'L' THEN 'Laki-laki' ELSE 'Perempuan' END AS jenis_kelamin, ma.nama as agama, kpns.no_hp, kpns.kepegawaian_nptt_npjlp as kepegawaian_nrk, kpns.kepegawaian_status_pegawai, kpns.foto FROM kepegawaian_non_pns kpns LEFT JOIN master_agama ma ON ma.id = CAST (kpns.agama AS INTEGER) WHERE kpns.is_deleted = 0 AND kpns.kepegawaian_status_pegawai = '" +
+        status +
+        "'" +
+        qwhere +
+        " LIMIT " +
+        limit +
+        " OFFSET " +
+        (parseInt(offset) - 1)
+    );
+
+    return query;
+  };
+
   const countAll = (status) => {
     const query = db.one(
       "SELECT COUNT(id) as total FROM kepegawaian_non_pns WHERE is_deleted = 0 AND kepegawaian_status_pegawai = '" +
         status +
         "'"
+    );
+
+    return query;
+  };
+
+  const countAllFilter = (status, qwhere) => {
+    const query = db.one(
+      "SELECT COUNT(id) as total FROM kepegawaian_non_pns WHERE is_deleted = 0 AND kepegawaian_status_pegawai = '" +
+        status +
+        "'" +
+        qwhere
     );
 
     return query;
@@ -59,6 +85,8 @@ const kepegawaian_non_pns = (db) => {
   };
 
   return {
+    filter,
+    countAllFilter,
     countAll,
     create,
     find,

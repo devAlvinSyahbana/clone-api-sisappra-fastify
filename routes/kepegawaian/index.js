@@ -16,9 +16,11 @@ module.exports = async function (fastify, opts) {
           properties: {
             limit: {
               type: "integer",
+              default: 10,
             },
             offset: {
               type: "integer",
+              default: 1,
             },
             status: {
               type: "string",
@@ -33,6 +35,7 @@ module.exports = async function (fastify, opts) {
               type: "string",
             },
           },
+          required: ["limit", "offset"],
         },
         response: {
           200: {
@@ -69,38 +72,83 @@ module.exports = async function (fastify, opts) {
       const { limit, offset, status, nama, nrk, nopegawai } = request.query;
       let exec = null;
       let totalDt = 0;
+      let qwhere = "";
       if (status) {
         if (status === "PNS") {
+          if (nama || nrk || nopegawai) {
+            if (nama) {
+              qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
+            }
+            if (nrk) {
+              qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nrk}%'`;
+            }
+            if (nopegawai) {
+              qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nopegawai}%'`;
+            }
+            exec = await fastify.kepegawaian_pns.filter(limit, offset, qwhere);
+            const { total } = await fastify.kepegawaian_pns.countAllFilter(
+              qwhere
+            );
+            totalDt = total;
+          } else {
+            exec = await fastify.kepegawaian_pns.find(limit, offset);
+            const { total } = await fastify.kepegawaian_pns.countAll();
+            totalDt = total;
+          }
+        } else {
+          if (nama || nrk || nopegawai) {
+            if (nama) {
+              qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
+            }
+            if (nrk) {
+              qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nrk}%'`;
+            }
+            if (nopegawai) {
+              qwhere += ` AND kpns.kepegawaian_nptt_npjlp ILIKE '%${nopegawai}%'`;
+            }
+            exec = await fastify.kepegawaian_non_pns.filter(
+              limit,
+              offset,
+              status,
+              qwhere
+            );
+            const { total } = await fastify.kepegawaian_non_pns.countAll(
+              status
+            );
+            totalDt = total;
+          } else {
+            exec = await fastify.kepegawaian_non_pns.find(
+              limit,
+              offset,
+              status
+            );
+            const { total } = await fastify.kepegawaian_non_pns.countAll(
+              status
+            );
+            totalDt = total;
+          }
+        }
+      } else {
+        if (nama || nrk || nopegawai) {
           if (nama) {
+            qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
           }
           if (nrk) {
+            qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nrk}%'`;
           }
           if (nopegawai) {
+            qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nopegawai}%'`;
           }
+          exec = await fastify.kepegawaian_pns.filter(limit, offset, qwhere);
+          const { total } = await fastify.kepegawaian_pns.countAllFilter(
+            qwhere
+          );
+          totalDt = total;
+        } else {
           exec = await fastify.kepegawaian_pns.find(limit, offset);
           const { total } = await fastify.kepegawaian_pns.countAll();
           totalDt = total;
-        } else {
-          if (nama) {
-          }
-          if (nrk) {
-          }
-          if (nopegawai) {
-          }
-          exec = await fastify.kepegawaian_non_pns.find(limit, offset, status);
-          const { total } = await fastify.kepegawaian_non_pns.countAll(status);
-          totalDt = total;
         }
-      } else {
-        if (nama) {
-        }
-        if (nrk) {
-        }
-        if (nopegawai) {
-        }
-        exec = await fastify.kepegawaian_pns.find(limit, offset);
-        const { total } = await fastify.kepegawaian_pns.countAll();
-        totalDt = total;
       }
       try {
         if (exec) {
