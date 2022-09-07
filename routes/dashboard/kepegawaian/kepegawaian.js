@@ -3,129 +3,129 @@ const kepegawaian = require("../../../services/dashboard/kepegawaian/kepegawaian
 module.exports = async function (fastify, opts) {
     fastify.register(kepegawaian);
 
-    fastify.post(
-        "/create", {
-            schema: {
-                description: "This is an endpoint for creating kepegawaian",
-                tags: ["kepegawaian"],
-                body: {
-                    description: "Payload for creating kepegawaian",
-                    type: "object",
-                    properties: {
-                        id_pegawai: {
-                            type: "string"
-                        },
-                        status_kepegawaian: {
-                            type: "string"
-                        },
-                        pendidikan_terakhir: {
-                            type: "string"
-                        },
-                        golongan: {
-                            type: "string"
-                        },
-                        eselon: {
-                            type: "string"
-                        },
-                        jenis_kediklatan: {
-                            type: "string"
-                        },
-                        usia: {
-                            type: "number"
-                        },
-                        usia_pensiun: {
-                            type: "number"
-                        },
-                        status_ppns: {
-                            type: "string"
-                        }
-                    },
-                },
-                response: {
-                    201: {
-                        description: "Success Response",
-                        type: "object",
-                        properties: {
-                            id_pegawai: {
-                                type: "string"
-                            },
-                            status_kepegawaian: {
-                                type: "string"
-                            },
-                            pendidikan_terakhir: {
-                                type: "number"
-                            },
-                            golongan: {
-                                type: "string"
-                            },
-                            eselon: {
-                                type: "string"
-                            },
-                            jenis_kediklatan: {
-                                type: "string"
-                            },
-                            usia: {
-                                type: "number"
-                            },
-                            usia_pensiun: {
-                                type: "number"
-                            },
-                            status_ppns: {
-                                type: "string"
-                            }
-                        },
-                    },
-                },
-            },
-        },
-        async (request, reply) => {
-            const {
-                id_pegawai,
-                status_kepegawaian,
-                pendidikan_terakhir,
-                golongan,
-                eselon,
-                jenis_kediklatan,
-                usia,
-                usia_pensiun,
-                status_ppns
-            } = request.body;
-            const exec = await fastify.kepegawaian.create(
-                id_pegawai, status_kepegawaian, pendidikan_terakhir, golongan, eselon, jenis_kediklatan, usia, usia_pensiun, status_ppns
-            );
-            reply.code(201).send(exec);
-        }
-    );
+    // fastify.post(
+    //     "/create", {
+    //         schema: {
+    //             description: "This is an endpoint for creating kepegawaian",
+    //             tags: ["kepegawaian"],
+    //             body: {
+    //                 description: "Payload for creating kepegawaian",
+    //                 type: "object",
+    //                 properties: {
+    //                     id_pegawai: {
+    //                         type: "string"
+    //                     },
+    //                     status_kepegawaian: {
+    //                         type: "string"
+    //                     },
+    //                     pendidikan_terakhir: {
+    //                         type: "string"
+    //                     },
+    //                     golongan: {
+    //                         type: "string"
+    //                     },
+    //                     eselon: {
+    //                         type: "string"
+    //                     },
+    //                     jenis_kediklatan: {
+    //                         type: "string"
+    //                     },
+    //                     usia: {
+    //                         type: "number"
+    //                     },
+    //                     usia_pensiun: {
+    //                         type: "number"
+    //                     },
+    //                     status_ppns: {
+    //                         type: "string"
+    //                     }
+    //                 },
+    //             },
+    //             response: {
+    //                 201: {
+    //                     description: "Success Response",
+    //                     type: "object",
+    //                     properties: {
+    //                         id_pegawai: {
+    //                             type: "string"
+    //                         },
+    //                         status_kepegawaian: {
+    //                             type: "string"
+    //                         },
+    //                         pendidikan_terakhir: {
+    //                             type: "number"
+    //                         },
+    //                         golongan: {
+    //                             type: "string"
+    //                         },
+    //                         eselon: {
+    //                             type: "string"
+    //                         },
+    //                         jenis_kediklatan: {
+    //                             type: "string"
+    //                         },
+    //                         usia: {
+    //                             type: "number"
+    //                         },
+    //                         usia_pensiun: {
+    //                             type: "number"
+    //                         },
+    //                         status_ppns: {
+    //                             type: "string"
+    //                         }
+    //                     },
+    //                 },
+    //             },
+    //         },
+    //     },
+    //     async (request, reply) => {
+    //         const {
+    //             id_pegawai,
+    //             status_kepegawaian,
+    //             pendidikan_terakhir,
+    //             golongan,
+    //             eselon,
+    //             jenis_kediklatan,
+    //             usia,
+    //             usia_pensiun,
+    //             status_ppns
+    //         } = request.body;
+    //         const exec = await fastify.kepegawaian.create(
+    //             id_pegawai, status_kepegawaian, pendidikan_terakhir, golongan, eselon, jenis_kediklatan, usia, usia_pensiun, status_ppns
+    //         );
+    //         reply.code(201).send(exec);
+    //     }
+    // );
 
-    fastify.get(
-        "/sum-provinsi", {
-            schema: {
-                description: "This is an endpoint for fetching all kepegawaian per provinsi",
-                tags: ["kepegawaian"],
-                response: {
-                    200: {
-                        description: "Success Response",
-                        type: "array",
-                        items: {
-                            type: "object",
-                            properties: {
-                                status_kepegawaian: {
-                                    type: "string"
-                                },
-                                count: {
-                                    type: "string"
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-        },
-        async (request, reply) => {
-            const exec = await fastify.kepegawaian.get_total_pegawai_provinsi();
-            reply.code(200).send(exec);
-        }
-    );
+    // fastify.get(
+    //     "/sum-provinsi", {
+    //         schema: {
+    //             description: "This is an endpoint for fetching all kepegawaian per provinsi",
+    //             tags: ["kepegawaian"],
+    //             response: {
+    //                 200: {
+    //                     description: "Success Response",
+    //                     type: "array",
+    //                     items: {
+    //                         type: "object",
+    //                         properties: {
+    //                             status_kepegawaian: {
+    //                                 type: "string"
+    //                             },
+    //                             count: {
+    //                                 type: "string"
+    //                             },
+    //                         },
+    //                     },
+    //                 },
+    //             },
+    //         },
+    //     },
+    //     async (request, reply) => {
+    //         const exec = await fastify.kepegawaian.get_total_pegawai_provinsi();
+    //         reply.code(200).send(exec);
+    //     }
+    // );
 
     // ^  status kepegawaian
     fastify.get(
@@ -135,14 +135,26 @@ module.exports = async function (fastify, opts) {
                 tags: ["kepegawaian"],
                 response: {
                     200: {
-                        description: "Success Response",
-                        type: "array",
                         properties: {
-                            status_kepegawaian: {
+                            message: {
                                 type: "string"
                             },
-                            count: {
-                                type: "number"
+                            code: {
+                                type: "string"
+                            },
+                            data: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        status_kepegawaian: {
+                                            type: "string"
+                                        },
+                                        count: {
+                                            type: "number"
+                                        }
+                                    },
+                                }
                             }
                         },
                     },
@@ -151,8 +163,27 @@ module.exports = async function (fastify, opts) {
         },
         async (request, reply) => {
             const exec = await fastify.kepegawaian.get_status_kepegawaian();
-            console.log("ini loh console", exec)
-            reply.code(200).send(exec);
+
+            try {
+                if (exec) {
+                    reply.send({
+                        message: "success",
+                        code: 200,
+                        data: exec
+                    });
+                } else {
+                    reply.send({
+                        message: "success",
+                        code: 204
+                    });
+                }
+
+            } catch (error) {
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
+            }
         }
     );
 
@@ -164,14 +195,26 @@ module.exports = async function (fastify, opts) {
                 tags: ["kepegawaian"],
                 response: {
                     200: {
-                        description: "Success Response",
-                        type: "array",
                         properties: {
-                            pendidikan_terakhir: {
+                            message: {
                                 type: "string"
                             },
-                            count: {
-                                type: "number"
+                            code: {
+                                type: "string"
+                            },
+                            data: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        pendidikan_terakhir: {
+                                            type: "string"
+                                        },
+                                        count: {
+                                            type: "number"
+                                        }
+                                    },
+                                }
                             }
                         },
                     },
@@ -180,7 +223,27 @@ module.exports = async function (fastify, opts) {
         },
         async (request, reply) => {
             const exec = await fastify.kepegawaian.get_pendidikan_terakhir();
-            reply.code(200).send(exec);
+
+            try {
+                if (exec) {
+                    reply.send({
+                        message: "success",
+                        code: 200,
+                        data: exec
+                    });
+                } else {
+                    reply.send({
+                        message: "success",
+                        code: 204
+                    });
+                }
+
+            } catch (error) {
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
+            }
         }
     );
 
@@ -192,14 +255,26 @@ module.exports = async function (fastify, opts) {
                 tags: ["kepegawaian"],
                 response: {
                     200: {
-                        description: "Success Response",
-                        type: "array",
                         properties: {
-                            golongan: {
+                            message: {
                                 type: "string"
                             },
-                            count: {
-                                type: "number"
+                            code: {
+                                type: "string"
+                            },
+                            data: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        golongan: {
+                                            type: "string"
+                                        },
+                                        count: {
+                                            type: "number"
+                                        }
+                                    },
+                                }
                             }
                         },
                     },
@@ -208,7 +283,27 @@ module.exports = async function (fastify, opts) {
         },
         async (request, reply) => {
             const exec = await fastify.kepegawaian.get_golongan();
-            reply.code(200).send(exec);
+
+            try {
+                if (exec) {
+                    reply.send({
+                        message: "success",
+                        code: 200,
+                        data: exec
+                    });
+                } else {
+                    reply.send({
+                        message: "success",
+                        code: 204
+                    });
+                }
+
+            } catch (error) {
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
+            }
         }
     );
 
@@ -220,14 +315,26 @@ module.exports = async function (fastify, opts) {
                 tags: ["kepegawaian"],
                 response: {
                     200: {
-                        description: "Success Response",
-                        type: "array",
                         properties: {
-                            eselon: {
+                            message: {
                                 type: "string"
                             },
-                            count: {
-                                type: "number"
+                            code: {
+                                type: "string"
+                            },
+                            data: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        eselon: {
+                                            type: "string"
+                                        },
+                                        count: {
+                                            type: "number"
+                                        }
+                                    },
+                                }
                             }
                         },
                     },
@@ -236,7 +343,27 @@ module.exports = async function (fastify, opts) {
         },
         async (request, reply) => {
             const exec = await fastify.kepegawaian.get_eselon();
-            reply.code(200).send(exec);
+
+            try {
+                if (exec) {
+                    reply.send({
+                        message: "success",
+                        code: 200,
+                        data: exec
+                    });
+                } else {
+                    reply.send({
+                        message: "success",
+                        code: 204
+                    });
+                }
+
+            } catch (error) {
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
+            }
         }
     );
 
@@ -248,14 +375,26 @@ module.exports = async function (fastify, opts) {
                 tags: ["kepegawaian"],
                 response: {
                     200: {
-                        description: "Success Response",
-                        type: "array",
                         properties: {
-                            range_umur: {
+                            message: {
                                 type: "string"
                             },
-                            jumlah: {
-                                type: "number"
+                            code: {
+                                type: "string"
+                            },
+                            data: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        range_umur: {
+                                            type: "string"
+                                        },
+                                        jumlah: {
+                                            type: "number"
+                                        }
+                                    },
+                                }
                             }
                         },
                     },
@@ -264,7 +403,27 @@ module.exports = async function (fastify, opts) {
         },
         async (request, reply) => {
             const exec = await fastify.kepegawaian.get_usia();
-            reply.code(200).send(exec);
+
+            try {
+                if (exec) {
+                    reply.send({
+                        message: "success",
+                        code: 200,
+                        data: exec
+                    });
+                } else {
+                    reply.send({
+                        message: "success",
+                        code: 204
+                    });
+                }
+
+            } catch (error) {
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
+            }
         }
     );
 
@@ -276,14 +435,26 @@ module.exports = async function (fastify, opts) {
                 tags: ["kepegawaian"],
                 response: {
                     200: {
-                        description: "Success Response",
-                        type: "array",
                         properties: {
-                            status_ppns: {
+                            message: {
                                 type: "string"
                             },
-                            count: {
-                                type: "number"
+                            code: {
+                                type: "string"
+                            },
+                            data: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        status_ppns: {
+                                            type: "string"
+                                        },
+                                        count: {
+                                            type: "number"
+                                        }
+                                    },
+                                }
                             }
                         },
                     },
@@ -292,7 +463,27 @@ module.exports = async function (fastify, opts) {
         },
         async (request, reply) => {
             const exec = await fastify.kepegawaian.get_status_ppns();
-            reply.code(200).send(exec);
+
+            try {
+                if (exec) {
+                    reply.send({
+                        message: "success",
+                        code: 200,
+                        data: exec
+                    });
+                } else {
+                    reply.send({
+                        message: "success",
+                        code: 204
+                    });
+                }
+
+            } catch (error) {
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
+            }
         }
     );
 

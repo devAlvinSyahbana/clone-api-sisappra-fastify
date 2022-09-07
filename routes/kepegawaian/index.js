@@ -1,24 +1,41 @@
 const kepegawaian_pns = require("../../services/kepegawaian/kepegawaian_pns");
+const kepegawaian_non_pns = require("../../services/kepegawaian/kepegawaian_non_pns");
 
 module.exports = async function (fastify, opts) {
   fastify.register(kepegawaian_pns);
+  fastify.register(kepegawaian_non_pns);
 
   fastify.get(
     "/find",
     {
       schema: {
-        description: "This is an endpoint for fetching all kepagawaian PNS",
-        tags: ["kepegawaian pns"],
+        description: "This is an endpoint for fetching all kepegawaian",
+        tags: ["endpoint kepegawaian"],
         querystring: {
           type: "object",
           properties: {
             limit: {
               type: "integer",
+              default: 10,
             },
             offset: {
               type: "integer",
+              default: 1,
+            },
+            status: {
+              type: "string",
+            },
+            nama: {
+              type: "string",
+            },
+            nrk: {
+              type: "string",
+            },
+            nopegawai: {
+              type: "string",
             },
           },
+          required: ["limit", "offset"],
         },
         response: {
           200: {
@@ -52,16 +69,94 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { limit, offset } = request.query;
-      const exec = await fastify.kepegawaian_pns.find(limit, offset);
-      const { total } = await fastify.kepegawaian_pns.countAll();
+      const { limit, offset, status, nama, nrk, nopegawai } = request.query;
+      let exec = null;
+      let totalDt = 0;
+      let qwhere = "";
+      if (status) {
+        if (status === "PNS") {
+          if (nama || nrk || nopegawai) {
+            if (nama) {
+              qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
+            }
+            if (nrk) {
+              qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nrk}%'`;
+            }
+            if (nopegawai) {
+              qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nopegawai}%'`;
+            }
+            exec = await fastify.kepegawaian_pns.filter(limit, offset, qwhere);
+            const { total } = await fastify.kepegawaian_pns.countAllFilter(
+              qwhere
+            );
+            totalDt = total;
+          } else {
+            exec = await fastify.kepegawaian_pns.find(limit, offset);
+            const { total } = await fastify.kepegawaian_pns.countAll();
+            totalDt = total;
+          }
+        } else {
+          if (nama || nrk || nopegawai) {
+            if (nama) {
+              qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
+            }
+            if (nrk) {
+              qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nrk}%'`;
+            }
+            if (nopegawai) {
+              qwhere += ` AND kpns.kepegawaian_nptt_npjlp ILIKE '%${nopegawai}%'`;
+            }
+            exec = await fastify.kepegawaian_non_pns.filter(
+              limit,
+              offset,
+              status,
+              qwhere
+            );
+            const { total } = await fastify.kepegawaian_non_pns.countAll(
+              status
+            );
+            totalDt = total;
+          } else {
+            exec = await fastify.kepegawaian_non_pns.find(
+              limit,
+              offset,
+              status
+            );
+            const { total } = await fastify.kepegawaian_non_pns.countAll(
+              status
+            );
+            totalDt = total;
+          }
+        }
+      } else {
+        if (nama || nrk || nopegawai) {
+          if (nama) {
+            qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
+          }
+          if (nrk) {
+            qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nrk}%'`;
+          }
+          if (nopegawai) {
+            qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nopegawai}%'`;
+          }
+          exec = await fastify.kepegawaian_pns.filter(limit, offset, qwhere);
+          const { total } = await fastify.kepegawaian_pns.countAllFilter(
+            qwhere
+          );
+          totalDt = total;
+        } else {
+          exec = await fastify.kepegawaian_pns.find(limit, offset);
+          const { total } = await fastify.kepegawaian_pns.countAll();
+          totalDt = total;
+        }
+      }
       try {
         if (exec) {
           reply.send({
             message: "success",
             code: 200,
             data: exec,
-            total_data: total,
+            total_data: totalDt,
           });
         } else {
           reply.send({ message: "success", code: 204 });
@@ -76,8 +171,8 @@ module.exports = async function (fastify, opts) {
     "/count-all",
     {
       schema: {
-        description: "This is an endpoint for counting all kepagawaian PNS",
-        tags: ["kepegawaian pns"],
+        description: "This is an endpoint for counting all kepegawaian",
+        tags: ["endpoint kepegawaian"],
         response: {
           200: {
             description: "Success Response",
@@ -115,10 +210,11 @@ module.exports = async function (fastify, opts) {
     "/findone/:id",
     {
       schema: {
-        description: "This is an endpoint for fetching a kepegawaian pns by id",
-        tags: ["kepegawaian pns"],
+        description:
+          "This is an endpoint for fetching a endpoint kepegawaian by id",
+        tags: ["endpoint kepegawaian"],
         params: {
-          description: "Find one kepegawaian pns by id",
+          description: "Find one endpoint kepegawaian by id",
           type: "object",
           properties: {
             id: { type: "number" },
@@ -165,10 +261,10 @@ module.exports = async function (fastify, opts) {
     "/create",
     {
       schema: {
-        description: "This is an endpoint for creating a kepegawaian pns",
-        tags: ["kepegawaian pns"],
+        description: "This is an endpoint for creating a endpoint kepegawaian",
+        tags: ["endpoint kepegawaian"],
         body: {
-          description: "Payload for creating a kepegawaian pns",
+          description: "Payload for creating a endpoint kepegawaian",
           type: "object",
           properties: {
             nama: { type: "string" },
@@ -205,17 +301,17 @@ module.exports = async function (fastify, opts) {
     {
       schema: {
         description:
-          "This is an endpoint for updating an existing kepegawaian pns",
-        tags: ["kepegawaian pns"],
+          "This is an endpoint for updating an existing endpoint kepegawaian",
+        tags: ["endpoint kepegawaian"],
         params: {
-          description: "update kepegawaian pns by Id",
+          description: "update endpoint kepegawaian by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for updating a kepegawaian pns",
+          description: "Payload for updating a endpoint kepegawaian",
           type: "object",
           properties: {
             nama: { type: "string" },
@@ -260,17 +356,17 @@ module.exports = async function (fastify, opts) {
     {
       schema: {
         description:
-          "This is an endpoint for updating pic an existing kepegawaian pns",
-        tags: ["kepegawaian pns"],
+          "This is an endpoint for updating pic an existing endpoint kepegawaian",
+        tags: ["endpoint kepegawaian"],
         params: {
-          description: "update pic kepegawaian pns by Id",
+          description: "update pic endpoint kepegawaian by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for updating pic a kepegawaian pns",
+          description: "Payload for updating pic a endpoint kepegawaian",
           type: "object",
           properties: {
             status_pic: { type: "number" },
@@ -307,17 +403,17 @@ module.exports = async function (fastify, opts) {
     {
       schema: {
         description:
-          "This is an endpoint for DELETING an existing kepegawaian pns.",
-        tags: ["kepegawaian pns"],
+          "This is an endpoint for DELETING an existing endpoint kepegawaian.",
+        tags: ["endpoint kepegawaian"],
         params: {
-          description: "kepegawaian pns by Id",
+          description: "endpoint kepegawaian by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for deleted data kepegawaian pns",
+          description: "Payload for deleted data endpoint kepegawaian",
           type: "object",
           properties: {
             deleted_by: { type: "number" },
