@@ -11,14 +11,26 @@ module.exports = async function (fastify, opts) {
                 tags: ["dashboard_tramtibum"],
                 response: {
                     200: {
-                        description: "Success Response",
-                        type: "array",
                         properties: {
-                            kasus_tramtibum: {
+                            message: {
                                 type: "string"
                             },
-                            count: {
-                                type: "number"
+                            code: {
+                                type: "string"
+                            },
+                            data: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        kasus_tramtibum: {
+                                            type: "string"
+                                        },
+                                        count: {
+                                            type: "number"
+                                        }
+                                    },
+                                }
                             }
                         },
                     },
@@ -27,8 +39,27 @@ module.exports = async function (fastify, opts) {
         },
         async (request, reply) => {
             const exec = await fastify.dashboard_tramtibum.get_kasus_tramtibum();
-            console.log("ini loh console", exec)
-            reply.code(200).send(exec);
+
+            try {
+                if (exec) {
+                    reply.send({
+                        message: "success",
+                        code: 200,
+                        data: exec
+                    });
+                } else {
+                    reply.send({
+                        message: "success",
+                        code: 204
+                    });
+                }
+
+            } catch (error) {
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
+            }
         }
     );
 
@@ -40,14 +71,26 @@ module.exports = async function (fastify, opts) {
                 tags: ["dashboard_tramtibum"],
                 response: {
                     200: {
-                        description: "Success Response",
-                        type: "array",
                         properties: {
-                            jenis_pelanggaran_perda_tramtibum: {
+                            message: {
                                 type: "string"
                             },
-                            count: {
-                                type: "number"
+                            code: {
+                                type: "string"
+                            },
+                            data: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        jenis_pelanggaran_perda_tramtibum: {
+                                            type: "string"
+                                        },
+                                        count: {
+                                            type: "number"
+                                        }
+                                    },
+                                }
                             }
                         },
                     },
@@ -56,8 +99,27 @@ module.exports = async function (fastify, opts) {
         },
         async (request, reply) => {
             const exec = await fastify.dashboard_tramtibum.get_jenis_pelanggaran_perda_tramtibum();
-            console.log("ini loh console", exec)
-            reply.code(200).send(exec);
+
+            try {
+                if (exec) {
+                    reply.send({
+                        message: "success",
+                        code: 200,
+                        data: exec
+                    });
+                } else {
+                    reply.send({
+                        message: "success",
+                        code: 204
+                    });
+                }
+
+            } catch (error) {
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
+            }
         }
     );
 
@@ -69,14 +131,26 @@ module.exports = async function (fastify, opts) {
                 tags: ["dashboard_tramtibum"],
                 response: {
                     200: {
-                        description: "Success Response",
-                        type: "array",
                         properties: {
-                            kegiatan_tramtibum: {
+                            message: {
                                 type: "string"
                             },
-                            count: {
-                                type: "number"
+                            code: {
+                                type: "string"
+                            },
+                            data: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        kegiatan_tramtibum: {
+                                            type: "string"
+                                        },
+                                        count: {
+                                            type: "number"
+                                        }
+                                    },
+                                }
                             }
                         },
                     },
@@ -85,8 +159,27 @@ module.exports = async function (fastify, opts) {
         },
         async (request, reply) => {
             const exec = await fastify.dashboard_tramtibum.get_kegiatan_tramtibum();
-            console.log("ini loh console", exec)
-            reply.code(200).send(exec);
+
+            try {
+                if (exec) {
+                    reply.send({
+                        message: "success",
+                        code: 200,
+                        data: exec
+                    });
+                } else {
+                    reply.send({
+                        message: "success",
+                        code: 204
+                    });
+                }
+
+            } catch (error) {
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
+            }
         }
     );
 

@@ -11,14 +11,26 @@ module.exports = async function (fastify, opts) {
                 tags: ["jenis_sarana_prasarana"],
                 response: {
                     200: {
-                        description: "Success Response",
-                        type: "array",
                         properties: {
-                            jenis_sarana_prasarana: {
+                            message: {
                                 type: "string"
                             },
-                            count: {
-                                type: "number"
+                            code: {
+                                type: "string"
+                            },
+                            data: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        jenis_sarana_prasarana: {
+                                            type: "string"
+                                        },
+                                        count: {
+                                            type: "number"
+                                        }
+                                    },
+                                }
                             }
                         },
                     },
@@ -27,8 +39,27 @@ module.exports = async function (fastify, opts) {
         },
         async (request, reply) => {
             const exec = await fastify.jenis_sarana_prasarana.get_jenis_sarana_prasarana();
-            console.log("ini loh console", exec)
-            reply.code(200).send(exec);
+
+            try {
+                if (exec) {
+                    reply.send({
+                        message: "success",
+                        code: 200,
+                        data: exec
+                    });
+                } else {
+                    reply.send({
+                        message: "success",
+                        code: 204
+                    });
+                }
+
+            } catch (error) {
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
+            }
         }
     );
 
