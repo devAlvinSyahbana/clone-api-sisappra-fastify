@@ -1,4 +1,4 @@
-const laporan_ppns = require("../../services/laporan_ppns");
+const laporan_ppns = require("../../../services/laporan_ppns");
 
 module.exports = async function (fastify, opts) {
   fastify.register(laporan_ppns);

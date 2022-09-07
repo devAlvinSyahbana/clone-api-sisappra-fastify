@@ -1,4 +1,4 @@
-const laporan_pengawasan = require("../../services/pelaporan/laporan_pengawasan");
+const laporan_pengawasan = require("../../../services/pelaporan/laporan_pengawasan");
 
 module.exports = async function (fastify, opts) {
     fastify.register(laporan_pengawasan);

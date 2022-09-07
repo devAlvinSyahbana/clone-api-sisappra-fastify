@@ -1,4 +1,4 @@
-const laporan_tamu_daerah = require("../../services/pelaporan/laporan_tamu_daerah");
+const laporan_tamu_daerah = require("../../../services/pelaporan/laporan_tamu_daerah");
 
 module.exports = async function (fastify, opts) {
   fastify.register(laporan_tamu_daerah);
