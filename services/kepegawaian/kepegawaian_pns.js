@@ -1,6 +1,27 @@
 const fp = require("fastify-plugin");
 
 const kepegawaian_pns = (db) => {
+  const countKeluarga = (id) => {
+    const query = db.one(
+      "SELECT COUNT(id) as total FROM kepegawaian_pns_keluarga WHERE id_pegawai = " +
+        id
+    );
+
+    return query;
+  };
+
+  const findPendidikanTerakhir = (id) => {
+    const query = db.any(
+      "SELECT jenis_pendidikan FROM kepegawaian_pns_pendidikan WHERE id_pegawai = " +
+        id +
+        " ORDER BY tgl_ijazah DESC"
+    );
+
+    if (query) {
+      return query;
+    }
+    return false;
+  };
 
   const findPendidikan = (id) => {
     const query = db.any(
@@ -65,7 +86,10 @@ const kepegawaian_pns = (db) => {
       [id]
     );
 
-    return query;
+    if (query) {
+      return query;
+    }
+    return false;
   };
 
   const create = (nama, telepon, created_by) => {
@@ -94,6 +118,8 @@ const kepegawaian_pns = (db) => {
   };
 
   return {
+    countKeluarga,
+    findPendidikanTerakhir,
     findPendidikan,
     findKeluarga,
     filter,
