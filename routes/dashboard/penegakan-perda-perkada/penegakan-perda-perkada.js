@@ -11,14 +11,26 @@ module.exports = async function (fastify, opts) {
                 tags: ["dashboard_penegakan_perda_perkada"],
                 response: {
                     200: {
-                        description: "Success Response",
-                        type: "array",
                         properties: {
-                            kasus_perda: {
+                            message: {
                                 type: "string"
                             },
-                            count: {
-                                type: "number"
+                            code: {
+                                type: "string"
+                            },
+                            data: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        kasus_perda: {
+                                            type: "string"
+                                        },
+                                        count: {
+                                            type: "number"
+                                        }
+                                    },
+                                }
                             }
                         },
                     },
@@ -27,8 +39,27 @@ module.exports = async function (fastify, opts) {
         },
         async (request, reply) => {
             const exec = await fastify.dashboard_penegakan_perda_perkada.get_kasus_perda();
-            console.log("ini loh console", exec)
-            reply.code(200).send(exec);
+
+            try {
+                if (exec) {
+                    reply.send({
+                        message: "success",
+                        code: 200,
+                        data: exec
+                    });
+                } else {
+                    reply.send({
+                        message: "success",
+                        code: 204
+                    });
+                }
+
+            } catch (error) {
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
+            }
         }
     );
 
@@ -40,14 +71,26 @@ module.exports = async function (fastify, opts) {
                 tags: ["dashboard_penegakan_perda_perkada"],
                 response: {
                     200: {
-                        description: "Success Response",
-                        type: "array",
                         properties: {
-                            jenis_pelanggaran_perda: {
+                            message: {
                                 type: "string"
                             },
-                            count: {
-                                type: "number"
+                            code: {
+                                type: "string"
+                            },
+                            data: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        jenis_pelanggaran_perda: {
+                                            type: "string"
+                                        },
+                                        count: {
+                                            type: "number"
+                                        }
+                                    },
+                                }
                             }
                         },
                     },
@@ -56,8 +99,27 @@ module.exports = async function (fastify, opts) {
         },
         async (request, reply) => {
             const exec = await fastify.dashboard_penegakan_perda_perkada.get_jenis_perda();
-            console.log("ini loh console", exec)
-            reply.code(200).send(exec);
+
+            try {
+                if (exec) {
+                    reply.send({
+                        message: "success",
+                        code: 200,
+                        data: exec
+                    });
+                } else {
+                    reply.send({
+                        message: "success",
+                        code: 204
+                    });
+                }
+
+            } catch (error) {
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
+            }
         }
     );
 
