@@ -8,7 +8,7 @@ module.exports = async function (fastify, opts) {
     {
       schema: {
         description:
-          "API untuk mengambil seluruh Laporan tamu daerah",
+          "API untuk mengambil seluruh Laporan Tamu Daerah",
         tags: ["laporan tamu daerah"],
         response: {
           200: {
@@ -26,6 +26,7 @@ module.exports = async function (fastify, opts) {
                 maksud_dan_tujuan: { type: "string" },
                 pejabat_penerima_kunjungan: { type: "string" },
                 tempat_kunjungan: { type: "string" },
+                pelaksanaan: { type: "string" },
               },
             },
           },
@@ -34,7 +35,7 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const exec = await fastify.laporan_tamu_daerah.find();
-      console.log("string",exec)
+      console.log("string", exec)
       return exec;
     }
   );
@@ -67,6 +68,7 @@ module.exports = async function (fastify, opts) {
               maksud_dan_tujuan: { type: "string" },
               pejabat_penerima_kunjungan: { type: "string" },
               tempat_kunjungan: { type: "string" },
+              pelaksanaan: { type: "string" },
             },
           },
         },
@@ -98,6 +100,7 @@ module.exports = async function (fastify, opts) {
             maksud_dan_tujuan: { type: "string" },
             pejabat_penerima_kunjungan: { type: "string" },
             tempat_kunjungan: { type: "string" },
+            pelaksanaan: { type: "string" },
           },
         },
         response: {
@@ -114,15 +117,16 @@ module.exports = async function (fastify, opts) {
               maksud_dan_tujuan: { type: "string" },
               pejabat_penerima_kunjungan: { type: "string" },
               tempat_kunjungan: { type: "string" },
+              pelaksanaan: { type: "string" },
             },
           },
         },
       },
     },
     async (request, reply) => {
-      const { tanggal_kunjungan, waktu_mulai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan } = request.body;
+      const { tanggal_kunjungan, waktu_mulai_kunjungan, waktu_selesai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan, pelaksanaan } = request.body;
       const exec = await fastify.laporan_tamu_daerah.create(
-        tanggal_kunjungan, waktu_mulai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan
+        tanggal_kunjungan, waktu_mulai_kunjungan, waktu_selesai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan, pelaksanaan
       );
       reply.code(201).send(exec);
     }
@@ -154,6 +158,7 @@ module.exports = async function (fastify, opts) {
             maksud_dan_tujuan: { type: "string" },
             pejabat_penerima_kunjungan: { type: "string" },
             tempat_kunjungan: { type: "string" },
+            pelaksanaan: { type: "string" },
           },
         },
         response: {
@@ -170,6 +175,7 @@ module.exports = async function (fastify, opts) {
               maksud_dan_tujuan: { type: "string" },
               pejabat_penerima_kunjungan: { type: "string" },
               tempat_kunjungan: { type: "string" },
+              pelaksanaan: { type: "string" },
             },
           },
         },
@@ -177,9 +183,9 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const { tanggal_kunjungan, waktu_mulai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan } = request.body;
+      const { tanggal_kunjungan, waktu_mulai_kunjungan, waktu_selesai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan, pelaksanaan } = request.body;
       const exec = await fastify.laporan_tamu_daerah.update(
-        id, tanggal_kunjungan, waktu_mulai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan
+        id, tanggal_kunjungan, waktu_mulai_kunjungan, waktu_selesai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan, pelaksanaan
       );
 
       return exec;
