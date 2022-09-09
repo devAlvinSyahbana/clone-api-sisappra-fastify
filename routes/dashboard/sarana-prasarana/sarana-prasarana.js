@@ -38,7 +38,7 @@ module.exports = async function (fastify, opts) {
             },
         },
         async (request, reply) => {
-            const exec = await fastify.jenis_sarana_prasarana.get_jenis_sarana_prasarana();
+            const exec = await fastify.sarana_prasarana.get_jenis_sarana_prasarana();
 
             try {
                 if (exec) {
