@@ -18,12 +18,18 @@ module.exports = async function (fastify, opts) {
                             type: "object",
                             properties: {
                                 id: { type: "number" },
-                                tanggal_pelaporan: { type: "string" },
-                                deskripsi: { type: "string" },
-                                id_kota: { type: "string" },
-                                id_kecamatan: { type: "string" },
-                                id_kelurahan: { type: "string" },
-                                id_jenis_pengawasan: { type: "string" },
+                                nrk: { type: "string" },
+                                nama: { type: "string" },
+                                tgl_pengecekan: { type: "string" },
+                                share_location: { type: "string" },
+                                alamat: { type: "string" },
+                                lokasi_tiang: { type: "string" },
+                                kawasan_kendali: { type: "string" },
+                                status: { type: "string" },
+                                ukuran: { type: "string" },
+                                pemilik_reklame: { type: "string" },
+                                konstruksi_reklame: { type: "string" },
+                                konten_iklan: { type: "string" },
                             },
                         },
                     },
@@ -56,12 +62,18 @@ module.exports = async function (fastify, opts) {
                         description: "Berhasil Bro!",
                         type: "object",
                         properties: {
-                            tanggal_pelaporan: { type: "string" },
-                            deskripsi: { type: "string" },
-                            id_kota: { type: "string" },
-                            id_kecamatan: { type: "string" },
-                            id_kelurahan: { type: "string" },
-                            id_jenis_pengawasan: { type: "string" },
+                            nrk: { type: "string" },
+                            nama: { type: "string" },
+                            tgl_pengecekan: { type: "string" },
+                            share_location: { type: "string" },
+                            alamat: { type: "string" },
+                            lokasi_tiang: { type: "string" },
+                            kawasan_kendali: { type: "string" },
+                            status: { type: "string" },
+                            ukuran: { type: "string" },
+                            pemilik_reklame: { type: "string" },
+                            konstruksi_reklame: { type: "string" },
+                            konten_iklan: { type: "string" },
                         },
                     },
                 },
@@ -85,12 +97,18 @@ module.exports = async function (fastify, opts) {
                     description: "Payload for creating a laporan pengawasan",
                     type: "object",
                     properties: {
-                        tanggal_pelaporan: { type: "string" },
-                        deskripsi: { type: "string" },
-                        id_kota: { type: "string" },
-                        id_kecamatan: { type: "string" },
-                        id_kelurahan: { type: "string" },
-                        id_jenis_pengawasan: { type: "string" },
+                        nrk: { type: "string" },
+                        nama: { type: "string" },
+                        tgl_pengecekan: { type: "string" },
+                        share_location: { type: "string" },
+                        alamat: { type: "string" },
+                        lokasi_tiang: { type: "string" },
+                        kawasan_kendali: { type: "string" },
+                        status: { type: "string" },
+                        ukuran: { type: "string" },
+                        pemilik_reklame: { type: "string" },
+                        konstruksi_reklame: { type: "string" },
+                        konten_iklan: { type: "string" },
                     },
                 },
                 response: {
@@ -99,21 +117,27 @@ module.exports = async function (fastify, opts) {
                         type: "object",
                         properties: {
                             id: { type: "number" },
-                            tanggal_pelaporan: { type: "string" },
-                            deskripsi: { type: "string" },
-                            id_kota: { type: "string" },
-                            id_kecamatan: { type: "string" },
-                            id_kelurahan: { type: "string" },
-                            id_jenis_pengawasan: { type: "string" },
+                            nrk: { type: "string" },
+                            nama: { type: "string" },
+                            tgl_pengecekan: { type: "string" },
+                            share_location: { type: "string" },
+                            alamat: { type: "string" },
+                            lokasi_tiang: { type: "string" },
+                            kawasan_kendali: { type: "string" },
+                            status: { type: "string" },
+                            ukuran: { type: "string" },
+                            pemilik_reklame: { type: "string" },
+                            konstruksi_reklame: { type: "string" },
+                            konten_iklan: { type: "string" },
                         },
                     },
                 },
             },
         },
         async (request, reply) => {
-            const { tanggal_pelaporan, deskripsi, id_kota, id_kecamatan, id_kelurahan,  id_jenis_pengawasan } = request.body;
+            const { nrk, nama, tgl_pengecekan, share_location, alamat, lokasi_tiang, kawasan_kendali, status, ukuran, pemilik_reklame, konstruksi_reklame, konten_iklan } = request.body;
             const exec = await fastify.laporan_pengawasan.create(
-                tanggal_pelaporan, deskripsi, id_kota, id_kecamatan, id_kelurahan,  id_jenis_pengawasan
+                nrk, nama, tgl_pengecekan, share_location, alamat, lokasi_tiang, kawasan_kendali, status, ukuran, pemilik_reklame, konstruksi_reklame, konten_iklan
             );
             reply.code(201).send(exec);
         }
@@ -137,12 +161,18 @@ module.exports = async function (fastify, opts) {
                     description: "Payload for updating a laporan pengawasan",
                     type: "object",
                     properties: {
-                        tanggal_pelaporan: { type: "string" },
-                        deskripsi: { type: "string" },
-                        id_kota: { type: "string" },
-                        id_kecamatan: { type: "string" },
-                        id_kelurahan: { type: "string" },
-                        id_jenis_pengawasan: { type: "string" },
+                        nrk: { type: "string" },
+                        nama: { type: "string" },
+                        tgl_pengecekan: { type: "string" },
+                        share_location: { type: "string" },
+                        alamat: { type: "string" },
+                        lokasi_tiang: { type: "string" },
+                        kawasan_kendali: { type: "string" },
+                        status: { type: "string" },
+                        ukuran: { type: "string" },
+                        pemilik_reklame: { type: "string" },
+                        konstruksi_reklame: { type: "string" },
+                        konten_iklan: { type: "string" },
                     },
                 },
                 response: {
@@ -151,12 +181,18 @@ module.exports = async function (fastify, opts) {
                         type: "object",
                         properties: {
                             id: { type: "number" },
-                            tanggal_pelaporan: { type: "string" },
-                            deskripsi: { type: "string" },
-                            id_kota: { type: "string" },
-                            id_kecamatan: { type: "string" },
-                            id_kelurahan: { type: "string" },
-                            id_jenis_pengawasan: { type: "string" },
+                            nrk: { type: "string" },
+                            nama: { type: "string" },
+                            tgl_pengecekan: { type: "string" },
+                            share_location: { type: "string" },
+                            alamat: { type: "string" },
+                            lokasi_tiang: { type: "string" },
+                            kawasan_kendali: { type: "string" },
+                            status: { type: "string" },
+                            ukuran: { type: "string" },
+                            pemilik_reklame: { type: "string" },
+                            konstruksi_reklame: { type: "string" },
+                            konten_iklan: { type: "string" },
                         },
                     },
                 },
@@ -164,9 +200,9 @@ module.exports = async function (fastify, opts) {
         },
         async (request, reply) => {
             const { id } = request.params;
-            const { tanggal_pelaporan, deskripsi, id_kota, id_kecamatan, id_kelurahan,  id_jenis_pengawasan } = request.body;
+            const { nrk, nama, tgl_pengecekan, share_location, alamat, lokasi_tiang, kawasan_kendali, status, ukuran, pemilik_reklame, konstruksi_reklame, konten_iklan } = request.body;
             const exec = await fastify.laporan_pengawasan.update(
-                id, tanggal_pelaporan, deskripsi, id_kota, id_kecamatan, id_kelurahan,  id_jenis_pengawasan
+                id, nrk, nama, tgl_pengecekan, share_location, alamat, lokasi_tiang, kawasan_kendali, status, ukuran, pemilik_reklame, konstruksi_reklame, konten_iklan
             );
 
             return exec;
