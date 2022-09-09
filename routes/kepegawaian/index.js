@@ -9,7 +9,8 @@ module.exports = async function (fastify, opts) {
     "/find",
     {
       schema: {
-        description: "Endpoint ini digunakan untuk mengambil seluruh data kepegawaian berstatus PNS, PTT, PJLP",
+        description:
+          "Endpoint ini digunakan untuk mengambil seluruh data kepegawaian berstatus PNS, PTT, PJLP",
         tags: ["endpoint kepegawaian"],
         querystring: {
           type: "object",
@@ -421,6 +422,114 @@ module.exports = async function (fastify, opts) {
         exec = await fastify.kepegawaian_pns.findPendidikan(id);
       } else {
         exec = await fastify.kepegawaian_non_pns.findPendidikan(id);
+      }
+
+      try {
+        if (exec) {
+          reply.send({ message: "success", code: 200, data: exec });
+        } else {
+          reply.send({ message: "success", code: 204 });
+        }
+      } catch (error) {
+        reply.send({ message: error, code: 500 });
+      }
+    }
+  );
+
+  fastify.get(
+    "/count-keluarga/:id/:status",
+    {
+      schema: {
+        description:
+          "Endpoint ini digunakan untuk menghitung data keluarga dari salah satu pegawai berstatus PNS, PTT, PJLP berdasarkan id & status",
+        tags: ["endpoint kepegawaian"],
+        params: {
+          description: "Parameter yang digunakan",
+          type: "object",
+          properties: {
+            id: { type: "number" },
+            status: { type: "string" },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+              data: {
+                type: "object",
+                properties: {
+                  total: { type: "number" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id, status } = request.params;
+      let exec = null;
+      if (!status || status == "PNS") {
+        exec = await fastify.kepegawaian_pns.countKeluarga(id);
+      } else {
+        exec = await fastify.kepegawaian_non_pns.countKeluarga(id);
+      }
+
+      try {
+        if (exec) {
+          reply.send({ message: "success", code: 200, data: exec });
+        } else {
+          reply.send({ message: "success", code: 204 });
+        }
+      } catch (error) {
+        reply.send({ message: error, code: 500 });
+      }
+    }
+  );
+
+  fastify.get(
+    "/get-pendidikan-terakhir/:id/:status",
+    {
+      schema: {
+        description:
+          "Endpoint ini digunakan untuk mendapatkan data pendidikan terakhir dari salah satu pegawai berstatus PNS, PTT, PJLP berdasarkan id & status",
+        tags: ["endpoint kepegawaian"],
+        params: {
+          description: "Parameter yang digunakan",
+          type: "object",
+          properties: {
+            id: { type: "number" },
+            status: { type: "string" },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+              data: {
+                type: "object",
+                properties: {
+                  jenis_pendidikan: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id, status } = request.params;
+      let exec = null;
+      if (!status || status == "PNS") {
+        exec = await fastify.kepegawaian_pns.findPendidikanTerakhir(id);
+      } else {
+        exec = await fastify.kepegawaian_non_pns.findPendidikanTerakhir(id);
       }
 
       try {
