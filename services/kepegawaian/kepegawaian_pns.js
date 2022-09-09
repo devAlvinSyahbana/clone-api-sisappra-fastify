@@ -11,13 +11,16 @@ const kepegawaian_pns = (db) => {
   };
 
   const findPendidikanTerakhir = (id) => {
-    const query = db.one(
+    const query = db.any(
       "SELECT jenis_pendidikan FROM kepegawaian_pns_pendidikan WHERE id_pegawai = " +
         id +
-        " ORDER BY tgl_ijazah DESC LIMIT 1"
+        " ORDER BY tgl_ijazah DESC"
     );
 
-    return query;
+    if (query) {
+      return query;
+    }
+    return false;
   };
 
   const findPendidikan = (id) => {
@@ -83,7 +86,10 @@ const kepegawaian_pns = (db) => {
       [id]
     );
 
-    return query;
+    if (query) {
+      return query;
+    }
+    return false;
   };
 
   const create = (nama, telepon, created_by) => {

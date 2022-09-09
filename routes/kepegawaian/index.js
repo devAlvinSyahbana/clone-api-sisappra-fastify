@@ -531,10 +531,9 @@ module.exports = async function (fastify, opts) {
       } else {
         exec = await fastify.kepegawaian_non_pns.findPendidikanTerakhir(id);
       }
-
       try {
-        if (exec) {
-          reply.send({ message: "success", code: 200, data: exec });
+        if (exec.length > 0) {
+          reply.send({ message: "success", code: 200, data: exec[0] });
         } else {
           reply.send({ message: "success", code: 204 });
         }

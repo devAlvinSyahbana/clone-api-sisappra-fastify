@@ -9,14 +9,18 @@ const kepegawaian_non_pns = (db) => {
 
     return query;
   };
+
   const findPendidikanTerakhir = (id) => {
-    const query = db.one(
+    const query = db.any(
       "SELECT jenis_pendidikan FROM kepegawaian_non_pns_pendidikan WHERE id_pegawai = " +
         id +
-        " ORDER BY tgl_ijazah DESC LIMIT 1"
+        " ORDER BY tgl_ijazah DESC"
     );
 
-    return query;
+    if (query) {
+      return query;
+    }
+    return false;
   };
 
   const findPendidikan = (id) => {
