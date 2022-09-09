@@ -10,7 +10,7 @@ module.exports = fp(async function (fastify, opts) {
         description: "SISAPPRA API Documentation",
         version: "0.1.0",
       },
-      host: "localhost:3000",
+      host: `${process.env.FASTIFY_ADDRESS}:${process.env.PORT}`,
       schemes: ["http"],
       consumes: ["application/json"],
       produces: ["application/json"],

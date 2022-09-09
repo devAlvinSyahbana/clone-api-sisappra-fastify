@@ -1,12 +1,12 @@
 const fp = require("fastify-plugin");
 
 
-const jenis_sarana_prasarana = (db) => {
+const sarana_prasarana = (db) => {
 
 
     const get_jenis_sarana_prasarana = () => {
         const query = db.any(
-            "SELECT jenis_sarana_prasarana, COUNT( jenis_sarana_prasarana) FROM jenis_sarana_prasarana GROUP BY jenis_sarana_prasarana"
+            "SELECT jenis_sarana_prasarana.jenis_sarana_prasarana as jenis_sarana_prasarana, COUNT( sarana_prasarana.jenis_sarana_prasarana) as count FROM sarana_prasarana LEFT JOIN jenis_sarana_prasarana ON sarana_prasarana.jenis_sarana_prasarana=jenis_sarana_prasarana.id GROUP BY jenis_sarana_prasarana.jenis_sarana_prasarana"
         );
         return query;
     };
@@ -17,7 +17,7 @@ const jenis_sarana_prasarana = (db) => {
 };
 
 module.exports = fp((fastify, options, next) => {
-    fastify.decorate("jenis_sarana_prasarana", jenis_sarana_prasarana(fastify.db));
+    fastify.decorate("sarana_prasarana", sarana_prasarana(fastify.db));
     next();
 });
 

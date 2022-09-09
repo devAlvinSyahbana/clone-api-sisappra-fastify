@@ -1,6 +1,23 @@
 const fp = require("fastify-plugin");
 
 const kepegawaian_pns = (db) => {
+
+  const findPendidikan = (id) => {
+    const query = db.any(
+      "SELECT * FROM kepegawaian_pns_pendidikan WHERE id_pegawai = " + id
+    );
+
+    return query;
+  };
+
+  const findKeluarga = (id) => {
+    const query = db.any(
+      "SELECT * FROM kepegawaian_pns_keluarga WHERE id_pegawai = " + id
+    );
+
+    return query;
+  };
+
   const find = (limit, offset) => {
     const query = db.any(
       "SELECT kpns.id, kpns.nama, kpns.tempat_lahir, to_char(kpns.tgl_lahir, 'dd Mon YYYY') AS tgl_lahir, CASE WHEN kpns.jenis_kelamin = 'L' THEN 'Laki-laki' ELSE 'Perempuan' END AS jenis_kelamin, ma.nama as agama, kpns.no_hp, kpns.kepegawaian_nrk, kpns.kepegawaian_status_pegawai, kpns.foto FROM kepegawaian_pns kpns LEFT JOIN master_agama ma ON ma.id = CAST (kpns.agama AS INTEGER) WHERE kpns.is_deleted = 0 ORDER BY kpns.created_at DESC LIMIT " +
@@ -77,6 +94,8 @@ const kepegawaian_pns = (db) => {
   };
 
   return {
+    findPendidikan,
+    findKeluarga,
     filter,
     countAllFilter,
     countAll,
