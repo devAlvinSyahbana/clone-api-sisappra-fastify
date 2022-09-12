@@ -1,19 +1,19 @@
 const fp = require("fastify-plugin");
 
 const laporan_tamu_daerah = (db) => {
-  const create = async (tanggal_kunjungan, waktu_mulai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan) => {
+  const create = async (tanggal_kunjungan, waktu_mulai_kunjungan, waktu_selesai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan, pelaksanaan) => {
 
     const { id } = await db.one(
-      "INSERT INTO laporan_tamu_daerah (id_kota, id_kelurahan, id_kecamatan, tamu_daerah, tanggal) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-      [tanggal_kunjungan, waktu_mulai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan]
+      "INSERT INTO laporan_tamu_daerah (tanggal_kunjungan, waktu_mulai_kunjungan, waktu_selesai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan, pelaksanaan) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id",
+      [tanggal_kunjungan, waktu_mulai_kunjungan, waktu_selesai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan, pelaksanaan]
     );
 
-    return { tanggal_kunjungan, waktu_mulai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan };
+    return { tanggal_kunjungan, waktu_mulai_kunjungan, waktu_selesai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan, pelaksanaan };
   };
 
   const find = () => {
     const query = db.any(
-      "SELECT id, tanggal_kunjungan, waktu_mulai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan WHERE is_deleted = 0 ORDER BY created_at DESC"
+      "SELECT id, tanggal_kunjungan, waktu_mulai_kunjungan, waktu_selesai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan, pelaksanaan FROM laporan_tamu_daerah WHERE is_deleted = 0 ORDER BY created_at DESC"
     );
 
     return query;
@@ -21,17 +21,17 @@ const laporan_tamu_daerah = (db) => {
 
   const findone = (id) => {
     const query = db.one(
-      "SELECT id, tanggal_kunjungan, waktu_mulai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan FROM laporan_tamu_daerah WHERE id = $1 AND is_deleted = 0",
+      "SELECT id, tanggal_kunjungan, waktu_mulai_kunjungan, waktu_selesai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan, pelaksanaan FROM laporan_tamu_daerah WHERE id = $1 AND is_deleted = 0",
       [id]
     );
 
     return query;
   };
 
-  const update = (id, tanggal_kunjungan, waktu_mulai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan) => {
+  const update = (id, tanggal_kunjungan, waktu_mulai_kunjungan, waktu_selesai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan, pelaksanaan) => {
     db.one(
-      "UPDATE laporan_tamu_daerah SET tanggal_kunjungan = $1, waktu_mulai_kunjungan = $2, asal_instansi = $3, jml_pengunjung = $4, maksud_dan_tujuan = $5, pejabat_penerima_kunjungan = $6, tempat_kunjungan = $7, updated_at CURRENT_TIMESTAMP WHERE id = $8 RETURNING id",
-      [tanggal_kunjungan, waktu_mulai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan]
+      "UPDATE laporan_tamu_daerah SET tanggal_kunjungan = $1, waktu_mulai_kunjungan = $2, waktu_selesai_kunjungan = $3, asal_instansi = $4, jml_pengunjung = $5, maksud_dan_tujuan = $6, pejabat_penerima_kunjungan = $7, tempat_kunjungan = $8, pelaksanaan = $9, updated_at = CURRENT_TIMESTAMP WHERE id = $10 RETURNING id",
+      [tanggal_kunjungan, waktu_mulai_kunjungan, waktu_selesai_kunjungan, asal_instansi, jml_pengunjung, maksud_dan_tujuan, pejabat_penerima_kunjungan, tempat_kunjungan, pelaksanaan, id]
     );
   };
 

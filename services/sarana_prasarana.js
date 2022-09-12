@@ -21,14 +21,33 @@ const sarana_prasarana = (db) => {
   
   const find = () => {
     const query = db.any(
-        "SELECT * FROM sarana_prasarana ORDER BY created_at DESC"
+        "select sp.id, jsp.jenis_sarana_prasarana, ssp.status_sarana_prasarana, sp.jumlah, ksp.kondisi_sarana_prasarana as kondisi , sp.keterangan, sp.file_dokumentasi as dokumentasi from sarana_prasarana sp left join jenis_sarana_prasarana jsp on sp.jenis_sarana_prasarana = jsp.id left join status_sarana_prasarana ssp on sp.status_sarana_prasarana  = ssp.id left join kondisi_sarana_prasarana ksp on sp.kondisi = ksp.id where sp.is_deleted = 0 order by sp.created_at desc"
     );
     return query;
   };
-  const findone = (id) => {
-    const query = db.one(
-      "SELECT * FROM sarana_prasarana WHERE id = $1 AND is_deleted = 0",
-      [id]
+  const find_jenis_sarana_prasarana = () => {
+    const query = db.any(
+        "select * from jenis_sarana_prasarana where is_deleted = 0 order by created_at"
+    );
+    return query;
+  };
+  const find_kondisi_sarana_prasarana = () => {
+    const query = db.any(
+        "select * from kondisi_sarana_prasarana where is_deleted = 0 order by created_at"
+    );
+    return query;
+  };
+  const find_status_sarana_prasarana = () => {
+    const query = db.any(
+        "select * from status_sarana_prasarana where is_deleted = 0 order by created_at"
+    );
+    return query;
+  };
+
+  const findone = (jenis_sarana_prasarana,status_sarana_prasarana,kondisi_sarana_prasarana) => {
+    const query = db.any(
+      "select sp.id, jsp.jenis_sarana_prasarana, ssp.status_sarana_prasarana, sp.jumlah, ksp.kondisi_sarana_prasarana as kondisi , sp.keterangan, sp.file_dokumentasi as dokumentasi from sarana_prasarana sp left join jenis_sarana_prasarana jsp on sp.jenis_sarana_prasarana = jsp.id left join status_sarana_prasarana ssp on sp.status_sarana_prasarana  = ssp.id left join kondisi_sarana_prasarana ksp on sp.kondisi = ksp.id where sp.jenis_sarana_prasarana = $1 and sp.status_sarana_prasarana = $2 and sp.kondisi = $3 and sp.is_deleted = 0 order by sp.created_at desc",
+      [jenis_sarana_prasarana,status_sarana_prasarana,kondisi_sarana_prasarana]
     );
 
     return query;
@@ -67,9 +86,13 @@ const sarana_prasarana = (db) => {
     update,
     del,
     find,
+    find_jenis_sarana_prasarana,
+    find_status_sarana_prasarana,
+    find_kondisi_sarana_prasarana,
     findone,
     findFilter,
     post,
+
     
     
   };
