@@ -57,5 +57,5 @@ profile*
 *clinic*
 *flamegraph*
 
-.env
+# env
 .env
