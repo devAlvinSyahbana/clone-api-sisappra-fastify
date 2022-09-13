@@ -1,6 +1,14 @@
 const fp = require("fastify-plugin");
 
 const kepegawaian_pns = (db) => {
+  const getDataUnduh = () => {
+    const query = db.any(
+      "SELECT kpns.nama, kpns.tempat_lahir, to_char(kpns.tgl_lahir, 'dd Mon YYYY') AS tgl_lahir, CASE WHEN kpns.jenis_kelamin = 'L' THEN 'Laki-laki' ELSE 'Perempuan' END AS jenis_kelamin, ma.nama as agama, kpns.nik, kpns.no_kk, kpns.status_perkawinan, kpns.no_hp, kpns.sesuai_ktp_alamat, kpns.sesuai_ktp_rtrw, kpns.sesuai_ktp_provinsi, kpns.sesuai_ktp_kabkota, kpns.sesuai_ktp_kecamatan, kpns.sesuai_ktp_kelurahan, kpns.domisili_alamat, kpns.domisili_rtrw, kpns.domisili_provinsi, kpns.domisili_kabkota, kpns.domisili_kecamatan, kpns.domisili_kelurahan, kpns.kepegawaian_nrk, kpns.kepegawaian_nip, kpns.kepegawaian_pangkat, kpns.kepegawaian_golongan, kpns.kepegawaian_status_pegawai FROM kepegawaian_pns kpns LEFT JOIN master_agama ma ON ma.id = CAST (kpns.agama AS INTEGER) WHERE kpns.is_deleted = 0 ORDER BY kpns.nama ASC"
+    );
+
+    return query;
+  };
+
   const countKeluarga = (id) => {
     const query = db.one(
       "SELECT COUNT(id) as total FROM kepegawaian_pns_keluarga WHERE id_pegawai = " +
@@ -118,6 +126,7 @@ const kepegawaian_pns = (db) => {
   };
 
   return {
+    getDataUnduh,
     countKeluarga,
     findPendidikanTerakhir,
     findPendidikan,
