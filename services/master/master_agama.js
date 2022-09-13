@@ -58,6 +58,14 @@ const master_agama = (db) => {
     };
   };
 
+  const filter = (q) => {
+    const query = db.any(
+      "SELECT id, nama as agama FROM master_agama WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
+    );
+
+    return query;
+  };
+
   return {
     find,
     findone,
@@ -65,6 +73,7 @@ const master_agama = (db) => {
     create,
     update,
     del,
+    filter
   };
 };
 
