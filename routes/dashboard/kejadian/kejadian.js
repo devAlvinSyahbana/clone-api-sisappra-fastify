@@ -1,16 +1,41 @@
-const sarana_prasarana = require("../../../services/dashboard/plotting-anggota/plotting-anggota");
+const kejadian = require("../../../services/dashboard/kejadian/kejadian");
 
 module.exports = async function (fastify, opts) {
-    fastify.register(sarana_prasarana);
+    fastify.register(kejadian);
 
-    // ^  jenis sarana prasarana
+    // ^  jenis kejadian
     fastify.get(
-        "/sum-plotting-anggota", {
+        "/kejadian", {
             schema: {
-                description: "This is an endpoint for fetching all sarana prasarana per plotting_anggota",
-                tags: ["dashboard_plotting_anggota"],
+                description: "This is an endpoint for fetching all kejadian per kejadian",
+                tags: ["dashboard_kejadian"],
+                querystring: {
+                    type: "object",
+                    properties: {
+                        kota: {
+                            type: "string"
+                        },
+                        kecamatan: {
+                            type: "string"
+                        },
+                        kelurahan: {
+                            type: "string"
+                        },
+                        jenis_kejadian: {
+                            type: "string"
+                        },
+                        tanggal_awal_kejadian: {
+                            type: "string"
+                        },
+                        tanggal_akhir_kejadian: {
+                            type: "string"
+                        },
+                    },
+                },
                 response: {
                     200: {
+                        description: "Success Response",
+                        type: "object",
                         properties: {
                             message: {
                                 type: "string"
@@ -23,51 +48,39 @@ module.exports = async function (fastify, opts) {
                                 items: {
                                     type: "object",
                                     properties: {
-                                        kota_kab: {
-                                            type: "string"
-                                        },
-                                        kecamatan: {
-                                            type: "string"
-                                        },
-                                        kelurahan: {
-                                            type: "string"
-                                        },
-                                        lokasi: {
-                                            type: "string"
-                                        },
-                                        long: {
+                                        nama: {
                                             type: "string"
                                         },
                                         lat: {
                                             type: "string"
                                         },
-                                        total_jaga_pagi: {
+                                        long: {
+                                            type: "string"
+                                        },
+                                        nama_kota: {
+                                            type: "string"
+                                        },
+                                        nama_kec: {
+                                            type: "string"
+                                        },
+                                        nama_kel: {
+                                            type: "string"
+                                        },
+                                        jenis_kejadian: {
+                                            type: "string"
+                                        },
+                                        tanggal_awal_kejadian: {
+                                            type: "string"
+                                        },
+                                        tanggal_akhir_kejadian: {
+                                            type: "string"
+                                        },
+                                        jumlah_korban_jiwa: {
                                             type: "number"
                                         },
-                                        total_jaga_sore: {
+                                        jumlah_korban_materiil: {
                                             type: "number"
                                         },
-                                        total_jaga_malam: {
-                                            type: "number"
-                                        },
-                                        rawan_terhadap: {
-                                            type: "string"
-                                        },
-                                        pic: {
-                                            type: "string"
-                                        },
-                                        pic_contact: {
-                                            type: "string"
-                                        },
-                                        jam_jaga_pagi: {
-                                            type: "string"
-                                        },
-                                        jam_jaga_sore: {
-                                            type: "string"
-                                        },
-                                        jam_jaga_malam: {
-                                            type: "string"
-                                        }
                                     },
                                 }
                             }
@@ -77,8 +90,37 @@ module.exports = async function (fastify, opts) {
             },
         },
         async (request, reply) => {
-            const exec = await fastify.dashboard_plotting_anggota.get_plotting_anggota();
-
+            const {
+                kota,
+                kecamatan,
+                kelurahan,
+                jenis_kejadian,
+                tanggal_awal_kejadian,
+                tanggal_akhir_kejadian
+            } = request.query;
+            let exec = null;
+            let qwhere = "";
+            if (kota || kecamatan || kelurahan || jenis_kejadian || tanggal_awal_kejadian || tanggal_akhir_kejadian) {
+                if (kota) {
+                    qwhere += ` AND dk.kota = '${kota}'`;
+                }
+                if (kecamatan) {
+                    qwhere += ` AND dk.kecamatan = '${kecamatan}'`;
+                }
+                if (kelurahan) {
+                    qwhere += ` AND dk.kelurahan = '${kelurahan}'`;
+                }
+                if (jenis_kejadian) {
+                    qwhere += ` AND dk.jenis_kejadian = '${jenis_kejadian}'`;
+                }
+                if (tanggal_awal_kejadian) {
+                    qwhere += ` AND dk.tanggal_awal_kejadian = '${tanggal_awal_kejadian}'`;
+                }
+                if (tanggal_akhir_kejadian) {
+                    qwhere += ` AND dk.tanggal_akhir_kejadian = '${tanggal_akhir_kejadian}'`;
+                }
+                exec = await fastify.dashboard_kejadian.get_kejadian(qwhere);
+            }
             try {
                 if (exec) {
                     reply.send({
@@ -92,7 +134,6 @@ module.exports = async function (fastify, opts) {
                         code: 204
                     });
                 }
-
             } catch (error) {
                 reply.send({
                     message: error.message,
@@ -101,5 +142,6 @@ module.exports = async function (fastify, opts) {
             }
         }
     );
+
 
 };
