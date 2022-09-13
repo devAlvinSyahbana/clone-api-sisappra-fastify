@@ -3,7 +3,7 @@ const sarana_prasarana = require("../../../services/dashboard/plotting-anggota/p
 module.exports = async function (fastify, opts) {
     fastify.register(sarana_prasarana);
 
-    // ^  jenis sarana prasarana
+    // ^  plotting anggota
     fastify.get(
         "/sum-plotting-anggota", {
             schema: {
@@ -23,13 +23,13 @@ module.exports = async function (fastify, opts) {
                                 items: {
                                     type: "object",
                                     properties: {
-                                        kota_kab: {
+                                        nama_kota: {
                                             type: "string"
                                         },
-                                        kecamatan: {
+                                        nama_kec: {
                                             type: "string"
                                         },
-                                        kelurahan: {
+                                        nama_kel: {
                                             type: "string"
                                         },
                                         lokasi: {

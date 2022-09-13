@@ -1,23 +1,22 @@
 const fp = require("fastify-plugin");
 
 
-const dashboard_plotting_anggota = (db) => {
+const dashboard_kejadian = (db) => {
 
-
-    const get_plotting_anggota = () => {
+    const get_kejadian = (qwhere) => {
         const query = db.any(
-            "SELECT kota_kab, kecamatan, kelurahan, lokasi, long, lat, total_jaga_pagi, total_jaga_sore, total_jaga_malam, rawan_terhadap, pic, pic_contact, jam_jaga_pagi, jam_jaga_sore, jam_jaga_malam FROM public.dashboard_plotting_anggota;"
+            "SELECT dk.nama, lat, long, mkota.nama as nama_kota, mkec.nama as nama_kec, mkel.nama as nama_kel, jenis_kejadian, tanggal_awal_kejadian, tanggal_akhir_kejadian, jumlah_korban_jiwa, jumlah_korban_materiil FROM public.dashboard_kejadian dk left join master_kota mkota on mkota.kode = dk.kota left join master_kecamatan mkec on mkec.kode = dk.kecamatan left join master_kelurahan mkel on mkel.kode = dk.kelurahan WHERE dk.is_deleted = 0" + qwhere
         );
         return query;
     };
 
     return {
-        get_plotting_anggota
+        get_kejadian
     };
 };
 
 module.exports = fp((fastify, options, next) => {
-    fastify.decorate("dashboard_plotting_anggota", dashboard_plotting_anggota(fastify.db));
+    fastify.decorate("dashboard_kejadian", dashboard_kejadian(fastify.db));
     next();
 });
 
