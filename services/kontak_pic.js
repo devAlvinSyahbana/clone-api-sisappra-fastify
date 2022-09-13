@@ -27,19 +27,19 @@ const kontak_pic = (db) => {
         return query;
       };
 
-      const create = (nama, telepon, created_by) => {
+      const create = (email, created_by) => {
         const query = db.one(
-          "INSERT INTO kontak_pic ( nama, telepon, status_pic, is_deleted, created_by) VALUES ($1, $2, 0, 0, $3) RETURNING id",
-          [nama, telepon, created_by]
+          "INSERT INTO kontak_pic ( email, status_pic, is_deleted, created_by) VALUES ($1, 0, 0, $2) RETURNING id",
+          [email, created_by]
         );
     
         return query;
       };
     
-      const update = (id, nama, telepon, updated_by) => {
+      const update = (id, email, updated_by) => {
         db.one(
-          "UPDATE kontak_pic SET nama = $1, telepon = $2, updated_by = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $4 RETURNING id",
-          [nama, telepon, updated_by, id]
+          "UPDATE kontak_pic SET email = $1, updated_by = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING id",
+          [email, updated_by, id]
         );
       };
 

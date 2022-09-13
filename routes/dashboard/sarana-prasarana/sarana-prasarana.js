@@ -26,6 +26,9 @@ module.exports = async function (fastify, opts) {
                                         jenis_sarana_prasarana: {
                                             type: "string"
                                         },
+                                        year: {
+                                            type: "number"
+                                        },
                                         count: {
                                             type: "number"
                                         }

@@ -18,11 +18,23 @@ module.exports = async function (fastify, opts) {
               type: "object",
               properties: {
                 id: { type: "number" },
-                id_kota: { type: "string" },
-                id_kelurahan: { type: "string" },
-                id_kecamatan: { type: "string" },
-                kejadian: { type: "string" },
-                tanggal: { type: "string" },
+                bidang_wilayah: { type: "string" },
+                jumlah_kejadian: { type: "string" },
+                banjir: { type: "string" },
+                hewan_buas_dan_berbisa: { type: "string" },
+                kebakaran: { type: "string" },
+                kecelakaan: { type: "string" },
+                pendampingan_kekerasan_pada_perempuan_dan_anak: { type: "string" },
+                kerusakan_konstruksi: { type: "string" },
+                kriminalitas: { type: "string" },
+                pembunuhan: { type: "string" },
+                penemuan_mayat: { type: "string" },
+                penyelamatan_orang: { type: "string" },
+                pohon_tumbang: { type: "string" },
+                tawuran: { type: "string" },
+                terorisme: { type: "string" },
+                unjuk_rasa: { type: "string" },
+                keterangan: { type: "string" },
               },
             },
           },
@@ -31,7 +43,7 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const exec = await fastify.laporan_kejadian.find();
-      console.log("string",exec)
+      console.log("string", exec)
       return exec;
     }
   );
@@ -56,11 +68,23 @@ module.exports = async function (fastify, opts) {
             type: "object",
             properties: {
               id: { type: "number" },
-              id_kota: { type: "string" },
-              id_kelurahan: { type: "string" },
-              id_kecamatan: { type: "string" },
-              kejadian: { type: "string" },
-              tanggal: { type: "string" },
+              bidang_wilayah: { type: "string" },
+              jumlah_kejadian: { type: "string" },
+              banjir: { type: "string" },
+              hewan_buas_dan_berbisa: { type: "string" },
+              kebakaran: { type: "string" },
+              kecelakaan: { type: "string" },
+              pendampingan_kekerasan_pada_perempuan_dan_anak: { type: "string" },
+              kerusakan_konstruksi: { type: "string" },
+              kriminalitas: { type: "string" },
+              pembunuhan: { type: "string" },
+              penemuan_mayat: { type: "string" },
+              penyelamatan_orang: { type: "string" },
+              pohon_tumbang: { type: "string" },
+              tawuran: { type: "string" },
+              terorisme: { type: "string" },
+              unjuk_rasa: { type: "string" },
+              keterangan: { type: "string" },
             },
           },
         },
@@ -84,11 +108,23 @@ module.exports = async function (fastify, opts) {
           description: "Payload for creating a laporan kejadian",
           type: "object",
           properties: {
-            id_kota: { type: "string" },
-            id_kelurahan: { type: "string" },
-            id_kecamatan: { type: "string" },
-            kejadian: { type: "string" },
-            tanggal: { type: "string" },
+            bidang_wilayah: { type: "string" },
+            jumlah_kejadian: { type: "string" },
+            banjir: { type: "string" },
+            hewan_buas_dan_berbisa: { type: "string" },
+            kebakaran: { type: "string" },
+            kecelakaan: { type: "string" },
+            pendampingan_kekerasan_pada_perempuan_dan_anak: { type: "string" },
+            kerusakan_konstruksi: { type: "string" },
+            kriminalitas: { type: "string" },
+            pembunuhan: { type: "string" },
+            penemuan_mayat: { type: "string" },
+            penyelamatan_orang: { type: "string" },
+            pohon_tumbang: { type: "string" },
+            tawuran: { type: "string" },
+            terorisme: { type: "string" },
+            unjuk_rasa: { type: "string" },
+            keterangan: { type: "string" },
           },
         },
         response: {
@@ -97,20 +133,32 @@ module.exports = async function (fastify, opts) {
             type: "object",
             properties: {
               id: { type: "number" },
-              id_kota: { type: "string" },
-              id_kelurahan: { type: "string" },
-              id_kecamatan: { type: "string" },
-              kejadian: { type: "string" },
-              tanggal: { type: "string" },
+              bidang_wilayah: { type: "string" },
+              jumlah_kejadian: { type: "string" },
+              banjir: { type: "string" },
+              hewan_buas_dan_berbisa: { type: "string" },
+              kebakaran: { type: "string" },
+              kecelakaan: { type: "string" },
+              pendampingan_kekerasan_pada_perempuan_dan_anak: { type: "string" },
+              kerusakan_konstruksi: { type: "string" },
+              kriminalitas: { type: "string" },
+              pembunuhan: { type: "string" },
+              penemuan_mayat: { type: "string" },
+              penyelamatan_orang: { type: "string" },
+              pohon_tumbang: { type: "string" },
+              tawuran: { type: "string" },
+              terorisme: { type: "string" },
+              unjuk_rasa: { type: "string" },
+              keterangan: { type: "string" },
             },
           },
         },
       },
     },
     async (request, reply) => {
-      const { id_kota, id_kelurahan, id_kecamatan, kejadian, tanggal } = request.body;
+      const { bidang_wilayah, jumlah_kejadian, banjir, hewan_buas_dan_berbisa, kebakaran, kecelakaan, pendampingan_kekerasan_pada_perempuan_dan_anak, kerusakan_konstruksi, kriminalitas, pembunuhan, penemuan_mayat, penyelamatan_orang, pohon_tumbang, tawuran, terorisme, unjuk_rasa, keterangan } = request.body;
       const exec = await fastify.laporan_kejadian.create(
-        id_kota, id_kelurahan, id_kecamatan, kejadian, tanggal
+        bidang_wilayah, jumlah_kejadian, banjir, hewan_buas_dan_berbisa, kebakaran, kecelakaan, pendampingan_kekerasan_pada_perempuan_dan_anak, kerusakan_konstruksi, kriminalitas, pembunuhan, penemuan_mayat, penyelamatan_orang, pohon_tumbang, tawuran, terorisme, unjuk_rasa, keterangan
       );
       reply.code(201).send(exec);
     }
@@ -134,11 +182,23 @@ module.exports = async function (fastify, opts) {
           description: "Payload for updating a laporan kejadian",
           type: "object",
           properties: {
-            id_kota: { type: "string" },
-            id_kelurahan: { type: "string" },
-            id_kecamatan: { type: "string" },
-            kejadian: { type: "string" },
-            tanggal: { type: "string" },
+            bidang_wilayah: { type: "string" },
+            jumlah_kejadian: { type: "string" },
+            banjir: { type: "string" },
+            hewan_buas_dan_berbisa: { type: "string" },
+            kebakaran: { type: "string" },
+            kecelakaan: { type: "string" },
+            pendampingan_kekerasan_pada_perempuan_dan_anak: { type: "string" },
+            kerusakan_konstruksi: { type: "string" },
+            kriminalitas: { type: "string" },
+            pembunuhan: { type: "string" },
+            penemuan_mayat: { type: "string" },
+            penyelamatan_orang: { type: "string" },
+            pohon_tumbang: { type: "string" },
+            tawuran: { type: "string" },
+            terorisme: { type: "string" },
+            unjuk_rasa: { type: "string" },
+            keterangan: { type: "string" },
           },
         },
         response: {
@@ -147,11 +207,23 @@ module.exports = async function (fastify, opts) {
             type: "object",
             properties: {
               id: { type: "number" },
-              id_kota: { type: "string" },
-              id_kelurahan: { type: "string" },
-              id_kecamatan: { type: "string" },
-              kejadian: { type: "string" },
-              tanggal: { type: "string" },
+              bidang_wilayah: { type: "string" },
+              jumlah_kejadian: { type: "string" },
+              banjir: { type: "string" },
+              hewan_buas_dan_berbisa: { type: "string" },
+              kebakaran: { type: "string" },
+              kecelakaan: { type: "string" },
+              pendampingan_kekerasan_pada_perempuan_dan_anak: { type: "string" },
+              kerusakan_konstruksi: { type: "string" },
+              kriminalitas: { type: "string" },
+              pembunuhan: { type: "string" },
+              penemuan_mayat: { type: "string" },
+              penyelamatan_orang: { type: "string" },
+              pohon_tumbang: { type: "string" },
+              tawuran: { type: "string" },
+              terorisme: { type: "string" },
+              unjuk_rasa: { type: "string" },
+              keterangan: { type: "string" },
             },
           },
         },
@@ -159,9 +231,9 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const { id_kota, id_kelurahan, id_kecamatan, kejadian, tanggal } = request.body;
+      const { bidang_wilayah, jumlah_kejadian, banjir, hewan_buas_dan_berbisa, kebakaran, kecelakaan, pendampingan_kekerasan_pada_perempuan_dan_anak, kerusakan_konstruksi, kriminalitas, pembunuhan, penemuan_mayat, penyelamatan_orang, pohon_tumbang, tawuran, terorisme, unjuk_rasa, keterangan } = request.body;
       const exec = await fastify.laporan_kejadian.update(
-        id, id_kota, id_kelurahan, id_kecamatan, kejadian, tanggal
+        id, bidang_wilayah, jumlah_kejadian, banjir, hewan_buas_dan_berbisa, kebakaran, kecelakaan, pendampingan_kekerasan_pada_perempuan_dan_anak, kerusakan_konstruksi, kriminalitas, pembunuhan, penemuan_mayat, penyelamatan_orang, pohon_tumbang, tawuran, terorisme, unjuk_rasa, keterangan
       );
 
       return exec;

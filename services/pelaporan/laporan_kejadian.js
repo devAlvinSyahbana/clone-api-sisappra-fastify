@@ -1,19 +1,19 @@
 const fp = require("fastify-plugin");
 
 const laporan_kejadian = (db) => {
-  const create = async (id_kota, id_kelurahan, id_kecamatan, kejadian, tanggal) => {
+  const create = async (bidang_wilayah, jumlah_kejadian, banjir, hewan_buas_dan_berbisa, kebakaran, kecelakaan, pendampingan_kekerasan_pada_perempuan_dan_anak, kerusakan_konstruksi, kriminalitas, pembunuhan, penemuan_mayat, penyelamatan_orang, pohon_tumbang, tawuran, terorisme, unjuk_rasa, keterangan) => {
 
     const { id } = await db.one(
-      "INSERT INTO laporan_kejadian (id_kota, id_kelurahan, id_kecamatan, kejadian, tanggal) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-      [id_kota, id_kelurahan, id_kecamatan, kejadian, tanggal]
+      "INSERT INTO laporan_kejadian (bidang_wilayah, jumlah_kejadian, banjir, hewan_buas_dan_berbisa, kebakaran, kecelakaan, pendampingan_kekerasan_pada_perempuan_dan_anak, kerusakan_konstruksi, kriminalitas, pembunuhan, penemuan_mayat, penyelamatan_orang, pohon_tumbang, tawuran, terorisme, unjuk_rasa, keterangan) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17) RETURNING id",
+      [bidang_wilayah, jumlah_kejadian, banjir, hewan_buas_dan_berbisa, kebakaran, kecelakaan, pendampingan_kekerasan_pada_perempuan_dan_anak, kerusakan_konstruksi, kriminalitas, pembunuhan, penemuan_mayat, penyelamatan_orang, pohon_tumbang, tawuran, terorisme, unjuk_rasa, keterangan]
     );
 
-    return { id_kota, id_kelurahan, id_kecamatan, kejadian, tanggal };
+    return {bidang_wilayah, jumlah_kejadian, banjir, hewan_buas_dan_berbisa, kebakaran, kecelakaan, pendampingan_kekerasan_pada_perempuan_dan_anak, kerusakan_konstruksi, kriminalitas, pembunuhan, penemuan_mayat, penyelamatan_orang, pohon_tumbang, tawuran, terorisme, unjuk_rasa, keterangan};
   };
 
   const find = () => {
     const query = db.any(
-      "SELECT id, id_kota, id_kelurahan, id_kecamatan, kejadian, tanggal FROM laporan_kejadian WHERE is_deleted = 0 ORDER BY created_at DESC"
+      "SELECT id, bidang_wilayah, jumlah_kejadian, banjir, hewan_buas_dan_berbisa, kebakaran, kecelakaan, pendampingan_kekerasan_pada_perempuan_dan_anak, kerusakan_konstruksi, kriminalitas, pembunuhan, penemuan_mayat, penyelamatan_orang, pohon_tumbang, tawuran, terorisme, unjuk_rasa, keterangan FROM laporan_kejadian WHERE is_deleted = 0 ORDER BY created_at DESC"
     );
 
     return query;
@@ -21,17 +21,17 @@ const laporan_kejadian = (db) => {
 
   const findone = (id) => {
     const query = db.one(
-      "SELECT id, id_kota, id_kelurahan, id_kecamatan, kejadian, tanggal FROM laporan_kejadian WHERE id = $1 AND is_deleted = 0",
+      "SELECT id, bidang_wilayah, jumlah_kejadian, banjir, hewan_buas_dan_berbisa, kebakaran, kecelakaan, pendampingan_kekerasan_pada_perempuan_dan_anak, kerusakan_konstruksi, kriminalitas, pembunuhan, penemuan_mayat, penyelamatan_orang, pohon_tumbang, tawuran, terorisme, unjuk_rasa, keterangan FROM laporan_kejadian WHERE id = $1 AND is_deleted = 0",
       [id]
     );
 
     return query;
   };
 
-  const update = (id, id_kota, id_kelurahan, id_kecamatan, kejadian, tanggal) => {
+  const update = (id, bidang_wilayah, jumlah_kejadian, banjir, hewan_buas_dan_berbisa, kebakaran, kecelakaan, pendampingan_kekerasan_pada_perempuan_dan_anak, kerusakan_konstruksi, kriminalitas, pembunuhan, penemuan_mayat, penyelamatan_orang, pohon_tumbang, tawuran, terorisme, unjuk_rasa, keterangan) => {
     db.one(
-      "UPDATE laporan_kejadian SET id_kota = $1, id_kelurahan = $2, id_kecamatan = $3, kejadian = $4, tanggal = $5, updated_at = CURRENT_TIMESTAMP WHERE id = $6 RETURNING id",
-      [id_kota, id_kelurahan, id_kecamatan, kejadian, tanggal, id]
+      "UPDATE laporan_kejadian SET bidang_wilayah = $1, jumlah_kejadian = $2, banjir = $3, hewan_buas_dan_berbisa = $4, kebakaran = $5, kecelakaan = $6, pendampingan_kekerasan_pada_perempuan_dan_anak = $7, kerusakan_konstruksi = $8, kriminalitas = $9, pembunuhan = $10, penemuan_mayat = $11, penyelamatan_orang = $12, pohon_tumbang = $13, tawuran = $14, terorisme = $15, unjuk_rasa = $16, keterangan = $17, updated_at = CURRENT_TIMESTAMP WHERE id = $18 RETURNING id",
+      [bidang_wilayah, jumlah_kejadian, banjir, hewan_buas_dan_berbisa, kebakaran, kecelakaan, pendampingan_kekerasan_pada_perempuan_dan_anak, kerusakan_konstruksi, kriminalitas, pembunuhan, penemuan_mayat, penyelamatan_orang, pohon_tumbang, tawuran, terorisme, unjuk_rasa, keterangan, id]
     );
   };
 
