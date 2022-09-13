@@ -1,14 +1,14 @@
-const master_kecamatan  = require("../../../services/master/master_kecamatan");
+const master_pendidikan  = require("../../../services/master/master_pendidikan");
 
 module.exports = async function (fastify, opts) {
-  fastify.register(master_kecamatan);
+  fastify.register(master_pendidikan);
 
   fastify.get(
     "/find",
     {
       schema: {
-        description: "This is an endpoint for fetching all master kecamatan",
-        tags: ["master kecamatan"],
+        description: "This is an endpoint for fetching all master pendidikan",
+        tags: ["master pendidikan"],
         response: {
           200: {
             description: "Success Response",
@@ -22,10 +22,7 @@ module.exports = async function (fastify, opts) {
                   type: "object",
                   properties: {
                     id: { type: "number" },
-                    kode_kecamatan: { type: "string" },
-                    kecamatan: { type: "string" },
-                    kode_kota: { type: "string" },
-                    kota: { type: "string" },
+                    pendidikan: { type: "string" },
                   },
                 },
               },
@@ -35,7 +32,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const exec = await fastify.master_kecamatan.find();
+      const exec = await fastify.master_pendidikan.find();
 
       try {
         if (exec) {
@@ -53,10 +50,10 @@ module.exports = async function (fastify, opts) {
     "/findone/:id",
     {
       schema: {
-        description: "This is an endpoint for fetching a master kecamatan",
-        tags: ["master kecamatan"],
+        description: "This is an endpoint for fetching a master pendidikan",
+        tags: ["master pendidikan"],
         params: {
-          description: "Find one master kecamatan id",
+          description: "Find one master pendidikan id",
           type: "object",
           properties: {
             id: { type: "number" },
@@ -73,10 +70,7 @@ module.exports = async function (fastify, opts) {
                 type: "object",
                 properties: {
                   id: { type: "number" },
-                  kode_kecamatan: { type: "string" },
-                  kecamatan: { type: "string" },
-                  kode_kota: { type: "string" },
-                  kota: { type: "string" },
+                  pendidikan: { type: "string" },
                 },
               },
             },
@@ -86,7 +80,7 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const exec = await fastify.master_kecamatan.findone(id);
+      const exec = await fastify.master_pendidikan.findone(id);
 
       try {
         if (exec) {
@@ -101,17 +95,16 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/findone-by-kecamatan",
+    "/findone-by-pendidikan/:pendidikan",
     {
       schema: {
-        description: "This is an endpoint for fetching a master kecamatan",
-        tags: ["master kecamatan"],
-        querystring: {
-          description: "Find one master kecamatan by kecamatan",
+        description: "This is an endpoint for fetching a master pendidikan",
+        tags: ["master pendidikan"],
+        params: {
+          description: "Find one master pendidikan by pendidikan",
           type: "object",
           properties: {
-            kota: { type: "string" },
-            kecamatan: { type: "string" },
+            pendidikan: { type: "string" },
           },
         },
         response: {
@@ -122,16 +115,10 @@ module.exports = async function (fastify, opts) {
               message: { type: "string" },
               code: { type: "string" },
               data: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    id: { type: "number" },
-                    kode_kecamatan: { type: "string" },
-                    kecamatan: { type: "string" },
-                    kode_kota: { type: "string" },
-                    kota: { type: "string" },
-                  },
+                type: "object",
+                properties: {
+                  id: { type: "number" },
+                  pendidikan: { type: "string" },
                 },
               },
             },
@@ -140,9 +127,8 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { kota, kecamatan } = request.query;
-      const exec = await fastify.master_kecamatan.findone_by_kecamatan(kota, kecamatan);
-      console.log(exec)
+      const { pendidikan } = request.params;
+      const exec = await fastify.master_pendidikan.findone_by_pendidikan(pendidikan);
 
       try {
         if (exec) {
@@ -160,14 +146,13 @@ module.exports = async function (fastify, opts) {
     "/create",
     {
       schema: {
-        description: "This is an endpoint for creating a master kecamatan",
-        tags: ["master kecamatan"],
+        description: "This is an endpoint for creating a master pendidikan",
+        tags: ["master pendidikan"],
         body: {
-          description: "Payload for creating a master kecamatan",
+          description: "Payload for creating a master pendidikan",
           type: "object",
           properties: {
-            kode_kota: { type: "string" },
-            kecamatan: { type: "string" },
+            pendidikan: { type: "string" },
             created_by: { type: "number" },
           },
         },
@@ -184,10 +169,10 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {kode_kota,kecamatan, created_by} = request.body;
+      const {pendidikan,created_by} = request.body;
 
       try {
-        await fastify.master_kecamatan.create(kode_kota, kecamatan, created_by);
+        await fastify.master_pendidikan.create(pendidikan,created_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -199,21 +184,20 @@ module.exports = async function (fastify, opts) {
     "/update/:id",
     {
       schema: {
-        description: "This is an endpoint for updating an existing master kecamatan",
-        tags: ["master kecamatan"],
+        description: "This is an endpoint for updating an existing master pendidikan",
+        tags: ["master pendidikan"],
         params: {
-          description: "update master kecamatan by Id",
+          description: "update master pendidikan by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for updating a master kecamatan",
+          description: "Payload for updating a master pendidikan",
           type: "object",
           properties: {
-            kode_kota: { type: "string" },
-            kecamatan: { type: "string" },
+            pendidikan: { type: "string" },
             updated_by: { type: "number" },
           },
         },
@@ -231,10 +215,10 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const {kode_kota, kecamatan, updated_by } = request.body;
+      const {pendidikan, updated_by } = request.body;
 
       try {
-        await fastify.master_kecamatan.update(id, kecamatan, kode_kota, updated_by);
+        await fastify.master_pendidikan.update(id,pendidikan,updated_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -246,17 +230,17 @@ module.exports = async function (fastify, opts) {
     "/delete/:id",
     {
       schema: {
-        description: "This is an endpoint for DELETING an existing master kecamatan.",
-        tags: ["master kecamatan"],
+        description: "This is an endpoint for DELETING an existing master pendidikan.",
+        tags: ["master pendidikan"],
         params: {
-          description: "master kecamatan by Id",
+          description: "master pendidikan by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for deleted data master kecamatan",
+          description: "Payload for deleted data master pendidikan",
           type: "object",
           properties: {
             deleted_by: { type: "number" },
@@ -279,7 +263,7 @@ module.exports = async function (fastify, opts) {
       const { deleted_by } = request.body;
 
       try {
-        await fastify.master_kecamatan.del(id, deleted_by);
+        await fastify.master_pendidikan.del(id, deleted_by);
         reply.send({ message: "success", code: 204 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });

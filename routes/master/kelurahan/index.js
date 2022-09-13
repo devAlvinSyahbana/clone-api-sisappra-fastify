@@ -22,8 +22,9 @@ module.exports = async function (fastify, opts) {
                   type: "object",
                   properties: {
                     id: { type: "number" },
-                    kode: { type: "string" },
+                    kode_kelurahan: { type: "string" },
                     kelurahan: { type: "string" },
+                    kode_kecamatan: { type: "string" },
                     kecamatan: { type: "string" },
                   },
                 },
@@ -72,8 +73,9 @@ module.exports = async function (fastify, opts) {
                 type: "object",
                 properties: {
                   id: { type: "number" },
-                  kode: { type: "string" },
+                  kode_kelurahan: { type: "string" },
                   kelurahan: { type: "string" },
+                  kode_kecamatan: { type: "string" },
                   kecamatan: { type: "string" },
                 },
               },
@@ -99,12 +101,12 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/findone-by-kelurahan/:kecamatan/:kelurahan",
+    "/findone-by-kelurahan",
     {
       schema: {
         description: "This is an endpoint for fetching a master kelurahan",
         tags: ["master kelurahan"],
-        params: {
+        querystring: {
           description: "Find one master kelurahan by kelurahan",
           type: "object",
           properties: {
@@ -120,13 +122,16 @@ module.exports = async function (fastify, opts) {
               message: { type: "string" },
               code: { type: "string" },
               data: {
-                type: "object",
-                properties: {
-                  id: { type: "number" },
-                  kode: { type: "string" },
-                  kelurahan: { type: "string" },
-                  kecamatan: { type: "string" },
-              
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: { type: "number" },
+                    kode_kelurahan: { type: "string" },
+                    kelurahan: { type: "string" },
+                    kode_kecamatan: { type: "string" },
+                    kecamatan: { type: "string" },
+                  },
                 },
               },
             },
@@ -135,7 +140,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { kecamatan, kelurahan } = request.params;
+      const { kecamatan, kelurahan } = request.query;
       const exec = await fastify.master_kelurahan.findone_by_kelurahan(kecamatan, kelurahan);
 
       try {
