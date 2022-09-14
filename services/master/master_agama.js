@@ -20,7 +20,7 @@ const master_agama = (db) => {
   };
 
   const findone_by_agama = (agama) => {
-    let a = "%" + agama;
+    let a = agama;
 
     const query = db.one(
       "SELECT id, nama as agama FROM master_agama WHERE nama ilike $1 AND is_deleted = 0",
