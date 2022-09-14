@@ -1,4 +1,4 @@
-const dashboard_wasdak_ppkm = require("../../../services/dashboard/wasdak-ppkm/wasdak-ppkm");
+const dashboard_wasdak_ppkm = require("../../services/dashboard/wasdak-ppkm");
 
 module.exports = async function (fastify, opts) {
     fastify.register(dashboard_wasdak_ppkm);

@@ -1,4 +1,4 @@
-const kepegawaian = require("../../../services/dashboard/kepegawaian/kepegawaian");
+const kepegawaian = require("../../services/dashboard/kepegawaian");
 
 module.exports = async function (fastify, opts) {
     fastify.register(kepegawaian);
