@@ -7,7 +7,7 @@ module.exports = async function (fastify, opts) {
     fastify.get(
         "/titik-rawan-pmks", {
             schema: {
-                description: "This is an endpoint for fetching all dashboard_titik_rawan per jenis perorangan",
+                description: "This is an endpoint for fetching all dashboard_titik_rawan per jenis pmks",
                 tags: ["dashboard_titik_rawan"],
                 response: {
                     200: {
@@ -85,8 +85,8 @@ module.exports = async function (fastify, opts) {
     fastify.get(
         "/titik-rawan-pkl", {
             schema: {
-                description: "This is an endpoint for fetching all dashboard_wasdak_ppkm per tempat makan",
-                tags: ["dashboard_wasdak_ppkm"],
+                description: "This is an endpoint for fetching all dashboard_titik_rawan per pkl",
+                tags: ["dashboard_titik_rawan"],
                 response: {
                     200: {
                         properties: {
@@ -163,8 +163,8 @@ module.exports = async function (fastify, opts) {
     fastify.get(
         "/titik-rawan-banjir", {
             schema: {
-                description: "This is an endpoint for fetching all dashboard_titik_rawan per perkantoran",
-                tags: ["dashboard_wasdak_ppkm"],
+                description: "This is an endpoint for fetching all dashboard_titik_rawan per banjir",
+                tags: ["dashboard_titik_rawan"],
                 response: {
                     200: {
                         properties: {
@@ -241,8 +241,8 @@ module.exports = async function (fastify, opts) {
     fastify.get(
         "/titik-rawan-kebakaran", {
             schema: {
-                description: "This is an endpoint for fetching all dashboard_titik_rawan per usaha",
-                tags: ["dashboard_wasdak_ppkm"],
+                description: "This is an endpoint for fetching all dashboard_titik_rawan per kebakaran",
+                tags: ["dashboard_titik_rawan"],
                 response: {
                     200: {
                         properties: {
@@ -319,7 +319,7 @@ module.exports = async function (fastify, opts) {
     fastify.get(
         "/titik-rawan-macet", {
             schema: {
-                description: "This is an endpoint for fetching all dashboard_titik_rawan per kerumunan",
+                description: "This is an endpoint for fetching all dashboard_titik_rawan per macet",
                 tags: ["dashboard_titik_rawan"],
                 response: {
                     200: {
@@ -397,7 +397,7 @@ module.exports = async function (fastify, opts) {
     fastify.get(
         "/titik-rawan-konflik", {
             schema: {
-                description: "This is an endpoint for fetching all dashboard_titik_rawan per kerumunan",
+                description: "This is an endpoint for fetching all dashboard_titik_rawan per konflik",
                 tags: ["dashboard_titik_rawan"],
                 response: {
                     200: {
@@ -475,7 +475,7 @@ module.exports = async function (fastify, opts) {
     fastify.get(
         "/titik-rawan-tramtibum", {
             schema: {
-                description: "This is an endpoint for fetching all dashboard_titik_rawan per kerumunan",
+                description: "This is an endpoint for fetching all dashboard_titik_rawan per tramtibum",
                 tags: ["dashboard_titik_rawan"],
                 response: {
                     200: {
