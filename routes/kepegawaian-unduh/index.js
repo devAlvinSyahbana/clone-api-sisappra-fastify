@@ -1,8 +1,6 @@
 const kepegawaian_pns = require("../../services/kepegawaian/kepegawaian_pns");
 const kepegawaian_non_pns = require("../../services/kepegawaian/kepegawaian_non_pns");
 const XLSX = require("xlsx");
-const path = require("path");
-const fs = require("fs");
 
 module.exports = async function (fastify, opts) {
   fastify.register(kepegawaian_pns);
@@ -36,8 +34,8 @@ module.exports = async function (fastify, opts) {
       const { status } = request.query;
       let headerKepegawaian = [];
       let dataKepegawaian = [];
-      //   let headerKeluarga = [];
-      //   let headerPendidikan = [];
+      // let headerKeluarga = [];
+      // let headerPendidikan = [];
       try {
         const wb = XLSX.utils.book_new();
         // Definisikan header
@@ -76,6 +74,7 @@ module.exports = async function (fastify, opts) {
             "Eselon",
             "Tempat Tugas",
             "Subag/Seksi/Kecamatan",
+            "Kelurahan",
             "Status Pegawai",
             "Nomor Rekening",
             "Nomor KARPEG",
@@ -88,12 +87,18 @@ module.exports = async function (fastify, opts) {
             "Tanggal SK PNS",
             "Nomor SK Pangkat Terakhir",
             "Tanggal SK Pangkat",
+            "Diklat Pol PP Dasar",
+            "Nomor Sertifikat Diklat Pol PP Dasar",
+            "Tanggal Sertifikat Diklat Pol PP Dasar",
             "Diklat Struktural",
             "Nomor Sertifikat Diklat Struktural",
             "Tanggal Sertifikat Diklat Struktural",
             "Diklat PPNS",
             "Nomor Sertifikat Diklat PPNS",
             "Tanggal Sertifikat Diklat PPNS",
+            "Diklat Fungsional Pol PP",
+            "Nomor Sertifikat Diklat Fungsional Pol PP",
+            "Tanggal Sertifikat Diklat Fungsional Pol PP",
           ];
 
           const getData = await fastify.kepegawaian_pns.getDataUnduh();
@@ -102,120 +107,144 @@ module.exports = async function (fastify, opts) {
           });
           dataKepegawaian = convertData;
         }
-        // if (status == "PTT") {
-        //   headerKepegawaian = [
-        //     //data pribadi
-        //     "Nama",
-        //     "Tempat Lahir",
-        //     "Tanggal Lahir",
-        //     "Jenis Kelamin",
-        //     "Agama",
-        //     "NIK",
-        //     "Nomor KK",
-        //     "Status Perkawinan",
-        //     "Nomor HP",
-        //     "Alamat Sesuai KTP",
-        //     "RT/RW Sesuai KTP",
-        //     "Provinsi Sesuai KTP",
-        //     "Kab/Kota Sesuai KTP",
-        //     "Kecamatan Sesuai KTP",
-        //     "Kecamatan Sesuai KTP",
-        //     "Kelurahan Sesuai KTP",
-        //     "Alamat Domisili",
-        //     "RT/RW Domisili",
-        //     "Provinsi Domisili",
-        //     "Kab/Kota Domisili",
-        //     "Kecamatan Domisili",
-        //     "Kecamatan Domisili",
-        //     "Kelurahan Domisili",
-        //     //data kepegawaian
-        //     "NRK",
-        //     "NPTT",
-        //     "Pangkat",
-        //     "Golongan",
-        //     "TMT Pangkat",
-        //     "Pendidikan Pada SK",
-        //     "Jabatan",
-        //     "Eselon",
-        //     "Tempat Tugas",
-        //     "Subag/Seksi/Kecamatan",
-        //     "Status Pegawai",
-        //     "Nomor Rekening",
-        //     "Nomor KARPEG",
-        //     "Nomor Karis/Karsu",
-        //     "Nomor TASPEN",
-        //     "Nomor NPWP",
-        //     "Nomor BPJS/ASKES",
-        //     "TMT CPNS",
-        //     "TMT PNS",
-        //     "Tanggal SK PNS",
-        //     "Nomor SK Pangkat Terakhir",
-        //     "Tanggal SK Pangkat",
-        //     "Diklat Struktural",
-        //     "Nomor Sertifikat Diklat Struktural",
-        //     "Tanggal Sertifikat Diklat Struktural",
-        //     "Diklat PPNS",
-        //     "Nomor Sertifikat Diklat PPNS",
-        //     "Tanggal Sertifikat Diklat PPNS",
-        //   ];
-        // }
-        // if (status == "PJLP") {
-        //   headerKepegawaian = [
-        //     //data pribadi
-        //     "Nama",
-        //     "Tempat Lahir",
-        //     "Tanggal Lahir",
-        //     "Jenis Kelamin",
-        //     "Agama",
-        //     "NIK",
-        //     "Nomor KK",
-        //     "Status Perkawinan",
-        //     "Nomor HP",
-        //     "Alamat Sesuai KTP",
-        //     "RT/RW Sesuai KTP",
-        //     "Provinsi Sesuai KTP",
-        //     "Kab/Kota Sesuai KTP",
-        //     "Kecamatan Sesuai KTP",
-        //     "Kecamatan Sesuai KTP",
-        //     "Kelurahan Sesuai KTP",
-        //     "Alamat Domisili",
-        //     "RT/RW Domisili",
-        //     "Provinsi Domisili",
-        //     "Kab/Kota Domisili",
-        //     "Kecamatan Domisili",
-        //     "Kecamatan Domisili",
-        //     "Kelurahan Domisili",
-        //     //data kepegawaian
-        //     "NRK",
-        //     "NPJLP",
-        //     "Pangkat",
-        //     "Golongan",
-        //     "TMT Pangkat",
-        //     "Pendidikan Pada SK",
-        //     "Jabatan",
-        //     "Eselon",
-        //     "Tempat Tugas",
-        //     "Subag/Seksi/Kecamatan",
-        //     "Status Pegawai",
-        //     "Nomor Rekening",
-        //     "Nomor KARPEG",
-        //     "Nomor Karis/Karsu",
-        //     "Nomor TASPEN",
-        //     "Nomor NPWP",
-        //     "Nomor BPJS/ASKES",
-        //     "TMT CPNS",
-        //     "TMT PNS",
-        //     "Tanggal SK PNS",
-        //     "Nomor SK Pangkat Terakhir",
-        //     "Tanggal SK Pangkat",
-        //     "Diklat Struktural",
-        //     "Nomor Sertifikat Diklat Struktural",
-        //     "Tanggal Sertifikat Diklat Struktural",
-        //     "Diklat PPNS",
-        //     "Nomor Sertifikat Diklat PPNS",
-        //     "Tanggal Sertifikat Diklat PPNS",
-        //   ];
-        // }
+        if (status == "PTT") {
+          headerKepegawaian = [
+            //data pribadi
+            "Nama",
+            "Tempat Lahir",
+            "Tanggal Lahir",
+            "Jenis Kelamin",
+            "Agama",
+            "NIK",
+            "Nomor KK",
+            "Status Perkawinan",
+            "Nomor HP",
+            "Alamat Sesuai KTP",
+            "RT/RW Sesuai KTP",
+            "Provinsi Sesuai KTP",
+            "Kab/Kota Sesuai KTP",
+            "Kecamatan Sesuai KTP",
+            "Kelurahan Sesuai KTP",
+            "Alamat Domisili",
+            "RT/RW Domisili",
+            "Provinsi Domisili",
+            "Kab/Kota Domisili",
+            "Kecamatan Domisili",
+            "Kelurahan Domisili",
+            //data kepegawaian
+            "NPTT",
+            "NIP",
+            "Pangkat",
+            "Golongan",
+            "TMT Pangkat",
+            "Pendidikan Pada SK",
+            "Jabatan",
+            "Eselon",
+            "Tempat Tugas",
+            "Subag/Seksi/Kecamatan",
+            "Kelurahan",
+            "Status Pegawai",
+            "Nomor Rekening",
+            "Nomor KARPEG",
+            "Nomor Karis/Karsu",
+            "Nomor TASPEN",
+            "Nomor NPWP",
+            "Nomor BPJS/ASKES",
+            "TMT CPNS",
+            "TMT PNS",
+            "Tanggal SK PNS",
+            "Nomor SK Pangkat Terakhir",
+            "Tanggal SK Pangkat",
+            "Diklat Pol PP Dasar",
+            "Nomor Sertifikat Diklat Pol PP Dasar",
+            "Tanggal Sertifikat Diklat Pol PP Dasar",
+            "Diklat Struktural",
+            "Nomor Sertifikat Diklat Struktural",
+            "Tanggal Sertifikat Diklat Struktural",
+            "Diklat PPNS",
+            "Nomor Sertifikat Diklat PPNS",
+            "Tanggal Sertifikat Diklat PPNS",
+            "Diklat Fungsional Pol PP",
+            "Nomor Sertifikat Diklat Fungsional Pol PP",
+            "Tanggal Sertifikat Diklat Fungsional Pol PP",
+          ];
+          const getData = await fastify.kepegawaian_non_pns.getDataUnduh(
+            status
+          );
+          const convertData = getData.map(function (item) {
+            return Object.values(item);
+          });
+          dataKepegawaian = convertData;
+        }
+        if (status == "PJLP") {
+          headerKepegawaian = [
+            //data pribadi
+            "Nama",
+            "Tempat Lahir",
+            "Tanggal Lahir",
+            "Jenis Kelamin",
+            "Agama",
+            "NIK",
+            "Nomor KK",
+            "Status Perkawinan",
+            "Nomor HP",
+            "Alamat Sesuai KTP",
+            "RT/RW Sesuai KTP",
+            "Provinsi Sesuai KTP",
+            "Kab/Kota Sesuai KTP",
+            "Kecamatan Sesuai KTP",
+            "Kelurahan Sesuai KTP",
+            "Alamat Domisili",
+            "RT/RW Domisili",
+            "Provinsi Domisili",
+            "Kab/Kota Domisili",
+            "Kecamatan Domisili",
+            "Kelurahan Domisili",
+            //data kepegawaian
+            "NPJLP",
+            "NIP",
+            "Pangkat",
+            "Golongan",
+            "TMT Pangkat",
+            "Pendidikan Pada SK",
+            "Jabatan",
+            "Eselon",
+            "Tempat Tugas",
+            "Subag/Seksi/Kecamatan",
+            "Kelurahan",
+            "Status Pegawai",
+            "Nomor Rekening",
+            "Nomor KARPEG",
+            "Nomor Karis/Karsu",
+            "Nomor TASPEN",
+            "Nomor NPWP",
+            "Nomor BPJS/ASKES",
+            "TMT CPNS",
+            "TMT PNS",
+            "Tanggal SK PNS",
+            "Nomor SK Pangkat Terakhir",
+            "Tanggal SK Pangkat",
+            "Diklat Pol PP Dasar",
+            "Nomor Sertifikat Diklat Pol PP Dasar",
+            "Tanggal Sertifikat Diklat Pol PP Dasar",
+            "Diklat Struktural",
+            "Nomor Sertifikat Diklat Struktural",
+            "Tanggal Sertifikat Diklat Struktural",
+            "Diklat PPNS",
+            "Nomor Sertifikat Diklat PPNS",
+            "Tanggal Sertifikat Diklat PPNS",
+            "Diklat Fungsional Pol PP",
+            "Nomor Sertifikat Diklat Fungsional Pol PP",
+            "Tanggal Sertifikat Diklat Fungsional Pol PP",
+          ];
+          const getData = await fastify.kepegawaian_non_pns.getDataUnduh(
+            status
+          );
+          const convertData = getData.map(function (item) {
+            return Object.values(item);
+          });
+          dataKepegawaian = convertData;
+        }
 
         // Definisikan rows untuk ditulis ke dalam spreadsheet
         const wsDataKepegawaian = [headerKepegawaian, ...dataKepegawaian];
@@ -223,7 +252,7 @@ module.exports = async function (fastify, opts) {
         const fileName = "DATA KEPEGAWAIAN " + status;
         wb.Props = {
           Title: fileName,
-          Author: "SISAPPRA",
+          Author: "SISAPPRA - KEPEGAWAIAN",
           CreatedDate: new Date(),
         };
         // Buat Sheet
@@ -247,7 +276,6 @@ module.exports = async function (fastify, opts) {
           "attachment; filename=" + `${fileName}.xlsx`
         );
         reply.send(wBuffer);
-        // reply.send("success");
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
       }
