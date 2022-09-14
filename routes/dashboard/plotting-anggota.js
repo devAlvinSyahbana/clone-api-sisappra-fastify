@@ -1,4 +1,4 @@
-const sarana_prasarana = require("../../../services/dashboard/plotting-anggota/plotting-anggota");
+const sarana_prasarana = require("../../services/dashboard/plotting-anggota");
 
 module.exports = async function (fastify, opts) {
     fastify.register(sarana_prasarana);

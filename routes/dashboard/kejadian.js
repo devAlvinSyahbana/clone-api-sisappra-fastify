@@ -1,4 +1,4 @@
-const kejadian = require("../../../services/dashboard/kejadian/kejadian");
+const kejadian = require("../../services/dashboard/kejadian");
 
 module.exports = async function (fastify, opts) {
     fastify.register(kejadian);
