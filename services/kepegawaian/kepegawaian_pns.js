@@ -33,7 +33,7 @@ const kepegawaian_pns = (db) => {
 
   const findPendidikan = (id) => {
     const query = db.any(
-      "SELECT * FROM kepegawaian_pns_pendidikan WHERE id_pegawai = " + id
+      "SELECT mpen.nama as jenis_pendidikan, kpen.nama_sekolah, kpen.nomor_ijazah, kpen.tgl_ijazah, kpen.jurusan, kpen.fakultas, kpen.file_ijazah FROM kepegawaian_pns_pendidikan kpen LEFT JOIN master_pendidikan mpen ON mpen.id = kpen.jenis_pendidikan WHERE kpen.id_pegawai = " + id
     );
 
     return query;
@@ -41,7 +41,8 @@ const kepegawaian_pns = (db) => {
 
   const findKeluarga = (id) => {
     const query = db.any(
-      "SELECT * FROM kepegawaian_pns_keluarga WHERE id_pegawai = " + id
+      "SELECT klgr.hubungan, klgr.nama, klgr.tempat_lahir, klgr.tgl_lahir, CASE WHEN klgr.jenis_kelamin = 'L' THEN 'Laki-laki' ELSE 'Perempuan' END AS jenis_kelamin FROM kepegawaian_pns_keluarga klgr WHERE klgr.id_pegawai = " +
+        id
     );
 
     return query;
