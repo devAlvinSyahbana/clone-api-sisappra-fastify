@@ -1,6 +1,14 @@
 const fp = require("fastify-plugin");
 
 const kepegawaian_pns = (db) => {
+  const getDataUnduh = () => {
+    const query = db.any(
+      "SELECT kpns.nama, kpns.tempat_lahir, to_char(kpns.tgl_lahir, 'dd Mon YYYY') AS tgl_lahir, CASE WHEN kpns.jenis_kelamin = 'L' THEN 'Laki-laki' ELSE 'Perempuan' END AS jenis_kelamin, ma.nama as agama, kpns.nik, kpns.no_kk, kpns.status_perkawinan, kpns.no_hp, kpns.sesuai_ktp_alamat, kpns.sesuai_ktp_rtrw, kpns.sesuai_ktp_provinsi, kpns.sesuai_ktp_kabkota, kpns.sesuai_ktp_kecamatan, kpns.sesuai_ktp_kelurahan, kpns.domisili_alamat, kpns.domisili_rtrw, kpns.domisili_provinsi, kpns.domisili_kabkota, kpns.domisili_kecamatan, kpns.domisili_kelurahan, kpns.kepegawaian_nrk, kpns.kepegawaian_nip, kpns.kepegawaian_pangkat, kpns.kepegawaian_golongan, kpns.kepegawaian_status_pegawai FROM kepegawaian_pns kpns LEFT JOIN master_agama ma ON ma.id = CAST (kpns.agama AS INTEGER) WHERE kpns.is_deleted = 0 ORDER BY kpns.nama ASC"
+    );
+
+    return query;
+  };
+
   const countKeluarga = (id) => {
     const query = db.one(
       "SELECT COUNT(id) as total FROM kepegawaian_pns_keluarga WHERE id_pegawai = " +
@@ -82,7 +90,7 @@ const kepegawaian_pns = (db) => {
 
   const findone = (id) => {
     const query = db.one(
-      "SELECT * FROM kepegawaian_pns WHERE id = $1 AND is_deleted = 0",
+      "SELECT kpns.id, kpns.nama, kpns.tempat_lahir, kpns.tgl_lahir, kpns.jenis_kelamin, magama.id as agama_id, magama.nama as agama_name, kpns.nik, kpns.no_kk, kpns.status_perkawinan, kpns.no_hp, kpns.sesuai_ktp_alamat, kpns.sesuai_ktp_rtrw, kpns.sesuai_ktp_provinsi, kpns.sesuai_ktp_kabkota, kpns.sesuai_ktp_kecamatan, kpns.sesuai_ktp_kelurahan, kpns.domisili_alamat, kpns.domisili_rtrw, kpns.domisili_provinsi, kpns.domisili_kabkota, kpns.domisili_kecamatan, kpns.domisili_kelurahan, kpns.kepegawaian_nrk, kpns.kepegawaian_nip, kpns.kepegawaian_golongan, kpns.kepegawaian_tmtpangkat, kpns.kepegawaian_pendidikan_pada_sk, kpns.kepegawaian_jabatan, kpns.kepegawaian_eselon, kpns.kepegawaian_tempat_tugas, kpns.kepegawaian_subbag_seksi_kecamatan, kpns.kepegawaian_status_pegawai, kpns.kepegawaian_no_rekening, kpns.kepegawaian_no_karpeg, kpns.kepegawaian_no_kasirkasur, kpns.kepegawaian_no_taspen, kpns.kepegawaian_npwp, kpns.kepegawaian_no_bpjs_askes, kpns.kepegawaian_tmt_cpns, kpns.kepegawaian_sk_cpns, kpns.kepegawaian_tmt_pns, kpns.kepegawaian_tgl_sk_pns, kpns.kepegawaian_sk_pns, kpns.kepegawaian_no_sk_pangkat_terakhir, kpns.kepegawaian_tgl_sk_pangkat_terakhir, kpns.kepegawaian_sk_pangkat_terakhir, kpns.kepegawaian_diklat_pol_pp_dasar, kpns.kepegawaian_diklat_pol_pp_dasar_no_sertifikat, kpns.kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat, kpns.kepegawaian_diklat_pol_pp_dasar_file_sertifikat, kpns.kepegawaian_diklat_pol_pp_strutural, kpns.kepegawaian_diklat_pol_pp_strutural_no_sertifikat, kpns.kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat, kpns.kepegawaian_diklat_pol_pp_strutural_file_sertifikat, kpns.kepegawaian_diklat_pol_pp_ppns, kpns.kepegawaian_diklat_pol_pp_ppns_no_sertifikat, kpns.kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat, kpns.kepegawaian_diklat_pol_pp_ppns_file_sertifikat, kpns.kepegawaian_diklat_fungsional_pol_pp, kpns.kepegawaian_diklat_fungsional_pol_pp_no_sertifikat, kpns.kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat, kpns.kepegawaian_diklat_fungsional_pol_pp_file_sertifikat, kpns.foto, kpns.kepegawaian_pangkat, kpns.kepegawaian_kelurahan FROM kepegawaian_pns kpns LEFT JOIN master_agama magama ON kpns.agama = magama.id WHERE kpns.id = $1 AND kpns.is_deleted = 0",
       [id]
     );
 
@@ -118,6 +126,7 @@ const kepegawaian_pns = (db) => {
   };
 
   return {
+    getDataUnduh,
     countKeluarga,
     findPendidikanTerakhir,
     findPendidikan,

@@ -4,7 +4,7 @@ const master_kelurahan = (db) => {
 
   const find = () => {
     const query = db.any(
-      "SELECT mk.id, mk.nama as kelurahan, mk.kode, mkec.nama as kecamatan FROM master_kelurahan mk JOIN master_kecamatan mkec on mk.kode_kecamatan = mkec.kode WHERE mk.is_deleted = 0 ORDER BY mk.created_at DESC"
+      "SELECT mk.id, mk.kode as kode_kelurahan, mk.nama as kelurahan, mk.kode_kecamatan, mkec.nama as kecamatan FROM master_kelurahan mk JOIN master_kecamatan mkec on mk.kode_kecamatan = mkec.kode WHERE mk.is_deleted = 0 ORDER BY mk.created_at DESC"
     );
 
     return query;
@@ -12,7 +12,7 @@ const master_kelurahan = (db) => {
 
   const findone = (id) => {
     const query = db.one(
-      "SELECT mk.id, mk.nama as kelurahan, mk.kode, mkec.nama as kecamatan FROM master_kelurahan mk JOIN master_kecamatan mkec on mk.kode_kecamatan = mkec.kode WHERE mk.id = $1 AND mk.is_deleted = 0",
+      "SELECT mk.id, mk.kode as kode_kelurahan, mk.nama as kelurahan,mk.kode_kecamatan, mkec.nama as kecamatan FROM master_kelurahan mk JOIN master_kecamatan mkec on mk.kode_kecamatan = mkec.kode WHERE mk.id = $1 AND mk.is_deleted = 0",
       [id]
     );
 
@@ -20,11 +20,14 @@ const master_kelurahan = (db) => {
   };
 
   const findone_by_kelurahan = (kecamatan, kelurahan) => {
-    let a = "%"+kelurahan;
-    let b = "%"+kecamatan
+    if (kecamatan == undefined){kecamatan = ""}
+    if (kelurahan == undefined){kelurahan = ""}
 
-    const query = db.one(
-      "SELECT mk.id, mk.nama as kelurahan, mk.kode, mkec.nama as kecamatan FROM master_kelurahan mk JOIN master_kecamatan mkec on mk.kode_kecamatan = mkec.kode WHERE mk.nama LIKE $1 AND mkec.nama LIKE $2 AND mk.is_deleted = 0",
+    let a = "%"+kelurahan;
+    let b = "%"+kecamatan;
+
+    const query = db.any(
+      "SELECT mk.id, mk.kode as kode_kelurahan, mk.nama as kelurahan, mk.kode_kecamatan, mkec.nama as kecamatan FROM master_kelurahan mk JOIN master_kecamatan mkec on mk.kode_kecamatan = mkec.kode WHERE mk.nama LIKE $1 AND mkec.nama LIKE $2 AND mk.is_deleted = 0",
       [a, b]
     );
 

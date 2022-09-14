@@ -4,7 +4,7 @@ const master_kecamatan = (db) => {
 
   const find = () => {
     const query = db.any(
-      "SELECT mk.id, mk.nama, mk.kode, mkot.nama as kecamatan, mkot.nama as kota FROM master_kecamatan mk JOIN master_kota mkot on mk.kode_kota = mkot.kode WHERE mk.is_deleted = 0 ORDER BY mk.created_at DESC"
+      "SELECT mk.id, mk.kode as kode_kecamatan, mk.nama as kecamatan, mk.kode_kota, mkot.nama as kota FROM master_kecamatan mk JOIN master_kota mkot on mk.kode_kota = mkot.kode WHERE mk.is_deleted = 0 ORDER BY mk.created_at DESC"
     );
 
     return query;
@@ -12,7 +12,7 @@ const master_kecamatan = (db) => {
 
   const findone = (id) => {
     const query = db.one(
-      "SELECT mk.id, mk.nama as kecamatan, mk.kode, mkot.nama as kota FROM master_kecamatan mk JOIN master_kota mkot on mk.kode_kota = mkot.kode WHERE mk.id = $1 AND mk.is_deleted = 0",
+      "SELECT mk.id, mk.kode as kode_kecamatan, mk.nama as kecamatan, mk.kode_kota, mkot.nama as kota FROM master_kecamatan mk JOIN master_kota mkot on mk.kode_kota = mkot.kode WHERE mk.id = $1 AND mk.is_deleted = 0",
       [id]
     );
 
@@ -20,11 +20,14 @@ const master_kecamatan = (db) => {
   };
 
   const findone_by_kecamatan = (kota, kecamatan) => {
-    let a = "%"+kota;
-    let b = "%"+kecamatan
+    if (kota == undefined){kota = ""}
+    if (kecamatan == undefined){kecamatan = ""}
 
-    const query = db.one(
-      "SELECT mk.id, mk.nama as kecamatan, mk.kode, mkot.nama as kota FROM master_kecamatan mk JOIN master_kota mkot on mk.kode_kota = mkot.kode WHERE mk.nama ilike  $1 AND mkot.nama ilike $2 AND mk.is_deleted = 0",
+    let a = "%"+ kota;
+    let b = "%"+ kecamatan;
+ 
+    const query = db.any(
+      "SELECT mk.id, mk.kode as kode_kecamatan, mk.nama as kecamatan, mk.kode_kota, mkot.nama as kota FROM master_kecamatan mk JOIN master_kota mkot on mk.kode_kota = mkot.kode WHERE mk.nama ilike $1 AND mkot.nama ilike $2 AND mk.is_deleted = 0 " ,
       [b, a]
     );
 
