@@ -1,16 +1,14 @@
-const kontak_pic = require("../../services/kontak_pic");
-
+const master_agama  = require("../../../services/master/master_agama");
 
 module.exports = async function (fastify, opts) {
-  fastify.register(kontak_pic);
+  fastify.register(master_agama);
 
   fastify.get(
     "/find",
     {
       schema: {
-        description:
-          "This is an endpoint for fetching all kontak pic",
-        tags: ["kontak pic"],
+        description: "This is an endpoint for fetching all master agama",
+        tags: ["master agama"],
         response: {
           200: {
             description: "Success Response",
@@ -18,35 +16,33 @@ module.exports = async function (fastify, opts) {
             properties: {
               message: { type: "string" },
               code: { type: "string" },
-              data:{
+              data: {
                 type: "array",
                 items: {
                   type: "object",
                   properties: {
                     id: { type: "number" },
-                    email: { type: "string" },
-                    status_pic: { type: "number" },
+                    agama: { type: "string" },
                   },
-                }
-              }
+                },
+              },
             },
           },
         },
       },
     },
     async (request, reply) => {
-      const exec = await fastify.kontak_pic.find();
+      const exec = await fastify.master_agama.find();
 
       try {
         if (exec) {
           reply.send({ message: "success", code: 200, data: exec });
-        }else{
-          reply.send({ message: "success", code: 204});
+        } else {
+          reply.send({ message: "success", code: 204 });
         }
-
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
-      }     
+      }
     }
   );
 
@@ -54,10 +50,10 @@ module.exports = async function (fastify, opts) {
     "/findone/:id",
     {
       schema: {
-        description: "This is an endpoint for fetching a kontak pic by id",
-        tags: ["kontak pic"],
+        description: "This is an endpoint for fetching a master agama",
+        tags: ["master agama"],
         params: {
-          description: "Find one kontak pic by id",
+          description: "Find one master agama id",
           type: "object",
           properties: {
             id: { type: "number" },
@@ -74,8 +70,7 @@ module.exports = async function (fastify, opts) {
                 type: "object",
                 properties: {
                   id: { type: "number" },
-                  email: { type: "string" },
-                  status_pic: { type: "number" },
+                  agama: { type: "string" },
                 },
               },
             },
@@ -85,7 +80,7 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const exec = await fastify.kontak_pic.findone(id);
+      const exec = await fastify.master_agama.findone(id);
 
       try {
         if (exec) {
@@ -94,22 +89,22 @@ module.exports = async function (fastify, opts) {
           reply.send({ message: "success", code: 204 });
         }
       } catch (error) {
-        reply.send({ message: error, code: 500});
+        reply.send({ message: error, code: 500 });
       }
     }
   );
 
   fastify.get(
-    "/findone-status-pic/:status_pic",
+    "/findone-by-agama/:agama",
     {
       schema: {
-        description: "This is an endpoint for fetching a kontak pic by id",
-        tags: ["kontak pic"],
+        description: "This is an endpoint for fetching a master agama",
+        tags: ["master agama"],
         params: {
-          description: "Find one kontak pic by id",
+          description: "Find one master agama by agama",
           type: "object",
           properties: {
-            status_pic: { type: "number" },
+            agama: { type: "string" },
           },
         },
         response: {
@@ -123,8 +118,7 @@ module.exports = async function (fastify, opts) {
                 type: "object",
                 properties: {
                   id: { type: "number" },
-                  email: { type: "string" },
-                  status_pic: { type: "number" },
+                  agama: { type: "string" },
                 },
               },
             },
@@ -133,8 +127,8 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { status_pic } = request.params;
-      const exec = await fastify.kontak_pic.findone_status_pic(status_pic);
+      const { agama } = request.params;
+      const exec = await fastify.master_agama.findone_by_agama(agama);
 
       try {
         if (exec) {
@@ -143,7 +137,7 @@ module.exports = async function (fastify, opts) {
           reply.send({ message: "success", code: 204 });
         }
       } catch (error) {
-        reply.send({ message: error, code: 500});
+        reply.send({ message: error, code: 500 });
       }
     }
   );
@@ -152,14 +146,13 @@ module.exports = async function (fastify, opts) {
     "/create",
     {
       schema: {
-        description: "This is an endpoint for creating a kontak pic",
-        tags: ["kontak pic"],
+        description: "This is an endpoint for creating a master agama",
+        tags: ["master agama"],
         body: {
-          description: "Payload for creating a kontak pic",
+          description: "Payload for creating a master agama",
           type: "object",
           properties: {
-            email: { type: "string" },
-            telepon: { type: "string" },
+            agama: { type: "string" },
             created_by: { type: "number" },
           },
         },
@@ -176,14 +169,10 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { email, created_by } = request.body;
+      const {agama,created_by} = request.body;
 
       try {
-        await fastify.kontak_pic.create(
-            email,
-         
-            created_by
-        );
+        await fastify.master_agama.create(agama,created_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -195,22 +184,20 @@ module.exports = async function (fastify, opts) {
     "/update/:id",
     {
       schema: {
-        description:
-          "This is an endpoint for updating an existing kontak pic",
-        tags: ["kontak pic"],
+        description: "This is an endpoint for updating an existing master agama",
+        tags: ["master agama"],
         params: {
-          description: "update kontak pic by Id",
+          description: "update master agama by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for updating a kontak pic",
+          description: "Payload for updating a master agama",
           type: "object",
           properties: {
-            email: { type: "string" },
-            telepon: { type: "string" },
+            agama: { type: "string" },
             updated_by: { type: "number" },
           },
         },
@@ -228,62 +215,10 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const { email, updated_by } = request.body;
+      const {agama, updated_by } = request.body;
 
       try {
-        await fastify.kontak_pic.update(id,email,updated_by);
-  
-        reply.send({ message: "success", code: 200 });
-      } catch (error) {
-        reply.send({ message: error.message, code: 500 });
-      }
-    }
-  );
-
-  fastify.put(
-    "/update-pic/:id",
-    {
-      schema: {
-        description:
-          "This is an endpoint for updating pic an existing kontak pic",
-        tags: ["kontak pic"],
-        params: {
-          description: "update pic kontak pic by Id",
-          type: "object",
-          properties: {
-            id: { type: "number" },
-          },
-        },
-        body: {
-          description: "Payload for updating pic a kontak pic",
-          type: "object",
-          properties: {
-            status_pic: { type: "number" },
-            updated_by: { type: "number" },
-          },
-        },
-        response: {
-          200: {
-            description: "Success Response",
-            type: "object",
-            properties: {
-              message: { type: "string" },
-              code: { type: "string" },
-            },
-          },
-        },
-      },
-    },
-    async (request, reply) => {
-      const { id } = request.params;
-      const { status_pic, updated_by } = request.body;
-      try {
-        await fastify.kontak_pic.update_pic(
-          id,
-          status_pic,
-          updated_by
-        );
-  
+        await fastify.master_agama.update(id,agama,updated_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -295,18 +230,17 @@ module.exports = async function (fastify, opts) {
     "/delete/:id",
     {
       schema: {
-        description:
-          "This is an endpoint for DELETING an existing kontak pic.",
-        tags: ["kontak pic"],
+        description: "This is an endpoint for DELETING an existing master agama.",
+        tags: ["master agama"],
         params: {
-          description: "kontak pic by Id",
+          description: "master agama by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for deleted data kontak pic",
+          description: "Payload for deleted data master agama",
           type: "object",
           properties: {
             deleted_by: { type: "number" },
@@ -329,10 +263,61 @@ module.exports = async function (fastify, opts) {
       const { deleted_by } = request.body;
 
       try {
-        await fastify.kontak_pic.del(id, deleted_by);
+        await fastify.master_agama.del(id, deleted_by);
         reply.send({ message: "success", code: 204 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
+      }
+    }
+  );
+
+  fastify.get(
+    "/filter/:q",
+    {
+      schema: {
+        description: "This is an endpoint for filtering a master agama",
+        tags: ["master agama"],
+        params: {
+          description: "Filter master agama by search",
+          type: "object",
+          properties: {
+            q: { type: "string" },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: { type: "number" },
+                    agama: { type: "string" },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { q } = request.params;
+      const exec = await fastify.master_agama.filter(q);
+
+      try {
+        if (exec) {
+          reply.send({ message: "success", code: 200, data: exec });
+        } else {
+          reply.send({ message: "success", code: 204 });
+        }
+      } catch (error) {
+        reply.send({ message: error, code: 500 });
       }
     }
   );
