@@ -23,8 +23,11 @@ module.exports = async function (fastify, opts) {
                                 items: {
                                     type: "object",
                                     properties: {
-                                        perorangan: {
+                                        jenis_wasdak: {
                                             type: "string"
+                                        },
+                                        year: {
+                                            type: "number"
                                         },
                                         count: {
                                             type: "number"
@@ -83,8 +86,11 @@ module.exports = async function (fastify, opts) {
                                 items: {
                                     type: "object",
                                     properties: {
-                                        tempat_makan: {
+                                        jenis_wasdak: {
                                             type: "string"
+                                        },
+                                        year: {
+                                            type: "number"
                                         },
                                         count: {
                                             type: "number"
@@ -143,8 +149,11 @@ module.exports = async function (fastify, opts) {
                                 items: {
                                     type: "object",
                                     properties: {
-                                        perkantoran: {
+                                        jenis_wasdak: {
                                             type: "string"
+                                        },
+                                        year: {
+                                            type: "number"
                                         },
                                         count: {
                                             type: "number"
@@ -203,8 +212,11 @@ module.exports = async function (fastify, opts) {
                                 items: {
                                     type: "object",
                                     properties: {
-                                        usaha: {
+                                        jenis_wasdak: {
                                             type: "string"
+                                        },
+                                        year: {
+                                            type: "number"
                                         },
                                         count: {
                                             type: "number"
@@ -263,10 +275,13 @@ module.exports = async function (fastify, opts) {
                                 items: {
                                     type: "object",
                                     properties: {
-                                        kerumunan: {
+                                        jenis_wasdak: {
                                             type: "string"
                                         },
-                                        jumlah: {
+                                        year: {
+                                            type: "number"
+                                        },
+                                        count: {
                                             type: "number"
                                         }
                                     },
