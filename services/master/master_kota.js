@@ -20,11 +20,9 @@ const master_kota = (db) => {
   };
 
   const findone_by_kota = (kota) => {
-    let a = "%" + kota;
-
     const query = db.one(
       "SELECT id, nama as kota, kode FROM master_kota WHERE nama ilike $1 AND is_deleted = 0",
-      [a]
+      [kota]
     );
 
     return query;

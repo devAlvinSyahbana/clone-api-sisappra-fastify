@@ -20,10 +20,13 @@ const master_jenis_perda_perkada = (db) => {
   };
 
   const findone_by_jenis_perda_perkada = (judul, deskripsi) => {
+    if (judul == undefined){judul = ""}
+    if (deskripsi == undefined){deskripsi = ""}
+
     let a = "%" + judul;
     let b = "%" + deskripsi;
 
-    const query = db.one(
+    const query = db.any(
       "SELECT id, judul, deskripsi FROM master_jenis_perda_perkada WHERE judul ilike $1 AND deskripsi ilike $2 AND is_deleted = 0",
       [a, b]
     );

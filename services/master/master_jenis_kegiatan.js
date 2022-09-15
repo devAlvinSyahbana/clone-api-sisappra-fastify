@@ -20,11 +20,9 @@ const master_jenis_kegiatan = (db) => {
   };
 
   const findone_by_jenis_kegiatan = (jenis_kegiatan) => {
-    let a = "%" + jenis_kegiatan;
-
     const query = db.one(
       "SELECT id, nama as jenis_kegiatan, kode FROM master_jenis_kegiatan WHERE nama ilike $1 AND is_deleted = 0",
-      [a]
+      [jenis_kegiatan]
     );
 
     return query;

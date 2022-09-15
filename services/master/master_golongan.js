@@ -20,11 +20,9 @@ const master_golongan = (db) => {
   };
 
   const findone_by_golongan = (golongan) => {
-    let a = golongan;
-
     const query = db.one(
       "SELECT id, urutan_tingkat_golongan, nama as golongan FROM master_golongan WHERE nama ilike $1 AND is_deleted = 0",
-      [a]
+      [golongan]
     );
 
     return query;
