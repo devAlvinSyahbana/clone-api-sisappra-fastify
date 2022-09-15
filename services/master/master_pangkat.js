@@ -20,11 +20,9 @@ const master_pangkat = (db) => {
   };
 
   const findone_by_pangkat = (pangkat) => {
-    let a = pangkat;
-
     const query = db.one(
       "SELECT id, nama as pangkat FROM master_pangkat WHERE nama ilike $1 AND is_deleted = 0",
-      [a]
+      [pangkat]
     );
 
     return query;

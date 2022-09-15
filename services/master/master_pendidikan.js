@@ -20,11 +20,9 @@ const master_pendidikan = (db) => {
   };
 
   const findone_by_pendidikan = (pendidikan) => {
-    let a = pendidikan;
-
     const query = db.one(
       "SELECT id, urutan_tingkat_pendidikan,  nama as pendidikan FROM master_pendidikan WHERE nama ilike $1 AND is_deleted = 0",
-      [a]
+      [pendidikan]
     );
 
     return query;
