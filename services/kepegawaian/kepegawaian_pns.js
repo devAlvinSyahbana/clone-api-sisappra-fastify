@@ -1,6 +1,15 @@
 const fp = require("fastify-plugin");
 
 const kepegawaian_pns = (db) => {
+  const autocompliteFill = (qwhere) => {
+    const query = db.any(
+      "SELECT kpns.id, kpns.nama, kpns.kepegawaian_nrk as no_pegawai FROM kepegawaian_pns kpns WHERE kpns.is_deleted = 0" +
+        qwhere
+    );
+
+    return query;
+  };
+
   const getDataUnduh = () => {
     const query = db.any(
       "SELECT kpns.id, kpns.nama, kpns.tempat_lahir, to_char(kpns.tgl_lahir, 'dd Mon YYYY') AS tgl_lahir, CASE WHEN kpns.jenis_kelamin = 'L' THEN 'Laki-laki' ELSE 'Perempuan' END AS jenis_kelamin, ma.nama as agama, kpns.nik, kpns.no_kk, kpns.status_perkawinan, kpns.no_hp, kpns.sesuai_ktp_alamat, kpns.sesuai_ktp_rtrw, kpns.sesuai_ktp_provinsi, kpns.sesuai_ktp_kabkota, kpns.sesuai_ktp_kecamatan, kpns.sesuai_ktp_kelurahan, kpns.domisili_alamat, kpns.domisili_rtrw, kpns.domisili_provinsi, kpns.domisili_kabkota, kpns.domisili_kecamatan, kpns.domisili_kelurahan, kpns.kepegawaian_nrk, kpns.kepegawaian_nip, mpang.nama as kepegawaian_pangkat, mg.nama as kepegawaian_golongan, kpns.kepegawaian_tmtpangkat, mp.nama as kepegawaian_pendidikan_pada_sk, mj.nama as kepegawaian_jabatan, mes.nama as kepegawaian_eselon, kpns.kepegawaian_tempat_tugas, kpns.kepegawaian_subbag_seksi_kecamatan, kpns.kepegawaian_kelurahan, kpns.kepegawaian_status_pegawai, kpns.kepegawaian_no_rekening, kpns.kepegawaian_no_karpeg, kpns.kepegawaian_no_kasirkasur, kpns.kepegawaian_no_taspen, kpns.kepegawaian_npwp, kpns.kepegawaian_no_bpjs_askes, kpns.kepegawaian_tmt_cpns, kpns.kepegawaian_tmt_pns, kpns.kepegawaian_tgl_sk_pns, kpns.kepegawaian_no_sk_pangkat_terakhir, kpns.kepegawaian_tgl_sk_pangkat_terakhir, kpns.kepegawaian_sk_pangkat_terakhir, kpns.kepegawaian_diklat_pol_pp_dasar, kpns.kepegawaian_diklat_pol_pp_dasar_no_sertifikat, kpns.kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat, kpns.kepegawaian_diklat_pol_pp_strutural, kpns.kepegawaian_diklat_pol_pp_strutural_no_sertifikat, kpns.kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat, kpns.kepegawaian_diklat_pol_pp_ppns, kpns.kepegawaian_diklat_pol_pp_ppns_no_sertifikat, kpns.kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat, kpns.kepegawaian_diklat_fungsional_pol_pp, kpns.kepegawaian_diklat_fungsional_pol_pp_no_sertifikat, kpns.kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat FROM kepegawaian_pns kpns LEFT JOIN master_agama ma ON ma.id = kpns.agama LEFT JOIN master_golongan mg ON mg.id = kpns.kepegawaian_golongan LEFT JOIN master_pendidikan mp ON mp.id = kpns.kepegawaian_pendidikan_pada_sk LEFT JOIN master_jabatan mj ON mj.id = kpns.kepegawaian_jabatan LEFT JOIN master_eselon mes ON mes.id = kpns.kepegawaian_eselon LEFT JOIN master_pangkat mpang ON mpang.id = kpns.kepegawaian_pangkat WHERE kpns.is_deleted = 0 ORDER BY kpns.nama ASC"
@@ -33,7 +42,8 @@ const kepegawaian_pns = (db) => {
 
   const findPendidikan = (id) => {
     const query = db.any(
-      "SELECT mpen.nama as jenis_pendidikan, kpen.nama_sekolah, kpen.nomor_ijazah, kpen.tgl_ijazah, kpen.jurusan, kpen.fakultas, kpen.file_ijazah FROM kepegawaian_pns_pendidikan kpen LEFT JOIN master_pendidikan mpen ON mpen.id = kpen.jenis_pendidikan WHERE kpen.id_pegawai = " + id
+      "SELECT mpen.nama as jenis_pendidikan, kpen.nama_sekolah, kpen.nomor_ijazah, kpen.tgl_ijazah, kpen.jurusan, kpen.fakultas, kpen.file_ijazah FROM kepegawaian_pns_pendidikan kpen LEFT JOIN master_pendidikan mpen ON mpen.id = kpen.jenis_pendidikan WHERE kpen.id_pegawai = " +
+        id
     );
 
     return query;
@@ -110,10 +120,144 @@ const kepegawaian_pns = (db) => {
     return query;
   };
 
-  const update = (id, nama, telepon, updated_by) => {
+  const update = (
+    id,
+    nama,
+    tempat_lahir,
+    tgl_lahir,
+    jenis_kelamin,
+    agama,
+    nik,
+    no_kk,
+    status_perkawinan,
+    no_hp,
+    sesuai_ktp_alamat,
+    sesuai_ktp_rtrw,
+    sesuai_ktp_provinsi,
+    sesuai_ktp_kabkota,
+    sesuai_ktp_kecamatan,
+    sesuai_ktp_kelurahan,
+    domisili_alamat,
+    domisili_rtrw,
+    domisili_provinsi,
+    domisili_kabkota,
+    domisili_kecamatan,
+    domisili_kelurahan,
+    kepegawaian_nrk,
+    kepegawaian_nip,
+    kepegawaian_pangkat,
+    kepegawaian_golongan,
+    kepegawaian_tmtpangkat,
+    kepegawaian_pendidikan_pada_sk,
+    kepegawaian_jabatan,
+    kepegawaian_eselon,
+    kepegawaian_tempat_tugas,
+    kepegawaian_subbag_seksi_kecamatan,
+    kepegawaian_kelurahan,
+    kepegawaian_status_pegawai,
+    kepegawaian_no_rekening,
+    kepegawaian_no_karpeg,
+    kepegawaian_no_kasirkasur,
+    kepegawaian_no_taspen,
+    kepegawaian_npwp,
+    kepegawaian_no_bpjs_askes,
+    kepegawaian_tmt_cpns,
+    kepegawaian_sk_cpns,
+    kepegawaian_tmt_pns,
+    kepegawaian_tgl_sk_pns,
+    kepegawaian_sk_pns,
+    kepegawaian_no_sk_pangkat_terakhir,
+    kepegawaian_tgl_sk_pangkat_terakhir,
+    kepegawaian_sk_pangkat_terakhir,
+    kepegawaian_diklat_pol_pp_dasar,
+    kepegawaian_diklat_pol_pp_dasar_no_sertifikat,
+    kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat,
+    kepegawaian_diklat_pol_pp_dasar_file_sertifikat,
+    kepegawaian_diklat_pol_pp_strutural,
+    kepegawaian_diklat_pol_pp_strutural_no_sertifikat,
+    kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat,
+    kepegawaian_diklat_pol_pp_strutural_file_sertifikat,
+    kepegawaian_diklat_pol_pp_ppns,
+    kepegawaian_diklat_pol_pp_ppns_no_sertifikat,
+    kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat,
+    kepegawaian_diklat_pol_pp_ppns_file_sertifikat,
+    kepegawaian_diklat_fungsional_pol_pp,
+    kepegawaian_diklat_fungsional_pol_pp_no_sertifikat,
+    kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat,
+    kepegawaian_diklat_fungsional_pol_pp_file_sertifikat,
+    foto,
+    updated_by
+  ) => {
     db.one(
-      "UPDATE kontak_pic SET nama = $1, telepon = $2, updated_by = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $4 RETURNING id",
-      [nama, telepon, updated_by, id]
+      "UPDATE kepegawaian_pns SET nama = $1, telepon = $2, updated_by = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $4 RETURNING id",
+      [
+        nama,
+        tempat_lahir,
+        tgl_lahir,
+        jenis_kelamin,
+        agama,
+        nik,
+        no_kk,
+        status_perkawinan,
+        no_hp,
+        sesuai_ktp_alamat,
+        sesuai_ktp_rtrw,
+        sesuai_ktp_provinsi,
+        sesuai_ktp_kabkota,
+        sesuai_ktp_kecamatan,
+        sesuai_ktp_kelurahan,
+        domisili_alamat,
+        domisili_rtrw,
+        domisili_provinsi,
+        domisili_kabkota,
+        domisili_kecamatan,
+        domisili_kelurahan,
+        kepegawaian_nrk,
+        kepegawaian_nip,
+        kepegawaian_pangkat,
+        kepegawaian_golongan,
+        kepegawaian_tmtpangkat,
+        kepegawaian_pendidikan_pada_sk,
+        kepegawaian_jabatan,
+        kepegawaian_eselon,
+        kepegawaian_tempat_tugas,
+        kepegawaian_subbag_seksi_kecamatan,
+        kepegawaian_kelurahan,
+        kepegawaian_status_pegawai,
+        kepegawaian_no_rekening,
+        kepegawaian_no_karpeg,
+        kepegawaian_no_kasirkasur,
+        kepegawaian_no_taspen,
+        kepegawaian_npwp,
+        kepegawaian_no_bpjs_askes,
+        kepegawaian_tmt_cpns,
+        kepegawaian_sk_cpns,
+        kepegawaian_tmt_pns,
+        kepegawaian_tgl_sk_pns,
+        kepegawaian_sk_pns,
+        kepegawaian_no_sk_pangkat_terakhir,
+        kepegawaian_tgl_sk_pangkat_terakhir,
+        kepegawaian_sk_pangkat_terakhir,
+        kepegawaian_diklat_pol_pp_dasar,
+        kepegawaian_diklat_pol_pp_dasar_no_sertifikat,
+        kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat,
+        kepegawaian_diklat_pol_pp_dasar_file_sertifikat,
+        kepegawaian_diklat_pol_pp_strutural,
+        kepegawaian_diklat_pol_pp_strutural_no_sertifikat,
+        kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat,
+        kepegawaian_diklat_pol_pp_strutural_file_sertifikat,
+        kepegawaian_diklat_pol_pp_ppns,
+        kepegawaian_diklat_pol_pp_ppns_no_sertifikat,
+        kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat,
+        kepegawaian_diklat_pol_pp_ppns_file_sertifikat,
+        kepegawaian_diklat_fungsional_pol_pp,
+        kepegawaian_diklat_fungsional_pol_pp_no_sertifikat,
+        kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat,
+        kepegawaian_diklat_fungsional_pol_pp_file_sertifikat,
+        foto,
+        updated_by,
+        id,
+      ]
     );
   };
 
@@ -127,6 +271,7 @@ const kepegawaian_pns = (db) => {
   };
 
   return {
+    autocompliteFill,
     getDataUnduh,
     countKeluarga,
     findPendidikanTerakhir,
