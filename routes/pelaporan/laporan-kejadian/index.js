@@ -93,7 +93,13 @@ module.exports = async function (fastify, opts) {
     async (request, reply) => {
       const { id } = request.params;
       const exec = await fastify.laporan_kejadian.findone(id);
-      return exec;
+      console.log(exec)
+      if (exec) {
+        reply.send({ message: "hooh tenan", code: 200, data: exec });
+      } else {
+        reply.send({ message: "hooh tenan", code :204 });
+      }
+      
     }
   );
 
