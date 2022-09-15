@@ -197,6 +197,7 @@ module.exports = async function (fastify, opts) {
                   nama: { type: "string" },
                   tempat_lahir: { type: "string" },
                   tgl_lahir: { type: "string" },
+                  jenis_kelamin_value: { type: "string" },
                   jenis_kelamin: { type: "string" },
                   agama_id: { type: "number" },
                   agama_name: { type: "string" },
