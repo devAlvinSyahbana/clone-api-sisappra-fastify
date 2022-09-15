@@ -4,7 +4,7 @@ const master_pendidikan = (db) => {
 
   const find = () => {
     const query = db.any(
-      "SELECT id, nama as pendidikan FROM master_pendidikan WHERE is_deleted = 0 ORDER BY created_at DESC",
+      "SELECT id, urutan_tingkat_pendidikan, nama as pendidikan FROM master_pendidikan WHERE is_deleted = 0 ORDER BY created_at DESC",
     );
 
     return query;
@@ -12,7 +12,7 @@ const master_pendidikan = (db) => {
 
   const findone = (id) => {
     const query = db.one(
-      "SELECT id, nama as pendidikan FROM master_pendidikan WHERE id = $1 AND is_deleted = 0",
+      "SELECT id, urutan_tingkat_pendidikan, nama as pendidikan FROM master_pendidikan WHERE id = $1 AND is_deleted = 0",
       [id]
     );
 
@@ -20,30 +20,30 @@ const master_pendidikan = (db) => {
   };
 
   const findone_by_pendidikan = (pendidikan) => {
-    let a = "%" + pendidikan;
+    let a = pendidikan;
 
     const query = db.one(
-      "SELECT id, nama as pendidikan FROM master_pendidikan WHERE nama ilike $1 AND is_deleted = 0",
+      "SELECT id, urutan_tingkat_pendidikan,  nama as pendidikan FROM master_pendidikan WHERE nama ilike $1 AND is_deleted = 0",
       [a]
     );
 
     return query;
   };
 
-  const create = async(pendidikan, created_by) => {
+  const create = async(pendidikan, urutan_tingkat_pendidikan, created_by) => {
     const query = db.one(
-      "INSERT INTO master_pendidikan (nama, is_deleted, created_by) VALUES ($1, 0, $2) RETURNING id",
-      [pendidikan, created_by]
+      "INSERT INTO master_pendidikan (nama, urutan_tingkat_pendidikan, is_deleted, created_by) VALUES ($1, $2, 0, $3) RETURNING id",
+      [pendidikan, urutan_tingkat_pendidikan, created_by]
     );
 
     return query;
   };
 
 
-  const update = (id, pendidikan, updated_by) => {
+  const update = (id, pendidikan, urutan_tingkat_pendidikan, updated_by) => {
     db.one(
-      "UPDATE master_pendidikan SET nama = $1, updated_by = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING id",
-      [pendidikan, updated_by, id]
+      "UPDATE master_pendidikan SET nama = $1, urutan_tingkat_pendidikan = $2, updated_by = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $4 RETURNING id",
+      [pendidikan, urutan_tingkat_pendidikan, updated_by, id]
     );
   };
 

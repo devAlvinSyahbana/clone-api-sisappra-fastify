@@ -23,6 +23,7 @@ module.exports = async function (fastify, opts) {
                   properties: {
                     id: { type: "number" },
                     pendidikan: { type: "string" },
+                    urutan_tingkat_pendidikan: { type: "number" },
                   },
                 },
               },
@@ -71,6 +72,7 @@ module.exports = async function (fastify, opts) {
                 properties: {
                   id: { type: "number" },
                   pendidikan: { type: "string" },
+                  urutan_tingkat_pendidikan: { type: "number" },
                 },
               },
             },
@@ -119,6 +121,7 @@ module.exports = async function (fastify, opts) {
                 properties: {
                   id: { type: "number" },
                   pendidikan: { type: "string" },
+                  urutan_tingkat_pendidikan: { type: "number" },
                 },
               },
             },
@@ -153,6 +156,7 @@ module.exports = async function (fastify, opts) {
           type: "object",
           properties: {
             pendidikan: { type: "string" },
+            urutan_tingkat_pendidikan: { type: "number" },
             created_by: { type: "number" },
           },
         },
@@ -169,10 +173,10 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {pendidikan,created_by} = request.body;
+      const {pendidikan, urutan_tingkat_pendidikan, created_by} = request.body;
 
       try {
-        await fastify.master_pendidikan.create(pendidikan,created_by);
+        await fastify.master_pendidikan.create(pendidikan, urutan_tingkat_pendidikan, created_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -198,6 +202,7 @@ module.exports = async function (fastify, opts) {
           type: "object",
           properties: {
             pendidikan: { type: "string" },
+            urutan_tingkat_pendidikan: { type: "number" },
             updated_by: { type: "number" },
           },
         },
@@ -215,10 +220,10 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const {pendidikan, updated_by } = request.body;
+      const {pendidikan, urutan_tingkat_pendidikan,  updated_by } = request.body;
 
       try {
-        await fastify.master_pendidikan.update(id,pendidikan,updated_by);
+        await fastify.master_pendidikan.update(id,pendidikan, urutan_tingkat_pendidikan, updated_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });

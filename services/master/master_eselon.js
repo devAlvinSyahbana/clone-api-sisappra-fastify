@@ -4,7 +4,7 @@ const master_eselon = (db) => {
 
   const find = () => {
     const query = db.any(
-      "SELECT id, nama as eselon FROM master_eselon WHERE is_deleted = 0 ORDER BY created_at DESC",
+      "SELECT id, nama as eselon, urutan_tingkat_eselon FROM master_eselon WHERE is_deleted = 0 ORDER BY created_at DESC",
     );
 
     return query;
@@ -12,7 +12,7 @@ const master_eselon = (db) => {
 
   const findone = (id) => {
     const query = db.one(
-      "SELECT id, nama as eselon FROM master_eselon WHERE id = $1 AND is_deleted = 0",
+      "SELECT id, nama as eselon, urutan_tingkat_eselon FROM master_eselon WHERE id = $1 AND is_deleted = 0",
       [id]
     );
 
@@ -20,30 +20,30 @@ const master_eselon = (db) => {
   };
 
   const findone_by_eselon = (eselon) => {
-    let a = "%" + eselon;
+    let a = eselon;
 
     const query = db.one(
-      "SELECT id, nama as eselon FROM master_eselon WHERE nama ilike $1 AND is_deleted = 0",
+      "SELECT id, nama as eselon, urutan_tingkat_eselon FROM master_eselon WHERE nama ilike $1 AND is_deleted = 0",
       [a]
     );
 
     return query;
   };
 
-  const create = async(eselon, created_by) => {
+  const create = async(eselon, urutan_tingkat_eselon, created_by) => {
     const query = db.one(
-      "INSERT INTO master_eselon (nama, is_deleted, created_by) VALUES ($1, 0, $2) RETURNING id",
-      [eselon, created_by]
+      "INSERT INTO master_eselon (nama, urutan_tingkat_eselon, is_deleted, created_by) VALUES ($1, $2, 0, $3) RETURNING id",
+      [eselon, urutan_tingkat_eselon, created_by]
     );
 
     return query;
   };
 
 
-  const update = (id, eselon, updated_by) => {
+  const update = (id, eselon, urutan_tingkat_eselon, updated_by) => {
     db.one(
-      "UPDATE master_eselon SET nama = $1, updated_by = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING id",
-      [eselon, updated_by, id]
+      "UPDATE master_eselon SET nama = $1, urutan_tingkat_eselon = $2, updated_by = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $4 RETURNING id",
+      [eselon, updated_by, urutan_tingkat_eselon, id]
     );
   };
 

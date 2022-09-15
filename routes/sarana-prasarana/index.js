@@ -1,5 +1,8 @@
 const sarana_prasarana = require("../../services/sarana_prasarana");
 const multer = require("fastify-multer");
+const XLSX = require("xlsx");
+const path = require("path");
+const fs = require("fs");
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "/uploads/sarana_prasarana");
@@ -521,47 +524,21 @@ module.exports = async function (fastify, opts) {
             description: "Success Response",
             type: "object",
             properties: {
-              jenis_sarana_prasarana: {
-                type: "string",
-              },
-              status_sarana_prasarana: {
-                type: "string",
-              },
-              jumlah: {
-                type: "number",
-              },
-              kondisi: {
-                type: "string",
-              },
-              keterangan: {
-                type: "string",
-              },
-              file_dokumentasi: {
-                type: "string",
-              },
+              message: { type: "string" },
+              code: { type: "string" },
             },
           },
         },
       },
     },
     async (request, reply) => {
-      const {
-        jenis_sarana_prasarana,
-        status_sarana_prasarana,
-        jumlah,
-        kondisi,
-        keterangan,
-        file_dokumentasi,
-      } = request.body;
-      const exec = await fastify.sarana_prasarana.create(
-        jenis_sarana_prasarana,
-        status_sarana_prasarana,
-        jumlah,
-        kondisi,
-        keterangan,
-        file_dokumentasi
-      );
-      reply.code(201).send(exec);
+      const { jenis_sarana_prasarana,status_sarana_prasarana,jumlah,kondisi,keterangan,file_dokumentasi,created_by} = request.body;
+      try {
+        await fastify.sarana_prasarana.create( jenis_sarana_prasarana,status_sarana_prasarana,jumlah,kondisi,keterangan,file_dokumentasi,created_by);
+        reply.send({ message: "success", code: 200 });
+      } catch (error) {
+        reply.send({ message: error.message, code: 500 });
+      }
     }
   );
 
@@ -699,6 +676,105 @@ module.exports = async function (fastify, opts) {
       try {
         await fastify.login.del(id, deleted_by);
         reply.send({ message: "success", code: 204 });
+      } catch (error) {
+        reply.send({ message: error.message, code: 500 });
+      }
+    }
+  );
+
+  fastify.get(
+    "/unduh",
+    {
+      schema: {
+        description:
+          "Endpoint ini digunakan untuk mengunduh seluruh data sarana dan prasarana",
+        tags: ["sarana_prasarana"],
+        querystring: {
+          type: "object",
+          properties: {
+            jenis_sarana_prasarana: {
+              type: "integer",
+            },
+            status_sarana_prasarana: {
+              type: "integer",
+            },
+            kondisi_sarana_prasarana: {
+              type: "integer",
+            },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "string",
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        jenis_sarana_prasarana,
+        status_sarana_prasarana,
+        kondisi_sarana_prasarana,
+      } = request.query;
+      let qwhere = "";
+      if (jenis_sarana_prasarana) {
+        qwhere += ` AND sp.jenis_sarana_prasarana = ${jenis_sarana_prasarana}`;
+      }
+      if (status_sarana_prasarana) {
+        qwhere += ` AND sp.status_sarana_prasarana = ${status_sarana_prasarana}`;
+      }
+      if (kondisi_sarana_prasarana) {
+        qwhere += ` AND sp.kondisi = ${kondisi_sarana_prasarana}`;
+      }
+      let headerData = [];
+      let data = [];
+      try {
+        const wb = XLSX.utils.book_new();
+        // Definisikan header
+          headerData = [
+            //data pribadi
+            "Jenis Sarana & Prasarana",
+            "Status Sarana & Prasarana",
+            "Jumlah",
+            "Kondisi",
+            "Keterangan",
+          ];
+
+          const getData = await fastify.sarana_prasarana.unduh(qwhere);
+          const convertData = getData.map(function (item) {
+            return Object.values(item);
+          });
+          data = convertData;
+
+        // Definisikan rows untuk ditulis ke dalam spreadsheet
+        const wsDataKepegawaian = [headerData, ...data];
+        // Buat Workbook
+        const fileName = "DATA SARANA DAN PRASARANA";
+        wb.Props = {
+          Title: fileName,
+          Author: "SISAPPRA - SARANA DAN PRASARANA",
+          CreatedDate: new Date(),
+        };
+        // Buat Sheet
+        wb.SheetNames.push("DATA SARANA PRASARANA");
+        // Buat Sheet dengan Data
+        const ws = XLSX.utils.aoa_to_sheet(wsDataKepegawaian);
+        // const ws = XLSX.utils.aoa_to_sheet(wsData);
+        wb.Sheets["DATA SARANA PRASARANA"] = ws;
+
+        const wopts = { bookType: "xlsx", bookSST: false, type: "buffer" };
+        const wBuffer = XLSX.write(wb, wopts);
+
+        reply.header(
+          "Content-Type",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
+        reply.header(
+          "Content-Disposition",
+          "attachment; filename=" + `${fileName}.xlsx`
+        );
+        reply.send(wBuffer);
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
       }
