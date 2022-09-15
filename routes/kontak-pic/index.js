@@ -24,8 +24,7 @@ module.exports = async function (fastify, opts) {
                   type: "object",
                   properties: {
                     id: { type: "number" },
-                    nama: { type: "string" },
-                    telepon: { type: "string" },
+                    email: { type: "string" },
                     status_pic: { type: "number" },
                   },
                 }
@@ -75,8 +74,7 @@ module.exports = async function (fastify, opts) {
                 type: "object",
                 properties: {
                   id: { type: "number" },
-                  nama: { type: "string" },
-                  telepon: { type: "string" },
+                  email: { type: "string" },
                   status_pic: { type: "number" },
                 },
               },
@@ -125,8 +123,7 @@ module.exports = async function (fastify, opts) {
                 type: "object",
                 properties: {
                   id: { type: "number" },
-                  nama: { type: "string" },
-                  telepon: { type: "string" },
+                  email: { type: "string" },
                   status_pic: { type: "number" },
                 },
               },
@@ -161,7 +158,7 @@ module.exports = async function (fastify, opts) {
           description: "Payload for creating a kontak pic",
           type: "object",
           properties: {
-            nama: { type: "string" },
+            email: { type: "string" },
             telepon: { type: "string" },
             created_by: { type: "number" },
           },
@@ -179,12 +176,12 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { nama, telepon, created_by } = request.body;
+      const { email, created_by } = request.body;
 
       try {
         await fastify.kontak_pic.create(
-            nama,
-            telepon, 
+            email,
+         
             created_by
         );
         reply.send({ message: "success", code: 200 });
@@ -212,7 +209,7 @@ module.exports = async function (fastify, opts) {
           description: "Payload for updating a kontak pic",
           type: "object",
           properties: {
-            nama: { type: "string" },
+            email: { type: "string" },
             telepon: { type: "string" },
             updated_by: { type: "number" },
           },
@@ -231,16 +228,10 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const { nama,telepon, updated_by } = request.body;
+      const { email, updated_by } = request.body;
 
       try {
-        await fastify.kontak_pic.update(
-          id,
-          nama,
-          telepon, 
-        
-          updated_by
-        );
+        await fastify.kontak_pic.update(id,email,updated_by);
   
         reply.send({ message: "success", code: 200 });
       } catch (error) {
