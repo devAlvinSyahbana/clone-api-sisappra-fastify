@@ -20,11 +20,9 @@ const master_eselon = (db) => {
   };
 
   const findone_by_eselon = (eselon) => {
-    let a = eselon;
-
     const query = db.one(
       "SELECT id, nama as eselon, urutan_tingkat_eselon FROM master_eselon WHERE nama ilike $1 AND is_deleted = 0",
-      [a]
+      [eselon]
     );
 
     return query;
