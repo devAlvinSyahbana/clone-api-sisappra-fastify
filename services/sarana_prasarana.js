@@ -7,7 +7,6 @@ const sarana_prasarana = (db) => {
     jumlah,
     kondisi,
     keterangan,
-    file_dokumentasi
   ) => {
     const query = db.one(
       "INSERT INTO sarana_prasarana (jenis_sarana_prasarana, status_sarana_prasarana, jumlah, kondisi, keterangan, file_dokumentasi) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
@@ -17,23 +16,9 @@ const sarana_prasarana = (db) => {
         jumlah,
         kondisi,
         keterangan,
-        file_dokumentasi,
       ]
     );
 
-    return query;
-  };
-  const findFilter = () => {
-    const query = db.any(
-      "SELECT jenis_sarana_prasarana, status_sarana_prasarana, kondisi FROM sarana_prasarana ORDER BY created_at DESC"
-    );
-    return query;
-  };
-
-  const find = () => {
-    const query = db.any(
-      "select sp.id, jsp.jenis_sarana_prasarana, ssp.status_sarana_prasarana, sp.jumlah, ksp.kondisi_sarana_prasarana as kondisi , sp.keterangan, sp.file_dokumentasi as dokumentasi from sarana_prasarana sp left join jenis_sarana_prasarana jsp on sp.jenis_sarana_prasarana = jsp.id left join status_sarana_prasarana ssp on sp.status_sarana_prasarana  = ssp.id left join kondisi_sarana_prasarana ksp on sp.kondisi = ksp.id where sp.is_deleted = 0 order by sp.created_at DESC"
-    );
     return query;
   };
   const find_jenis_sarana_prasarana = (jenis_sarana_prasarana) => {
@@ -91,17 +76,30 @@ const sarana_prasarana = (db) => {
     jumlah,
     kondisi,
     keterangan,
-    file_dokumentasi,
     updated_by
   ) => {
     db.one(
-      "UPDATE sarana_prasarana SET jenis_sarana_prasarana = $1, status_sarana_prasarana =$2, jumlah =$3, kondisi =$4, keterangan =$5, file_dokumentasi =$6 updated_at = CURRENT_TIMESTAMP WHERE id = $7 RETURNING id",
+      "UPDATE sarana_prasarana SET jenis_sarana_prasarana = $1, status_sarana_prasarana = $2, jumlah =$3, kondisi = $4, keterangan = $5, updated_at = CURRENT_TIMESTAMP, updated_by = $6 WHERE id = $7 RETURNING id",
       [
         jenis_sarana_prasarana,
         status_sarana_prasarana,
         jumlah,
         kondisi,
         keterangan,
+        updated_by,
+        id,
+      ]
+    );
+  };
+
+  const updateFile = (
+    id,
+    file_dokumentasi,
+    updated_by
+  ) => {
+    db.one(
+      "UPDATE sarana_prasarana SET file_dokumentasi = $1, updated_at = CURRENT_TIMESTAMP, updated_by = $2 WHERE id = $3 RETURNING id",
+      [
         file_dokumentasi,
         updated_by,
         id,
@@ -116,13 +114,6 @@ const sarana_prasarana = (db) => {
     );
 
     return { id };
-  };
-
-  const post = () => {
-    const query = db.any(
-      "UPDATE * FROM sarana_prasarana ORDER BY created_at DESC"
-    );
-    return query;
   };
 
   const unduh = (qwhere) => {
@@ -143,15 +134,13 @@ const sarana_prasarana = (db) => {
     create,
     update,
     del,
-    find,
     find_jenis_sarana_prasarana,
     find_status_sarana_prasarana,
     find_kondisi_sarana_prasarana,
     filter,
-    findFilter,
-    post,
     countAllFilter,
     unduh,
+    updateFile
   };
 };
 

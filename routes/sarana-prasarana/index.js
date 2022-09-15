@@ -1,200 +1,37 @@
 const sarana_prasarana = require("../../services/sarana_prasarana");
 const multer = require("fastify-multer");
 const XLSX = require("xlsx");
-const path = require("path");
-const fs = require("fs");
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "/uploads/sarana_prasarana");
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname + "-" + Date.now());
-  },
-});
-const upload = multer({ storage: storage });
 
 module.exports = async function (fastify, opts) {
   fastify.register(sarana_prasarana);
   fastify.register(multer.contentParser);
+  //------------ Define the Storage to Store files------------
+  var filename = "";
+  const storage = multer.diskStorage({
+    destination: async (req, file, cb) => {
+      let fileFormat = file.mimetype.split("/");
+      let dateTimestamp = Date.now();
+      filename =
+        dateTimestamp +
+        "-" +
+        file.fieldname +
+        "." +
+        fileFormat[fileFormat.length - 1];
 
-  fastify.get(
-    "/find",
-    {
-      schema: {
-        description: "This is an endpoint for fetching all sarana_prasarana",
-        tags: ["sarana_prasarana"],
-        response: {
-          200: {
-            description: "Success Response",
-            type: "object",
-            properties: {
-              message: { type: "string" },
-              code: { type: "string" },
-              data: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    jenis_sarana_prasarana: { type: "string" },
-                    status_sarana_prasarana: { type: "string" },
-                    jumlah: { type: "number" },
-                    kondisi: { type: "string" },
-                    keterangan: { type: "string" },
-                    dokumentasi: { type: "string" },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      return cb(null, "uploads/sarana_prasarana");
     },
-    async (request, reply) => {
-      const exec = await fastify.sarana_prasarana.find();
-
-      try {
-        if (exec) {
-          reply.send({ message: "success", code: 200, data: exec });
-        } else {
-          reply.send({ message: "success", code: 204 });
-        }
-      } catch (error) {
-        reply.send({ message: error.message, code: 500 });
-      }
-    }
-  );
-
-  fastify.get(
-    "/find-jenis-sarana-prasarana",
-    {
-      schema: {
-        description:
-          "This is an endpoint for fetching all jenis-sarana-prasarana",
-        tags: ["sarana_prasarana"],
-        response: {
-          200: {
-            description: "Success Response",
-            type: "object",
-            properties: {
-              message: { type: "string" },
-              code: { type: "string" },
-              data: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    id: { type: "number" },
-                    jenis_sarana_prasarana: { type: "string" },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+    filename: (req, file, cb) => {
+      cb(null, filename);
     },
-    async (request, reply) => {
-      const exec = await fastify.sarana_prasarana.find_jenis_sarana_prasarana();
+  });
 
-      try {
-        if (exec) {
-          reply.send({ message: "success", code: 200, data: exec });
-        } else {
-          reply.send({ message: "success", code: 204 });
-        }
-      } catch (error) {
-        reply.send({ message: error.message, code: 500 });
-      }
-    }
-  );
-  fastify.get(
-    "/find-kondisi-sarana-prasarana",
-    {
-      schema: {
-        description:
-          "This is an endpoint for fetching all kondisi-sarana-prasarana",
-        tags: ["sarana_prasarana"],
-        response: {
-          200: {
-            description: "Success Response",
-            type: "object",
-            properties: {
-              message: { type: "string" },
-              code: { type: "string" },
-              data: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    id: { type: "number" },
-                    kondisi_sarana_prasarana: { type: "string" },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    async (request, reply) => {
-      const exec =
-        await fastify.sarana_prasarana.find_kondisi_sarana_prasarana();
+  const upload = multer({
+    storage: storage,
+  });
+  function truePath(path) {
+    return path.replace(/\\/g, "/");
+  }
 
-      try {
-        if (exec) {
-          reply.send({ message: "success", code: 200, data: exec });
-        } else {
-          reply.send({ message: "success", code: 204 });
-        }
-      } catch (error) {
-        reply.send({ message: error.message, code: 500 });
-      }
-    }
-  );
-  fastify.get(
-    "/find-status-sarana-prasarana",
-    {
-      schema: {
-        description:
-          "This is an endpoint for fetching all status-sarana-prasarana",
-        tags: ["sarana_prasarana"],
-        response: {
-          200: {
-            description: "Success Response",
-            type: "object",
-            properties: {
-              message: { type: "string" },
-              code: { type: "string" },
-              data: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    id: { type: "number" },
-                    status_sarana_prasarana: { type: "string" },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    async (request, reply) => {
-      const exec =
-        await fastify.sarana_prasarana.find_status_sarana_prasarana();
-
-      try {
-        if (exec) {
-          reply.send({ message: "success", code: 200, data: exec });
-        } else {
-          reply.send({ message: "success", code: 204 });
-        }
-      } catch (error) {
-        reply.send({ message: error.message, code: 500 });
-      }
-    }
-  );
   fastify.get(
     "/findjenis/:jenis_sarana_prasarana",
     {
@@ -455,40 +292,6 @@ module.exports = async function (fastify, opts) {
     }
   );
 
-  fastify.get(
-    "/findFilter",
-    {
-      schema: {
-        description: "This is an endpoint for fetching all sarana_prasarana",
-        tags: ["sarana_prasarana"],
-        response: {
-          200: {
-            description: "Success Response",
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                jenis_sarana_prasarana: {
-                  type: "string",
-                },
-                status_sarana_prasarana: {
-                  type: "string",
-                },
-                kondisi: {
-                  type: "string",
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    async (request, reply) => {
-      const exec = await fastify.sarana_prasarana.findFilter();
-      return exec;
-    }
-  );
-
   fastify.post(
     "/create",
     {
@@ -514,7 +317,7 @@ module.exports = async function (fastify, opts) {
             keterangan: {
               type: "string",
             },
-            file_dokumentasi: {
+            created_by: {
               type: "string",
             },
           },
@@ -526,50 +329,61 @@ module.exports = async function (fastify, opts) {
             properties: {
               message: { type: "string" },
               code: { type: "string" },
+              data: {
+                type: "object",
+                properties: {
+                  return_id: { type: "number" },
+                },
+              },
             },
           },
         },
       },
     },
     async (request, reply) => {
-      const { jenis_sarana_prasarana,status_sarana_prasarana,jumlah,kondisi,keterangan,file_dokumentasi,created_by} = request.body;
+      const {
+        jenis_sarana_prasarana,
+        status_sarana_prasarana,
+        jumlah,
+        kondisi,
+        keterangan,
+        created_by,
+      } = request.body;
       try {
-        await fastify.sarana_prasarana.create( jenis_sarana_prasarana,status_sarana_prasarana,jumlah,kondisi,keterangan,file_dokumentasi,created_by);
-        reply.send({ message: "success", code: 200 });
+        const { id } = await fastify.sarana_prasarana.create(
+          jenis_sarana_prasarana,
+          status_sarana_prasarana,
+          jumlah,
+          kondisi,
+          keterangan,
+          created_by
+        );
+        reply.send({ message: "success", code: 200, data: { return_id: id } });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
       }
     }
   );
 
-  // fastify.post("/uploadSchema", {
-  //   schema: {
-  //     tags: ["sarana_prasarana"],
-  //     consumes: ["multipart/form-data"],
-  //     body: {
-  //       type: "object",
-  //       properties: {
-  //         fileName: {
-  //           type: "array",
-  //           items: {
-  //             type: "string",
-  //             format: "binary",
-  //           },
-  //         },
-  //       },
-  //       required: ["fileName"],
-  //     },
-  //   },
-  //   handler: (request, reply) => {
-  //   const {
-  //     file
-  //   } = request.body.file;
-  //   console.log(file);
-  //   reply.send({
-  //     file
-  //   });
-  // },
-  // });
+  fastify.post(
+    "/upload-file/:id",
+    {
+      preHandler: upload.fields([{ name: "file_dokumentasi", maxCount: 1 }]),
+    },
+    async (request, reply) => {
+      console.log("request.files", request.files);
+      const { id } = request.params;
+      const file_dokumentasi = request.files["file_dokumentasi"]
+        ? await truePath(request.files["file_dokumentasi"][0].path)
+        : "";
+      try {
+        await fastify.sarana_prasarana.updateFile(id, file_dokumentasi, created_by);
+        reply.send({ message: "success", code: 200 });
+      } catch (error) {
+        reply.send({ message: error.message, code: 500 });
+      }
+    }
+  );
 
   fastify.put(
     "/update/:id",
@@ -596,8 +410,7 @@ module.exports = async function (fastify, opts) {
             jumlah: { type: "number" },
             kondisi: { type: "string" },
             keterangan: { type: "string" },
-            file_dokumentasi: { type: "string" },
-            updated_by: { type: "number" },
+            updated_by: { type: "string" },
           },
         },
         response: {
@@ -620,7 +433,6 @@ module.exports = async function (fastify, opts) {
         jumlah,
         kondisi,
         keterangan,
-        file_dokumentasi,
         updated_by,
       } = request.body;
 
@@ -632,7 +444,6 @@ module.exports = async function (fastify, opts) {
           jumlah,
           kondisi,
           keterangan,
-          file_dokumentasi,
           updated_by
         );
 
@@ -657,6 +468,15 @@ module.exports = async function (fastify, opts) {
             id: { type: "number" },
           },
         },
+        body: {
+          description: "Payload for delete",
+          type: "object",
+          properties: {
+            deleted_by: {
+              type: "string",
+            },
+          },
+        },
         response: {
           204: {
             description: "Success Response",
@@ -674,7 +494,7 @@ module.exports = async function (fastify, opts) {
       const { deleted_by } = request.body;
 
       try {
-        await fastify.login.del(id, deleted_by);
+        await fastify.sarana_prasarana.del(id, deleted_by);
         reply.send({ message: "success", code: 204 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -732,20 +552,20 @@ module.exports = async function (fastify, opts) {
       try {
         const wb = XLSX.utils.book_new();
         // Definisikan header
-          headerData = [
-            //data pribadi
-            "Jenis Sarana & Prasarana",
-            "Status Sarana & Prasarana",
-            "Jumlah",
-            "Kondisi",
-            "Keterangan",
-          ];
+        headerData = [
+          //data pribadi
+          "Jenis Sarana & Prasarana",
+          "Status Sarana & Prasarana",
+          "Jumlah",
+          "Kondisi",
+          "Keterangan",
+        ];
 
-          const getData = await fastify.sarana_prasarana.unduh(qwhere);
-          const convertData = getData.map(function (item) {
-            return Object.values(item);
-          });
-          data = convertData;
+        const getData = await fastify.sarana_prasarana.unduh(qwhere);
+        const convertData = getData.map(function (item) {
+          return Object.values(item);
+        });
+        data = convertData;
 
         // Definisikan rows untuk ditulis ke dalam spreadsheet
         const wsDataKepegawaian = [headerData, ...data];
