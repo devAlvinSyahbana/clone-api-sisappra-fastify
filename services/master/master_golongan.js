@@ -4,7 +4,7 @@ const master_golongan = (db) => {
 
   const find = () => {
     const query = db.any(
-      "SELECT id, nama as golongan FROM master_golongan WHERE is_deleted = 0 ORDER BY created_at DESC",
+      "SELECT id, urutan_tingkat_golongan, nama as golongan FROM master_golongan WHERE is_deleted = 0 ORDER BY created_at DESC",
     );
 
     return query;
@@ -12,7 +12,7 @@ const master_golongan = (db) => {
 
   const findone = (id) => {
     const query = db.one(
-      "SELECT id, nama as golongan FROM master_golongan WHERE id = $1 AND is_deleted = 0",
+      "SELECT id, urutan_tingkat_golongan, nama as golongan FROM master_golongan WHERE id = $1 AND is_deleted = 0",
       [id]
     );
 
@@ -20,30 +20,30 @@ const master_golongan = (db) => {
   };
 
   const findone_by_golongan = (golongan) => {
-    let a = "%" + golongan;
+    let a = golongan;
 
     const query = db.one(
-      "SELECT id, nama as golongan FROM master_golongan WHERE nama ilike $1 AND is_deleted = 0",
+      "SELECT id, urutan_tingkat_golongan, nama as golongan FROM master_golongan WHERE nama ilike $1 AND is_deleted = 0",
       [a]
     );
 
     return query;
   };
 
-  const create = async(golongan, created_by) => {
+  const create = async(golongan, urutan_tingkat_golongan, created_by) => {
     const query = db.one(
-      "INSERT INTO master_golongan (nama, is_deleted, created_by) VALUES ($1, 0, $2) RETURNING id",
-      [golongan, created_by]
+      "INSERT INTO master_golongan (nama, urutan_tingkat_golongan, is_deleted, created_by) VALUES ($1, $2, 0, $3) RETURNING id",
+      [golongan, urutan_tingkat_golongan, created_by]
     );
 
     return query;
   };
 
 
-  const update = (id, golongan, updated_by) => {
+  const update = (id, golongan, urutan_tingkat_golongan, updated_by) => {
     db.one(
-      "UPDATE master_golongan SET nama = $1, updated_by = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING id",
-      [golongan, updated_by, id]
+      "UPDATE master_golongan SET nama = $1, urutan_tingkat_golongan = $2, updated_by = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $4 RETURNING id",
+      [golongan, urutan_tingkat_golongan, updated_by, id]
     );
   };
 

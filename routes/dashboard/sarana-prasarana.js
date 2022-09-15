@@ -1,4 +1,4 @@
-const sarana_prasarana = require("../../../services/dashboard/sarana-prasarana/sarana-prasarana");
+const sarana_prasarana = require("../../services/dashboard/sarana-prasarana");
 
 module.exports = async function (fastify, opts) {
     fastify.register(sarana_prasarana);

@@ -1,8 +1,6 @@
 const kepegawaian_pns = require("../../services/kepegawaian/kepegawaian_pns");
 const kepegawaian_non_pns = require("../../services/kepegawaian/kepegawaian_non_pns");
 const XLSX = require("xlsx");
-const path = require("path");
-const fs = require("fs");
 
 module.exports = async function (fastify, opts) {
   fastify.register(kepegawaian_pns);
@@ -36,13 +34,16 @@ module.exports = async function (fastify, opts) {
       const { status } = request.query;
       let headerKepegawaian = [];
       let dataKepegawaian = [];
-      //   let headerKeluarga = [];
-      //   let headerPendidikan = [];
+      let headerKeluarga = [];
+      let dataKeluarga = [];
+      let headerPendidikan = [];
+      let dataPendidikan = [];
       try {
         const wb = XLSX.utils.book_new();
         // Definisikan header
         if (status == "PNS") {
           headerKepegawaian = [
+            "Id",
             //data pribadi
             "Nama",
             "Tempat Lahir",
@@ -76,6 +77,7 @@ module.exports = async function (fastify, opts) {
             "Eselon",
             "Tempat Tugas",
             "Subag/Seksi/Kecamatan",
+            "Kelurahan",
             "Status Pegawai",
             "Nomor Rekening",
             "Nomor KARPEG",
@@ -88,142 +90,483 @@ module.exports = async function (fastify, opts) {
             "Tanggal SK PNS",
             "Nomor SK Pangkat Terakhir",
             "Tanggal SK Pangkat",
+            "Diklat Pol PP Dasar",
+            "Nomor Sertifikat Diklat Pol PP Dasar",
+            "Tanggal Sertifikat Diklat Pol PP Dasar",
             "Diklat Struktural",
             "Nomor Sertifikat Diklat Struktural",
             "Tanggal Sertifikat Diklat Struktural",
             "Diklat PPNS",
             "Nomor Sertifikat Diklat PPNS",
             "Tanggal Sertifikat Diklat PPNS",
+            "Diklat Fungsional Pol PP",
+            "Nomor Sertifikat Diklat Fungsional Pol PP",
+            "Tanggal Sertifikat Diklat Fungsional Pol PP",
+          ];
+          headerKeluarga = [
+            "Keluarga Dari",
+            "Nama Keluarga",
+            "Hubungan Keluarga",
+            "Tempat, Tanggal Lahir",
+            "Jenis Kelamin",
+          ];
+          headerPendidikan = [
+            "Pendidikan Dari",
+            "Jenis Pendidikan",
+            "Nama Sekolah",
+            "Nomor Ijazah",
+            "Tanggal Ijazah",
+            "Jurusan",
+            "Fakultas",
           ];
 
           const getData = await fastify.kepegawaian_pns.getDataUnduh();
-          const convertData = getData.map(function (item) {
+          const convertData = await getData.map(function (item) {
             return Object.values(item);
           });
           dataKepegawaian = convertData;
+
+          const employeDataKeluarga = await getData.filter((item) => {
+            return { id: item.id, nama: item.nama };
+          });
+          if (employeDataKeluarga) {
+            let r = 2;
+            for (const entity of employeDataKeluarga) {
+              const getDataKeluarga =
+                await fastify.kepegawaian_pns.findKeluarga(entity.id);
+              if (getDataKeluarga.length > 0) {
+                for (let i = 0; i < getDataKeluarga.length; i++) {
+                  const klrg = getDataKeluarga[i];
+                  const date_born = new Date(klrg.tgl_lahir);
+                  if (i === 0) {
+                    dataKeluarga.push([
+                      entity.nama,
+                      klrg.nama,
+                      klrg.hubungan,
+                      `${klrg.tempat_lahir}, ${date_born.toLocaleDateString()}`,
+                      klrg.jenis_kelamin,
+                    ]);
+                  } else {
+                    dataKeluarga.push([
+                      "",
+                      klrg.nama,
+                      klrg.hubungan,
+                      `${klrg.tempat_lahir}, ${date_born.toLocaleDateString()}`,
+                      klrg.jenis_kelamin,
+                    ]);
+                  }
+                }
+              } else {
+                dataKeluarga.push([entity.nama, "-", "-", "-", "-"]);
+              }
+              r++;
+            }
+          }
+
+          const employeDataPendidikan = await getData.filter((item) => {
+            return { id: item.id, nama: item.nama };
+          });
+
+          if (employeDataPendidikan) {
+            let r = 2;
+            for (const entity of employeDataPendidikan) {
+              const getDataPendidikan =
+                await fastify.kepegawaian_pns.findPendidikan(entity.id);
+              if (getDataPendidikan.length > 0) {
+                for (let i = 0; i < getDataPendidikan.length; i++) {
+                  const pendik = getDataPendidikan[i];
+                  const date_ijazah = new Date(pendik.tgl_ijazah);
+                  if (i === 0) {
+                    dataPendidikan.push([
+                      entity.nama,
+                      pendik.jenis_pendidikan,
+                      pendik.nama_sekolah,
+                      pendik.nomor_ijazah,
+                      date_ijazah.toLocaleDateString(),
+                      pendik.jurusan,
+                      pendik.fakultas,
+                    ]);
+                  } else {
+                    dataPendidikan.push([
+                      "",
+                      pendik.jenis_pendidikan,
+                      pendik.nama_sekolah,
+                      pendik.nomor_ijazah,
+                      date_ijazah.toLocaleDateString(),
+                      pendik.jurusan,
+                      pendik.fakultas,
+                    ]);
+                  }
+                }
+              } else {
+                dataPendidikan.push([
+                  entity.nama,
+                  "-",
+                  "-",
+                  "-",
+                  "-",
+                  "-",
+                  "-",
+                ]);
+              }
+              r++;
+            }
+          }
         }
-        // if (status == "PTT") {
-        //   headerKepegawaian = [
-        //     //data pribadi
-        //     "Nama",
-        //     "Tempat Lahir",
-        //     "Tanggal Lahir",
-        //     "Jenis Kelamin",
-        //     "Agama",
-        //     "NIK",
-        //     "Nomor KK",
-        //     "Status Perkawinan",
-        //     "Nomor HP",
-        //     "Alamat Sesuai KTP",
-        //     "RT/RW Sesuai KTP",
-        //     "Provinsi Sesuai KTP",
-        //     "Kab/Kota Sesuai KTP",
-        //     "Kecamatan Sesuai KTP",
-        //     "Kecamatan Sesuai KTP",
-        //     "Kelurahan Sesuai KTP",
-        //     "Alamat Domisili",
-        //     "RT/RW Domisili",
-        //     "Provinsi Domisili",
-        //     "Kab/Kota Domisili",
-        //     "Kecamatan Domisili",
-        //     "Kecamatan Domisili",
-        //     "Kelurahan Domisili",
-        //     //data kepegawaian
-        //     "NRK",
-        //     "NPTT",
-        //     "Pangkat",
-        //     "Golongan",
-        //     "TMT Pangkat",
-        //     "Pendidikan Pada SK",
-        //     "Jabatan",
-        //     "Eselon",
-        //     "Tempat Tugas",
-        //     "Subag/Seksi/Kecamatan",
-        //     "Status Pegawai",
-        //     "Nomor Rekening",
-        //     "Nomor KARPEG",
-        //     "Nomor Karis/Karsu",
-        //     "Nomor TASPEN",
-        //     "Nomor NPWP",
-        //     "Nomor BPJS/ASKES",
-        //     "TMT CPNS",
-        //     "TMT PNS",
-        //     "Tanggal SK PNS",
-        //     "Nomor SK Pangkat Terakhir",
-        //     "Tanggal SK Pangkat",
-        //     "Diklat Struktural",
-        //     "Nomor Sertifikat Diklat Struktural",
-        //     "Tanggal Sertifikat Diklat Struktural",
-        //     "Diklat PPNS",
-        //     "Nomor Sertifikat Diklat PPNS",
-        //     "Tanggal Sertifikat Diklat PPNS",
-        //   ];
-        // }
-        // if (status == "PJLP") {
-        //   headerKepegawaian = [
-        //     //data pribadi
-        //     "Nama",
-        //     "Tempat Lahir",
-        //     "Tanggal Lahir",
-        //     "Jenis Kelamin",
-        //     "Agama",
-        //     "NIK",
-        //     "Nomor KK",
-        //     "Status Perkawinan",
-        //     "Nomor HP",
-        //     "Alamat Sesuai KTP",
-        //     "RT/RW Sesuai KTP",
-        //     "Provinsi Sesuai KTP",
-        //     "Kab/Kota Sesuai KTP",
-        //     "Kecamatan Sesuai KTP",
-        //     "Kecamatan Sesuai KTP",
-        //     "Kelurahan Sesuai KTP",
-        //     "Alamat Domisili",
-        //     "RT/RW Domisili",
-        //     "Provinsi Domisili",
-        //     "Kab/Kota Domisili",
-        //     "Kecamatan Domisili",
-        //     "Kecamatan Domisili",
-        //     "Kelurahan Domisili",
-        //     //data kepegawaian
-        //     "NRK",
-        //     "NPJLP",
-        //     "Pangkat",
-        //     "Golongan",
-        //     "TMT Pangkat",
-        //     "Pendidikan Pada SK",
-        //     "Jabatan",
-        //     "Eselon",
-        //     "Tempat Tugas",
-        //     "Subag/Seksi/Kecamatan",
-        //     "Status Pegawai",
-        //     "Nomor Rekening",
-        //     "Nomor KARPEG",
-        //     "Nomor Karis/Karsu",
-        //     "Nomor TASPEN",
-        //     "Nomor NPWP",
-        //     "Nomor BPJS/ASKES",
-        //     "TMT CPNS",
-        //     "TMT PNS",
-        //     "Tanggal SK PNS",
-        //     "Nomor SK Pangkat Terakhir",
-        //     "Tanggal SK Pangkat",
-        //     "Diklat Struktural",
-        //     "Nomor Sertifikat Diklat Struktural",
-        //     "Tanggal Sertifikat Diklat Struktural",
-        //     "Diklat PPNS",
-        //     "Nomor Sertifikat Diklat PPNS",
-        //     "Tanggal Sertifikat Diklat PPNS",
-        //   ];
-        // }
+        if (status == "PTT") {
+          headerKepegawaian = [
+            "Id",
+            //data pribadi
+            "Nama",
+            "Tempat Lahir",
+            "Tanggal Lahir",
+            "Jenis Kelamin",
+            "Agama",
+            "NIK",
+            "Nomor KK",
+            "Status Perkawinan",
+            "Nomor HP",
+            "Alamat Sesuai KTP",
+            "RT/RW Sesuai KTP",
+            "Provinsi Sesuai KTP",
+            "Kab/Kota Sesuai KTP",
+            "Kecamatan Sesuai KTP",
+            "Kelurahan Sesuai KTP",
+            "Alamat Domisili",
+            "RT/RW Domisili",
+            "Provinsi Domisili",
+            "Kab/Kota Domisili",
+            "Kecamatan Domisili",
+            "Kelurahan Domisili",
+            //data kepegawaian
+            "NPTT",
+            "NIP",
+            "Pangkat",
+            "Golongan",
+            "TMT Pangkat",
+            "Pendidikan Pada SK",
+            "Jabatan",
+            "Eselon",
+            "Tempat Tugas",
+            "Subag/Seksi/Kecamatan",
+            "Kelurahan",
+            "Status Pegawai",
+            "Nomor Rekening",
+            "Nomor KARPEG",
+            "Nomor Karis/Karsu",
+            "Nomor TASPEN",
+            "Nomor NPWP",
+            "Nomor BPJS/ASKES",
+            "TMT CPNS",
+            "TMT PNS",
+            "Tanggal SK PNS",
+            "Nomor SK Pangkat Terakhir",
+            "Tanggal SK Pangkat",
+            "Diklat Pol PP Dasar",
+            "Nomor Sertifikat Diklat Pol PP Dasar",
+            "Tanggal Sertifikat Diklat Pol PP Dasar",
+            "Diklat Struktural",
+            "Nomor Sertifikat Diklat Struktural",
+            "Tanggal Sertifikat Diklat Struktural",
+            "Diklat PPNS",
+            "Nomor Sertifikat Diklat PPNS",
+            "Tanggal Sertifikat Diklat PPNS",
+            "Diklat Fungsional Pol PP",
+            "Nomor Sertifikat Diklat Fungsional Pol PP",
+            "Tanggal Sertifikat Diklat Fungsional Pol PP",
+          ];
+          headerKeluarga = [
+            "Keluarga Dari",
+            "Nama Keluarga",
+            "Hubungan Keluarga",
+            "Tempat, Tanggal Lahir",
+            "Jenis Kelamin",
+          ];
+          headerPendidikan = [
+            "Pendidikan Dari",
+            "Jenis Pendidikan",
+            "Nama Sekolah",
+            "Nomor Ijazah",
+            "Tanggal Ijazah",
+            "Jurusan",
+            "Fakultas",
+          ];
+
+          const getData = await fastify.kepegawaian_non_pns.getDataUnduh(status);
+          const convertData = await getData.map(function (item) {
+            return Object.values(item);
+          });
+          dataKepegawaian = convertData;
+
+          const employeDataKeluarga = await getData.filter((item) => {
+            return { id: item.id, nama: item.nama };
+          });
+          if (employeDataKeluarga) {
+            let r = 2;
+            for (const entity of employeDataKeluarga) {
+              const getDataKeluarga =
+                await fastify.kepegawaian_non_pns.findKeluarga(entity.id);
+              if (getDataKeluarga.length > 0) {
+                for (let i = 0; i < getDataKeluarga.length; i++) {
+                  const klrg = getDataKeluarga[i];
+                  const date_born = new Date(klrg.tgl_lahir);
+                  if (i === 0) {
+                    dataKeluarga.push([
+                      entity.nama,
+                      klrg.nama,
+                      klrg.hubungan,
+                      `${klrg.tempat_lahir}, ${date_born.toLocaleDateString()}`,
+                      klrg.jenis_kelamin,
+                    ]);
+                  } else {
+                    dataKeluarga.push([
+                      "",
+                      klrg.nama,
+                      klrg.hubungan,
+                      `${klrg.tempat_lahir}, ${date_born.toLocaleDateString()}`,
+                      klrg.jenis_kelamin,
+                    ]);
+                  }
+                }
+              } else {
+                dataKeluarga.push([entity.nama, "-", "-", "-", "-"]);
+              }
+              r++;
+            }
+          }
+
+          const employeDataPendidikan = await getData.filter((item) => {
+            return { id: item.id, nama: item.nama };
+          });
+
+          if (employeDataPendidikan) {
+            let r = 2;
+            for (const entity of employeDataPendidikan) {
+              const getDataPendidikan =
+                await fastify.kepegawaian_non_pns.findPendidikan(entity.id);
+              if (getDataPendidikan.length > 0) {
+                for (let i = 0; i < getDataPendidikan.length; i++) {
+                  const pendik = getDataPendidikan[i];
+                  const date_ijazah = new Date(pendik.tgl_ijazah);
+                  if (i === 0) {
+                    dataPendidikan.push([
+                      entity.nama,
+                      pendik.jenis_pendidikan,
+                      pendik.nama_sekolah,
+                      pendik.nomor_ijazah,
+                      date_ijazah.toLocaleDateString(),
+                      pendik.jurusan,
+                      pendik.fakultas,
+                    ]);
+                  } else {
+                    dataPendidikan.push([
+                      "",
+                      pendik.jenis_pendidikan,
+                      pendik.nama_sekolah,
+                      pendik.nomor_ijazah,
+                      date_ijazah.toLocaleDateString(),
+                      pendik.jurusan,
+                      pendik.fakultas,
+                    ]);
+                  }
+                }
+              } else {
+                dataPendidikan.push([
+                  entity.nama,
+                  "-",
+                  "-",
+                  "-",
+                  "-",
+                  "-",
+                  "-",
+                ]);
+              }
+              r++;
+            }
+          }
+        }
+        if (status == "PJLP") {
+          headerKepegawaian = [
+            "Id",
+            //data pribadi
+            "Nama",
+            "Tempat Lahir",
+            "Tanggal Lahir",
+            "Jenis Kelamin",
+            "Agama",
+            "NIK",
+            "Nomor KK",
+            "Status Perkawinan",
+            "Nomor HP",
+            "Alamat Sesuai KTP",
+            "RT/RW Sesuai KTP",
+            "Provinsi Sesuai KTP",
+            "Kab/Kota Sesuai KTP",
+            "Kecamatan Sesuai KTP",
+            "Kelurahan Sesuai KTP",
+            "Alamat Domisili",
+            "RT/RW Domisili",
+            "Provinsi Domisili",
+            "Kab/Kota Domisili",
+            "Kecamatan Domisili",
+            "Kelurahan Domisili",
+            //data kepegawaian
+            "NPJLP",
+            "NIP",
+            "Pangkat",
+            "Golongan",
+            "TMT Pangkat",
+            "Pendidikan Pada SK",
+            "Jabatan",
+            "Eselon",
+            "Tempat Tugas",
+            "Subag/Seksi/Kecamatan",
+            "Kelurahan",
+            "Status Pegawai",
+            "Nomor Rekening",
+            "Nomor KARPEG",
+            "Nomor Karis/Karsu",
+            "Nomor TASPEN",
+            "Nomor NPWP",
+            "Nomor BPJS/ASKES",
+            "TMT CPNS",
+            "TMT PNS",
+            "Tanggal SK PNS",
+            "Nomor SK Pangkat Terakhir",
+            "Tanggal SK Pangkat",
+            "Diklat Pol PP Dasar",
+            "Nomor Sertifikat Diklat Pol PP Dasar",
+            "Tanggal Sertifikat Diklat Pol PP Dasar",
+            "Diklat Struktural",
+            "Nomor Sertifikat Diklat Struktural",
+            "Tanggal Sertifikat Diklat Struktural",
+            "Diklat PPNS",
+            "Nomor Sertifikat Diklat PPNS",
+            "Tanggal Sertifikat Diklat PPNS",
+            "Diklat Fungsional Pol PP",
+            "Nomor Sertifikat Diklat Fungsional Pol PP",
+            "Tanggal Sertifikat Diklat Fungsional Pol PP",
+          ];
+          headerKeluarga = [
+            "Keluarga Dari",
+            "Nama Keluarga",
+            "Hubungan Keluarga",
+            "Tempat, Tanggal Lahir",
+            "Jenis Kelamin",
+          ];
+          headerPendidikan = [
+            "Pendidikan Dari",
+            "Jenis Pendidikan",
+            "Nama Sekolah",
+            "Nomor Ijazah",
+            "Tanggal Ijazah",
+            "Jurusan",
+            "Fakultas",
+          ];
+
+          const getData = await fastify.kepegawaian_non_pns.getDataUnduh(status);
+          const convertData = await getData.map(function (item) {
+            return Object.values(item);
+          });
+          dataKepegawaian = convertData;
+
+          const employeDataKeluarga = await getData.filter((item) => {
+            return { id: item.id, nama: item.nama };
+          });
+          if (employeDataKeluarga) {
+            let r = 2;
+            for (const entity of employeDataKeluarga) {
+              const getDataKeluarga =
+                await fastify.kepegawaian_non_pns.findKeluarga(entity.id);
+              if (getDataKeluarga.length > 0) {
+                for (let i = 0; i < getDataKeluarga.length; i++) {
+                  const klrg = getDataKeluarga[i];
+                  const date_born = new Date(klrg.tgl_lahir);
+                  if (i === 0) {
+                    dataKeluarga.push([
+                      entity.nama,
+                      klrg.nama,
+                      klrg.hubungan,
+                      `${klrg.tempat_lahir}, ${date_born.toLocaleDateString()}`,
+                      klrg.jenis_kelamin,
+                    ]);
+                  } else {
+                    dataKeluarga.push([
+                      "",
+                      klrg.nama,
+                      klrg.hubungan,
+                      `${klrg.tempat_lahir}, ${date_born.toLocaleDateString()}`,
+                      klrg.jenis_kelamin,
+                    ]);
+                  }
+                }
+              } else {
+                dataKeluarga.push([entity.nama, "-", "-", "-", "-"]);
+              }
+              r++;
+            }
+          }
+
+          const employeDataPendidikan = await getData.filter((item) => {
+            return { id: item.id, nama: item.nama };
+          });
+
+          if (employeDataPendidikan) {
+            let r = 2;
+            for (const entity of employeDataPendidikan) {
+              const getDataPendidikan =
+                await fastify.kepegawaian_non_pns.findPendidikan(entity.id);
+              if (getDataPendidikan.length > 0) {
+                for (let i = 0; i < getDataPendidikan.length; i++) {
+                  const pendik = getDataPendidikan[i];
+                  const date_ijazah = new Date(pendik.tgl_ijazah);
+                  if (i === 0) {
+                    dataPendidikan.push([
+                      entity.nama,
+                      pendik.jenis_pendidikan,
+                      pendik.nama_sekolah,
+                      pendik.nomor_ijazah,
+                      date_ijazah.toLocaleDateString(),
+                      pendik.jurusan,
+                      pendik.fakultas,
+                    ]);
+                  } else {
+                    dataPendidikan.push([
+                      "",
+                      pendik.jenis_pendidikan,
+                      pendik.nama_sekolah,
+                      pendik.nomor_ijazah,
+                      date_ijazah.toLocaleDateString(),
+                      pendik.jurusan,
+                      pendik.fakultas,
+                    ]);
+                  }
+                }
+              } else {
+                dataPendidikan.push([
+                  entity.nama,
+                  "-",
+                  "-",
+                  "-",
+                  "-",
+                  "-",
+                  "-",
+                ]);
+              }
+              r++;
+            }
+          }
+        }
 
         // Definisikan rows untuk ditulis ke dalam spreadsheet
         const wsDataKepegawaian = [headerKepegawaian, ...dataKepegawaian];
+        const wsDataKeluarga = [headerKeluarga, ...dataKeluarga];
+        const wsDataPendidikan = [headerPendidikan, ...dataPendidikan];
         // Buat Workbook
         const fileName = "DATA KEPEGAWAIAN " + status;
         wb.Props = {
           Title: fileName,
-          Author: "SISAPPRA",
+          Author: "SISAPPRA - KEPEGAWAIAN",
           CreatedDate: new Date(),
         };
         // Buat Sheet
@@ -232,8 +575,12 @@ module.exports = async function (fastify, opts) {
         wb.SheetNames.push("DATA PENDIDIKAN");
         // Buat Sheet dengan Data
         const ws_kepegawaian = XLSX.utils.aoa_to_sheet(wsDataKepegawaian);
+        const ws_keluarga = XLSX.utils.aoa_to_sheet(wsDataKeluarga);
+        const ws_pendidikan = XLSX.utils.aoa_to_sheet(wsDataPendidikan);
         // const ws = XLSX.utils.aoa_to_sheet(wsData);
         wb.Sheets["DATA KEPEGAWAIAN"] = ws_kepegawaian;
+        wb.Sheets["DATA KELUARGA"] = ws_keluarga;
+        wb.Sheets["DATA PENDIDIKAN"] = ws_pendidikan;
 
         const wopts = { bookType: "xlsx", bookSST: false, type: "buffer" };
         const wBuffer = XLSX.write(wb, wopts);
@@ -247,197 +594,9 @@ module.exports = async function (fastify, opts) {
           "attachment; filename=" + `${fileName}.xlsx`
         );
         reply.send(wBuffer);
-        // reply.send("success");
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
       }
     }
   );
-
-  // fastify.post(
-  //   "/create",
-  //   {
-  //     schema: {
-  //       description: "This is an endpoint for creating a endpoint kepegawaian",
-  //       tags: ["endpoint kepegawaian"],
-  //       body: {
-  //         description: "Payload for creating a endpoint kepegawaian",
-  //         type: "object",
-  //         properties: {
-  //           nama: { type: "string" },
-  //           telepon: { type: "string" },
-  //           created_by: { type: "number" },
-  //         },
-  //       },
-  //       response: {
-  //         201: {
-  //           description: "Success Response",
-  //           type: "object",
-  //           properties: {
-  //             message: { type: "string" },
-  //             code: { type: "string" },
-  //           },
-  //         },
-  //       },
-  //     },
-  //   },
-  //   async (request, reply) => {
-  //     const { nama, telepon, created_by } = request.body;
-
-  //     try {
-  //       await fastify.kepegawaian_pns.create(nama, telepon, created_by);
-  //       reply.send({ message: "success", code: 200 });
-  //     } catch (error) {
-  //       reply.send({ message: error.message, code: 500 });
-  //     }
-  //   }
-  // );
-
-  // fastify.put(
-  //   "/update/:id",
-  //   {
-  //     schema: {
-  //       description:
-  //         "This is an endpoint for updating an existing endpoint kepegawaian",
-  //       tags: ["endpoint kepegawaian"],
-  //       params: {
-  //         description: "update endpoint kepegawaian by Id",
-  //         type: "object",
-  //         properties: {
-  //           id: { type: "number" },
-  //         },
-  //       },
-  //       body: {
-  //         description: "Payload for updating a endpoint kepegawaian",
-  //         type: "object",
-  //         properties: {
-  //           nama: { type: "string" },
-  //           telepon: { type: "string" },
-  //           updated_by: { type: "number" },
-  //         },
-  //       },
-  //       response: {
-  //         200: {
-  //           description: "Success Response",
-  //           type: "object",
-  //           properties: {
-  //             message: { type: "string" },
-  //             code: { type: "string" },
-  //           },
-  //         },
-  //       },
-  //     },
-  //   },
-  //   async (request, reply) => {
-  //     const { id } = request.params;
-  //     const { nama, telepon, updated_by } = request.body;
-
-  //     try {
-  //       await fastify.kepegawaian_pns.update(
-  //         id,
-  //         nama,
-  //         telepon,
-
-  //         updated_by
-  //       );
-
-  //       reply.send({ message: "success", code: 200 });
-  //     } catch (error) {
-  //       reply.send({ message: error.message, code: 500 });
-  //     }
-  //   }
-  // );
-
-  // fastify.put(
-  //   "/update-pic/:id",
-  //   {
-  //     schema: {
-  //       description:
-  //         "This is an endpoint for updating pic an existing endpoint kepegawaian",
-  //       tags: ["endpoint kepegawaian"],
-  //       params: {
-  //         description: "update pic endpoint kepegawaian by Id",
-  //         type: "object",
-  //         properties: {
-  //           id: { type: "number" },
-  //         },
-  //       },
-  //       body: {
-  //         description: "Payload for updating pic a endpoint kepegawaian",
-  //         type: "object",
-  //         properties: {
-  //           status_pic: { type: "number" },
-  //           updated_by: { type: "number" },
-  //         },
-  //       },
-  //       response: {
-  //         200: {
-  //           description: "Success Response",
-  //           type: "object",
-  //           properties: {
-  //             message: { type: "string" },
-  //             code: { type: "string" },
-  //           },
-  //         },
-  //       },
-  //     },
-  //   },
-  //   async (request, reply) => {
-  //     const { id } = request.params;
-  //     const { status_pic, updated_by } = request.body;
-  //     try {
-  //       await fastify.kepegawaian_pns.update_pic(id, status_pic, updated_by);
-
-  //       reply.send({ message: "success", code: 200 });
-  //     } catch (error) {
-  //       reply.send({ message: error.message, code: 500 });
-  //     }
-  //   }
-  // );
-
-  // fastify.delete(
-  //   "/delete/:id",
-  //   {
-  //     schema: {
-  //       description:
-  //         "This is an endpoint for DELETING an existing endpoint kepegawaian.",
-  //       tags: ["endpoint kepegawaian"],
-  //       params: {
-  //         description: "endpoint kepegawaian by Id",
-  //         type: "object",
-  //         properties: {
-  //           id: { type: "number" },
-  //         },
-  //       },
-  //       body: {
-  //         description: "Payload for deleted data endpoint kepegawaian",
-  //         type: "object",
-  //         properties: {
-  //           deleted_by: { type: "number" },
-  //         },
-  //       },
-  //       response: {
-  //         204: {
-  //           description: "Success Response",
-  //           type: "object",
-  //           properties: {
-  //             message: { type: "string" },
-  //             code: { type: "string" },
-  //           },
-  //         },
-  //       },
-  //     },
-  //   },
-  //   async (request, reply) => {
-  //     const { id } = request.params;
-  //     const { deleted_by } = request.body;
-
-  //     try {
-  //       await fastify.kepegawaian_pns.del(id, deleted_by);
-  //       reply.send({ message: "success", code: 204 });
-  //     } catch (error) {
-  //       reply.send({ message: error.message, code: 500 });
-  //     }
-  //   }
-  // );
 };
