@@ -20,9 +20,9 @@ const kepegawaian_pns = (db) => {
 
   const findPendidikanTerakhir = (id) => {
     const query = db.any(
-      "SELECT jenis_pendidikan FROM kepegawaian_pns_pendidikan WHERE id_pegawai = " +
+      "SELECT mpend.nama as jenis_pendidikan FROM kepegawaian_pns_pendidikan kpns_pend LEFT JOIN master_pendidikan mpend ON mpend.id = kpns_pend.jenis_pendidikan WHERE kpns_pend.id_pegawai = " +
         id +
-        " ORDER BY tgl_ijazah DESC"
+        " ORDER BY kpns_pend.tgl_ijazah DESC"
     );
 
     if (query) {
