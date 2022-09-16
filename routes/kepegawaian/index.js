@@ -6,16 +6,38 @@ module.exports = async function (fastify, opts) {
   fastify.register(kepegawaian_pns);
   fastify.register(kepegawaian_non_pns);
   fastify.register(multer.contentParser);
+  //------------ Define the Storage to Store files------------
+  var filename = "";
   const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, "/uploads/kepegawaian");
+    destination: async (req, file, cb) => {
+      let rParam = req.params;
+      let rData = null;
+      if (rParam.status == "PNS") {
+        rData = await fastify.kepegawaian_pns.findone(rParam.id);
+      } else {
+        rData = await fastify.kepegawaian_non_pns.findone(rParam.id);
+      }
+      let fileFormat = file.mimetype.split("/");
+      let dateTimestamp = Date.now();
+      filename =
+        rData.kepegawaian_nrk +
+        "-" +
+        file.fieldname +
+        "-" +
+        dateTimestamp +
+        "." +
+        fileFormat[fileFormat.length - 1];
+
+      return cb(null, "uploads/kepegawaian");
     },
-    filename: function (req, file, cb) {
-      cb(null, file.fieldname + "-" + Date.now());
+    filename: (req, file, cb) => {
+      cb(null, filename);
     },
   });
-  const upload = multer({ storage: storage });
 
+  const upload = multer({
+    storage: storage,
+  });
   function truePath(path) {
     return path.replace(/\\/g, "/");
   }
@@ -612,13 +634,13 @@ module.exports = async function (fastify, opts) {
       const { status, nomor } = request.query;
       let exec = null;
       let qwhere = "";
-        if (status === "PNS") {
-          qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nomor}%'`
-          exec = await fastify.kepegawaian_pns.autocompliteFill(qwhere);
-        } else {
-          qwhere += ` AND kpnns.kepegawaian_nptt_npjlp ILIKE '%${nomor}%'`
-          exec = await fastify.kepegawaian_non_pns.autocompliteFill(qwhere);
-        }
+      if (status === "PNS") {
+        qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nomor}%'`;
+        exec = await fastify.kepegawaian_pns.autocompliteFill(qwhere);
+      } else {
+        qwhere += ` AND kpnns.kepegawaian_nptt_npjlp ILIKE '%${nomor}%'`;
+        exec = await fastify.kepegawaian_non_pns.autocompliteFill(qwhere);
+      }
       try {
         if (exec) {
           reply.send({
@@ -735,16 +757,16 @@ module.exports = async function (fastify, opts) {
             kepegawaian_sk_cpns: { type: "string", format: "binary" },
             kepegawaian_tmt_pns: { type: "string" },
             kepegawaian_tgl_sk_pns: { type: "string" },
-            kepegawaian_sk_pns: {
-              type: "string",
-              format: "binary",
-            },
+            // kepegawaian_sk_pns: {
+            //   type: "string",
+            //   format: "binary",
+            // },
             kepegawaian_no_sk_pangkat_terakhir: { type: "string" },
             kepegawaian_tgl_sk_pangkat_terakhir: { type: "string" },
-            kepegawaian_sk_pangkat_terakhir: {
-              type: "string",
-              format: "binary",
-            },
+            // kepegawaian_sk_pangkat_terakhir: {
+            //   type: "string",
+            //   format: "binary",
+            // },
             kepegawaian_diklat_pol_pp_dasar: { type: "string" },
             kepegawaian_diklat_pol_pp_dasar_no_sertifikat: {
               type: "string",
@@ -752,10 +774,10 @@ module.exports = async function (fastify, opts) {
             kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat: {
               type: "string",
             },
-            kepegawaian_diklat_pol_pp_dasar_file_sertifikat: {
-              type: "string",
-              format: "binary",
-            },
+            // kepegawaian_diklat_pol_pp_dasar_file_sertifikat: {
+            //   type: "string",
+            //   format: "binary",
+            // },
             kepegawaian_diklat_pol_pp_strutural: { type: "string" },
             kepegawaian_diklat_pol_pp_strutural_no_sertifikat: {
               type: "string",
@@ -763,10 +785,10 @@ module.exports = async function (fastify, opts) {
             kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat: {
               type: "string",
             },
-            kepegawaian_diklat_pol_pp_strutural_file_sertifikat: {
-              type: "string",
-              format: "binary",
-            },
+            // kepegawaian_diklat_pol_pp_strutural_file_sertifikat: {
+            //   type: "string",
+            //   format: "binary",
+            // },
             kepegawaian_diklat_pol_pp_ppns: { type: "string" },
             kepegawaian_diklat_pol_pp_ppns_no_sertifikat: {
               type: "string",
@@ -774,10 +796,10 @@ module.exports = async function (fastify, opts) {
             kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat: {
               type: "string",
             },
-            kepegawaian_diklat_pol_pp_ppns_file_sertifikat: {
-              type: "string",
-              format: "binary",
-            },
+            // kepegawaian_diklat_pol_pp_ppns_file_sertifikat: {
+            //   type: "string",
+            //   format: "binary",
+            // },
             kepegawaian_diklat_fungsional_pol_pp: { type: "string" },
             kepegawaian_diklat_fungsional_pol_pp_no_sertifikat: {
               type: "string",
@@ -785,11 +807,11 @@ module.exports = async function (fastify, opts) {
             kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat: {
               type: "string",
             },
-            kepegawaian_diklat_fungsional_pol_pp_file_sertifikat: {
-              type: "string",
-              format: "binary",
-            },
-            foto: { type: "string", format: "binary" },
+            // kepegawaian_diklat_fungsional_pol_pp_file_sertifikat: {
+            //   type: "string",
+            //   format: "binary",
+            // },
+            // foto: { type: "string", format: "binary" },
           },
         },
         response: {
@@ -803,28 +825,8 @@ module.exports = async function (fastify, opts) {
           },
         },
       },
-      preHandler: upload.fields([
-        { name: "foto", maxCount: 1 },
-        {
-          name: "kepegawaian_diklat_fungsional_pol_pp_file_sertifikat",
-          maxCount: 1,
-        },
-        { name: "kepegawaian_diklat_pol_pp_ppns_file_sertifikat", maxCount: 1 },
-        {
-          name: "kepegawaian_diklat_pol_pp_strutural_file_sertifikat",
-          maxCount: 1,
-        },
-        {
-          name: "kepegawaian_diklat_pol_pp_dasar_file_sertifikat",
-          maxCount: 1,
-        },
-        { name: "kepegawaian_sk_pangkat_terakhir", maxCount: 1 },
-        { name: "kepegawaian_sk_pns", maxCount: 1 },
-        { name: "kepegawaian_sk_cpns", maxCount: 1 },
-      ]),
     },
     async (request, reply) => {
-      console.log("request.files", request.files);
       const { id } = request.params;
       const {
         nama,
@@ -886,80 +888,162 @@ module.exports = async function (fastify, opts) {
       } = request.body;
 
       try {
-        const kepegawaian_sk_pangkat_terakhir = "";
-        const kepegawaian_sk_pns = "";
-        const kepegawaian_sk_cpns = "";
-        const kepegawaian_diklat_pol_pp_ppns_file_sertifikat = "";
-        const kepegawaian_diklat_pol_pp_strutural_file_sertifikat = "";
-        const kepegawaian_diklat_pol_pp_dasar_file_sertifikat = "";
-        const kepegawaian_diklat_fungsional_pol_pp_file_sertifikat = "";
-        const foto = "";
-        // await fastify.kepegawaian_pns.update(
+        await fastify.kepegawaian_pns.update(
+          id,
+          nama,
+          tempat_lahir,
+          tgl_lahir,
+          jenis_kelamin,
+          agama,
+          nik,
+          no_kk,
+          status_perkawinan,
+          no_hp,
+          sesuai_ktp_alamat,
+          sesuai_ktp_rtrw,
+          sesuai_ktp_provinsi,
+          sesuai_ktp_kabkota,
+          sesuai_ktp_kecamatan,
+          sesuai_ktp_kelurahan,
+          domisili_alamat,
+          domisili_rtrw,
+          domisili_provinsi,
+          domisili_kabkota,
+          domisili_kecamatan,
+          domisili_kelurahan,
+          kepegawaian_nrk,
+          kepegawaian_nip,
+          kepegawaian_pangkat,
+          kepegawaian_golongan,
+          kepegawaian_tmtpangkat,
+          kepegawaian_pendidikan_pada_sk,
+          kepegawaian_jabatan,
+          kepegawaian_eselon,
+          kepegawaian_tempat_tugas,
+          kepegawaian_subbag_seksi_kecamatan,
+          kepegawaian_kelurahan,
+          kepegawaian_status_pegawai,
+          kepegawaian_no_rekening,
+          kepegawaian_no_karpeg,
+          kepegawaian_no_kasirkasur,
+          kepegawaian_no_taspen,
+          kepegawaian_npwp,
+          kepegawaian_no_bpjs_askes,
+          kepegawaian_tmt_cpns,
+          kepegawaian_tmt_pns,
+          kepegawaian_tgl_sk_pns,
+          kepegawaian_no_sk_pangkat_terakhir,
+          kepegawaian_tgl_sk_pangkat_terakhir,
+          kepegawaian_diklat_pol_pp_dasar,
+          kepegawaian_diklat_pol_pp_dasar_no_sertifikat,
+          kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat,
+          kepegawaian_diklat_pol_pp_strutural,
+          kepegawaian_diklat_pol_pp_strutural_no_sertifikat,
+          kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat,
+          kepegawaian_diklat_pol_pp_ppns,
+          kepegawaian_diklat_pol_pp_ppns_no_sertifikat,
+          kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat,
+          kepegawaian_diklat_fungsional_pol_pp,
+          kepegawaian_diklat_fungsional_pol_pp_no_sertifikat,
+          kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat,
+          ""
+        );
+
+        reply.send({ message: "success", code: 200 });
+      } catch (error) {
+        reply.send({ message: error.message, code: 500 });
+      }
+    }
+  );
+
+  fastify.put(
+    "/update-file/:id/:status",
+    {
+      preHandler: upload.fields([
+        { name: "foto", maxCount: 1 },
+        {
+          name: "kepegawaian_diklat_fungsional_pol_pp_file_sertifikat",
+          maxCount: 1,
+        },
+        { name: "kepegawaian_diklat_pol_pp_ppns_file_sertifikat", maxCount: 1 },
+        {
+          name: "kepegawaian_diklat_pol_pp_strutural_file_sertifikat",
+          maxCount: 1,
+        },
+        {
+          name: "kepegawaian_diklat_pol_pp_dasar_file_sertifikat",
+          maxCount: 1,
+        },
+        { name: "kepegawaian_sk_pangkat_terakhir", maxCount: 1 },
+        { name: "kepegawaian_sk_pns", maxCount: 1 },
+        { name: "kepegawaian_sk_cpns", maxCount: 1 },
+      ]),
+    },
+    async (request, reply) => {
+      console.log("request.files", request.files);
+      const { id } = request.params;
+
+      try {
+        const kepegawaian_sk_pangkat_terakhir = request.files[
+          "kepegawaian_sk_pangkat_terakhir"
+        ]
+          ? await truePath(
+              request.files["kepegawaian_sk_pangkat_terakhir"][0].path
+            )
+          : "";
+
+        const kepegawaian_sk_pns = request.files["kepegawaian_sk_pns"]
+          ? await truePath(request.files["kepegawaian_sk_pns"][0].path)
+          : "";
+        const kepegawaian_sk_cpns = request.files["kepegawaian_sk_cpns"]
+          ? await truePath(request.files["kepegawaian_sk_cpns"][0].path)
+          : "";
+        const kepegawaian_diklat_pol_pp_ppns_file_sertifikat = request.files[
+          "kepegawaian_diklat_pol_pp_ppns_file_sertifikat"
+        ]
+          ? await truePath(
+              request.files["kepegawaian_diklat_pol_pp_ppns_file_sertifikat"][0]
+                .path
+            )
+          : "";
+        const kepegawaian_diklat_pol_pp_strutural_file_sertifikat = request
+          .files["kepegawaian_diklat_pol_pp_strutural_file_sertifikat"]
+          ? await truePath(
+              request.files[
+                "kepegawaian_diklat_pol_pp_strutural_file_sertifikat"
+              ][0].path
+            )
+          : "";
+        const kepegawaian_diklat_pol_pp_dasar_file_sertifikat = request.files[
+          "kepegawaian_diklat_pol_pp_dasar_file_sertifikat"
+        ]
+          ? await truePath(
+              request.files[
+                "kepegawaian_diklat_pol_pp_dasar_file_sertifikat"
+              ][0].path
+            )
+          : "";
+        const kepegawaian_diklat_fungsional_pol_pp_file_sertifikat = request
+          .files["kepegawaian_diklat_fungsional_pol_pp_file_sertifikat"]
+          ? await truePath(
+              request.files[
+                "kepegawaian_diklat_fungsional_pol_pp_file_sertifikat"
+              ][0].path
+            )
+          : "";
+        const foto = request.files["foto"]
+          ? await truePath(request.files["foto"][0].path)
+          : "";
+        // await fastify.kepegawaian_pns.updateFile(
         //   id,
-        //   nama,
-        //   tempat_lahir,
-        //   tgl_lahir,
-        //   jenis_kelamin,
-        //   agama,
-        //   nik,
-        //   no_kk,
-        //   status_perkawinan,
-        //   no_hp,
-        //   sesuai_ktp_alamat,
-        //   sesuai_ktp_rtrw,
-        //   sesuai_ktp_provinsi,
-        //   sesuai_ktp_kabkota,
-        //   sesuai_ktp_kecamatan,
-        //   sesuai_ktp_kelurahan,
-        //   domisili_alamat,
-        //   domisili_rtrw,
-        //   domisili_provinsi,
-        //   domisili_kabkota,
-        //   domisili_kecamatan,
-        //   domisili_kelurahan,
-        //   kepegawaian_nrk,
-        //   kepegawaian_nip,
-        //   kepegawaian_pangkat,
-        //   kepegawaian_golongan,
-        //   kepegawaian_tmtpangkat,
-        //   kepegawaian_pendidikan_pada_sk,
-        //   kepegawaian_jabatan,
-        //   kepegawaian_eselon,
-        //   kepegawaian_tempat_tugas,
-        //   kepegawaian_subbag_seksi_kecamatan,
-        //   kepegawaian_kelurahan,
-        //   kepegawaian_status_pegawai,
-        //   kepegawaian_no_rekening,
-        //   kepegawaian_no_karpeg,
-        //   kepegawaian_no_kasirkasur,
-        //   kepegawaian_no_taspen,
-        //   kepegawaian_npwp,
-        //   kepegawaian_no_bpjs_askes,
-        //   kepegawaian_tmt_cpns,
-        //   kepegawaian_sk_cpns,
-        //   kepegawaian_tmt_pns,
-        //   kepegawaian_tgl_sk_pns,
-        //   kepegawaian_sk_pns,
-        //   kepegawaian_no_sk_pangkat_terakhir,
-        //   kepegawaian_tgl_sk_pangkat_terakhir,
-        //   kepegawaian_sk_pangkat_terakhir,
-        //   kepegawaian_diklat_pol_pp_dasar,
-        //   kepegawaian_diklat_pol_pp_dasar_no_sertifikat,
-        //   kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat,
-        //   kepegawaian_diklat_pol_pp_dasar_file_sertifikat,
-        //   kepegawaian_diklat_pol_pp_strutural,
-        //   kepegawaian_diklat_pol_pp_strutural_no_sertifikat,
-        //   kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat,
-        //   kepegawaian_diklat_pol_pp_strutural_file_sertifikat,
-        //   kepegawaian_diklat_pol_pp_ppns,
-        //   kepegawaian_diklat_pol_pp_ppns_no_sertifikat,
-        //   kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat,
-        //   kepegawaian_diklat_pol_pp_ppns_file_sertifikat,
-        //   kepegawaian_diklat_fungsional_pol_pp,
-        //   kepegawaian_diklat_fungsional_pol_pp_no_sertifikat,
-        //   kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat,
-        //   kepegawaian_diklat_fungsional_pol_pp_file_sertifikat,
         //   foto,
+        //   kepegawaian_diklat_fungsional_pol_pp_file_sertifikat,
+        //   kepegawaian_diklat_pol_pp_ppns_file_sertifikat,
+        //   kepegawaian_diklat_pol_pp_strutural_file_sertifikat,
+        //   kepegawaian_diklat_pol_pp_dasar_file_sertifikat,
+        //   kepegawaian_sk_pangkat_terakhir,
+        //   kepegawaian_sk_pns,
+        //   kepegawaian_sk_cpns,
         //   ""
         // );
 
