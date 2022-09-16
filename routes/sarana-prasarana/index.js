@@ -377,7 +377,7 @@ module.exports = async function (fastify, opts) {
         ? await truePath(request.files["file_dokumentasi"][0].path)
         : "";
       try {
-        await fastify.sarana_prasarana.updateFile(id, file_dokumentasi, created_by);
+        await fastify.sarana_prasarana.updateFile(id, file_dokumentasi, '');
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
