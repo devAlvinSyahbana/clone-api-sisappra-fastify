@@ -7,15 +7,17 @@ const sarana_prasarana = (db) => {
     jumlah,
     kondisi,
     keterangan,
+    created_by
   ) => {
     const query = db.one(
-      "INSERT INTO sarana_prasarana (jenis_sarana_prasarana, status_sarana_prasarana, jumlah, kondisi, keterangan, file_dokumentasi) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+      "INSERT INTO sarana_prasarana (jenis_sarana_prasarana, status_sarana_prasarana, jumlah, kondisi, keterangan, created_by) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
       [
         jenis_sarana_prasarana,
         status_sarana_prasarana,
         jumlah,
         kondisi,
         keterangan,
+        created_by
       ]
     );
 
@@ -25,7 +27,7 @@ const sarana_prasarana = (db) => {
     const query = db.any(
       "select id,jenis_sarana_prasarana from jenis_sarana_prasarana where is_deleted = 0 and jenis_sarana_prasarana ilike '%" +
         jenis_sarana_prasarana +
-        "%' order by created_at"
+        "%' order by jenis_sarana_prasarana asc"
     );
     return query;
   };
@@ -33,7 +35,7 @@ const sarana_prasarana = (db) => {
     const query = db.any(
       "select id,kondisi_sarana_prasarana from kondisi_sarana_prasarana where is_deleted = 0 and kondisi_sarana_prasarana ilike '%" +
         kondisi_sarana_prasarana +
-        "%' order by created_at"
+        "%' order by kondisi_sarana_prasarana asc"
     );
     return query;
   };
@@ -41,7 +43,7 @@ const sarana_prasarana = (db) => {
     const query = db.any(
       "select id,status_sarana_prasarana from status_sarana_prasarana where is_deleted = 0 and status_sarana_prasarana ilike '%" +
         status_sarana_prasarana +
-        "%' order by created_at"
+        "%' order by status_sarana_prasarana asc"
     );
     return query;
   };
