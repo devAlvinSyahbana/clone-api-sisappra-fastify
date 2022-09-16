@@ -23,7 +23,7 @@ module.exports = async function (fastify, opts) {
                   properties: {
                     id: { type: "number" },
                     jenis_pelanggaran: { type: "string" },
-                    kode: { type: "string" },
+                    kode_penertiban: { type: "string" },
                   },
                 },
               },
@@ -72,7 +72,7 @@ module.exports = async function (fastify, opts) {
                 properties: {
                   id: { type: "number" },
                   jenis_pelanggaran: { type: "string" },
-                  kode: { type: "string" },
+                  kode_penertiban: { type: "string" },
                 },
               },
             },
@@ -97,7 +97,7 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/findone-by-jenis-pelanggaran/:jenis_pelanggaran",
+    "/findone-by-kode-penertiban/:kode_penertiban",
     {
       schema: {
         description: "This is an endpoint for fetching a master jenis pelanggaran",
@@ -106,7 +106,7 @@ module.exports = async function (fastify, opts) {
           description: "Find one master jenis pelanggaran by jenis pelanggaran",
           type: "object",
           properties: {
-            jenis_pelanggaran: { type: "string" },
+            kode_penertiban: { type: "string" },
           },
         },
         response: {
@@ -117,11 +117,14 @@ module.exports = async function (fastify, opts) {
               message: { type: "string" },
               code: { type: "string" },
               data: {
-                type: "object",
-                properties: {
-                  id: { type: "number" },
-                  jenis_pelanggaran: { type: "string" },
-                  kode: { type: "string" },
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: { type: "number" },
+                    jenis_pelanggaran: { type: "string" },
+                    kode_penertiban: { type: "string" },
+                  },
                 },
               },
             },
@@ -130,8 +133,8 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { jenis_pelanggaran } = request.params;
-      const exec = await fastify.master_jenis_pelanggaran.findone_by_jenis_pelanggaran(jenis_pelanggaran);
+      const { kode_penertiban } = request.params;
+      const exec = await fastify.master_jenis_pelanggaran.findone_by_kode_penertiban(kode_penertiban);
 
       try {
         if (exec) {
@@ -156,6 +159,7 @@ module.exports = async function (fastify, opts) {
           type: "object",
           properties: {
             jenis_pelanggaran: { type: "string" },
+            kode_penertiban: { type: "string" },
             created_by: { type: "number" },
           },
         },
@@ -172,10 +176,10 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {jenis_pelanggaran,created_by} = request.body;
+      const {jenis_pelanggaran, kode_penertiban, created_by} = request.body;
 
       try {
-        await fastify.master_jenis_pelanggaran.create(jenis_pelanggaran,created_by);
+        await fastify.master_jenis_pelanggaran.create(jenis_pelanggaran, kode_penertiban, created_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -201,6 +205,7 @@ module.exports = async function (fastify, opts) {
           type: "object",
           properties: {
             jenis_pelanggaran: { type: "string" },
+            kode_penertiban: { type: "string" },
             updated_by: { type: "number" },
           },
         },
@@ -218,10 +223,10 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const {jenis_pelanggaran, updated_by } = request.body;
+      const {jenis_pelanggaran, kode_penertiban, updated_by } = request.body;
 
       try {
-        await fastify.master_jenis_pelanggaran.update(id,jenis_pelanggaran,updated_by);
+        await fastify.master_jenis_pelanggaran.update(id,jenis_pelanggaran, kode_penertiban, updated_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
