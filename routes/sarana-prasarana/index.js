@@ -468,15 +468,6 @@ module.exports = async function (fastify, opts) {
             id: { type: "number" },
           },
         },
-        body: {
-          description: "Payload for delete",
-          type: "object",
-          properties: {
-            deleted_by: {
-              type: "string",
-            },
-          },
-        },
         response: {
           204: {
             description: "Success Response",
