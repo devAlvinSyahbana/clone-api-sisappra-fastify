@@ -491,10 +491,9 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const { deleted_by } = request.body;
 
       try {
-        await fastify.sarana_prasarana.del(id, deleted_by);
+        await fastify.sarana_prasarana.del(id, '');
         reply.send({ message: "success", code: 204 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
