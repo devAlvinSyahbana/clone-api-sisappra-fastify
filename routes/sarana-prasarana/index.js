@@ -303,16 +303,16 @@ module.exports = async function (fastify, opts) {
           type: "object",
           properties: {
             jenis_sarana_prasarana: {
-              type: "string",
+              type: "number",
             },
             status_sarana_prasarana: {
-              type: "string",
+              type: "number",
             },
             jumlah: {
               type: "number",
             },
             kondisi: {
-              type: "string",
+              type: "number",
             },
             keterangan: {
               type: "string",
@@ -405,10 +405,10 @@ module.exports = async function (fastify, opts) {
           description: "Payload for updating a sarana_prasarana",
           type: "object",
           properties: {
-            jenis_sarana_prasarana: { type: "string" },
-            status_sarana_prasarana: { type: "string" },
+            jenis_sarana_prasarana: { type: "number" },
+            status_sarana_prasarana: { type: "number" },
             jumlah: { type: "number" },
-            kondisi: { type: "string" },
+            kondisi: { type: "number" },
             keterangan: { type: "string" },
             updated_by: { type: "string" },
           },
