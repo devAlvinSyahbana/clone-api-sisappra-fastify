@@ -1,3 +1,5 @@
+const master_kota  = require("../../../services/master/master_kota");
+
 module.exports = async function (fastify, opts) {
   fastify.register(master_kota);
 
