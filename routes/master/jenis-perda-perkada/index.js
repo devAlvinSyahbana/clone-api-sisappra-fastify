@@ -1,14 +1,14 @@
-const master_jenis_penertiban = require("../../../services/master/master_jenis_penertiban");
+const master_jenis_perda_perkada  = require("../../../services/master/master_jenis_perda_perkada");
 
 module.exports = async function (fastify, opts) {
-  fastify.register(master_jenis_penertiban);
+  fastify.register(master_jenis_perda_perkada);
 
   fastify.get(
     "/find",
     {
       schema: {
-        description: "This is an endpoint for fetching all master jenis penertiban",
-        tags: ["master jenis penertiban"],
+        description: "This is an endpoint for fetching all master jenis perda perkada",
+        tags: ["master jenis perda perkada"],
         response: {
           200: {
             description: "Success Response",
@@ -22,8 +22,8 @@ module.exports = async function (fastify, opts) {
                   type: "object",
                   properties: {
                     id: { type: "number" },
-                    jenis_penertiban: { type: "string" },
-                    kode: { type: "string" },
+                    judul: { type: "string" },
+                    deskripsi: { type: "string" },
                   },
                 },
               },
@@ -33,7 +33,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const exec = await fastify.master_jenis_penertiban.find();
+      const exec = await fastify.master_jenis_perda_perkada.find();
 
       try {
         if (exec) {
@@ -51,10 +51,10 @@ module.exports = async function (fastify, opts) {
     "/findone/:id",
     {
       schema: {
-        description: "This is an endpoint for fetching a master jenis penertiban",
-        tags: ["master jenis penertiban"],
+        description: "This is an endpoint for fetching a master jenis perda perkada",
+        tags: ["master jenis perda perkada"],
         params: {
-          description: "Find one master jenis_ppenertibanid",
+          description: "Find one master jenis perda perkada id",
           type: "object",
           properties: {
             id: { type: "number" },
@@ -71,8 +71,8 @@ module.exports = async function (fastify, opts) {
                 type: "object",
                 properties: {
                   id: { type: "number" },
-                  jenis_penertiban: { type: "string" },
-                  kode: { type: "string" },
+                  judul: { type: "string" },
+                  deskripsi: { type: "string" },
                 },
               },
             },
@@ -82,7 +82,7 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const exec = await fastify.master_jenis_penertiban.findone(id);
+      const exec = await fastify.master_jenis_perda_perkada.findone(id);
 
       try {
         if (exec) {
@@ -97,16 +97,17 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/findone-by-jenis-penertiban/:jenis_penertiban",
+    "/findone-by-jenis-perda-perkada/:judul/:deskripsi",
     {
       schema: {
-        description: "This is an endpoint for fetching a master jenis penertiban",
-        tags: ["master jenis penertiban"],
+        description: "This is an endpoint for fetching a master jenis perda perkada",
+        tags: ["master jenis perda perkada"],
         params: {
-          description: "Find one master jenis_ppenertibanby jenis penertiban",
+          description: "Find one master jenis perda perkada by judul and deskripsi",
           type: "object",
           properties: {
-            jenis_penertiban: { type: "string" },
+            judul: { type: "string" },
+            deskripsi: { type: "string" },
           },
         },
         response: {
@@ -117,11 +118,14 @@ module.exports = async function (fastify, opts) {
               message: { type: "string" },
               code: { type: "string" },
               data: {
-                type: "object",
-                properties: {
-                  id: { type: "number" },
-                  jenis_penertiban: { type: "string" },
-                  kode: { type: "string" },
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: { type: "number" },
+                    judul: { type: "string" },
+                    deskripsi: { type: "string" },
+                  },
                 },
               },
             },
@@ -130,8 +134,8 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { jenis_penertiban} = request.params;
-      const exec = await fastify.master_jenis_penertiban.findone_by_jenis_penertiban(jenis_penertiban);
+      const { judul, deskripsi } = request.params;
+      const exec = await fastify.master_jenis_perda_perkada.findone_by_jenis_perda_perkada(judul, deskripsi);
 
       try {
         if (exec) {
@@ -149,14 +153,14 @@ module.exports = async function (fastify, opts) {
     "/create",
     {
       schema: {
-        description: "This is an endpoint for creating a master jenis penertiban",
-        tags: ["master jenis penertiban"],
+        description: "This is an endpoint for creating a master jenis perda perkada",
+        tags: ["master jenis perda perkada"],
         body: {
-          description: "Payload for creating a master jenis penertiban",
+          description: "Payload for creating a master jenis perda perkada",
           type: "object",
           properties: {
-            jenis_penertiban: { type: "string" },
-            kode: { type: "string" },
+            judul: { type: "string" },
+            deskripsi: { type: "string" },
             created_by: { type: "number" },
           },
         },
@@ -173,10 +177,10 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {jenis_penertiban, kode, created_by} = request.body;
+      const {judul,deskripsi, created_by} = request.body;
 
       try {
-        await fastify.master_jenis_penertiban.create(jenis_penertiban, kode,created_by);
+        await fastify.master_jenis_perda_perkada.create(judul,deskripsi, created_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -188,21 +192,21 @@ module.exports = async function (fastify, opts) {
     "/update/:id",
     {
       schema: {
-        description: "This is an endpoint for updating an existing master jenis penertiban",
-        tags: ["master jenis penertiban"],
+        description: "This is an endpoint for updating an existing master jenis perda perkada",
+        tags: ["master jenis perda perkada"],
         params: {
-          description: "update master jenis_ppenertibanby Id",
+          description: "update master jenis perda perkada by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for updating a master jenis penertiban",
+          description: "Payload for updating a master jenis perda perkada",
           type: "object",
           properties: {
-            jenis_penertiban: { type: "string" },
-            kode: { type: "string" },
+            judul: { type: "string" },
+            deskripsi: { type: "string" },
             updated_by: { type: "number" },
           },
         },
@@ -220,10 +224,10 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const {jenis_penertiban, kode, updated_by } = request.body;
+      const {judul, deskripsi, updated_by } = request.body;
 
       try {
-        await fastify.master_jenis_penertiban.update(id,jenis_penertiban, kode, updated_by);
+        await fastify.master_jenis_perda_perkada.update(id, judul, deskripsi, updated_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -235,17 +239,17 @@ module.exports = async function (fastify, opts) {
     "/delete/:id",
     {
       schema: {
-        description: "This is an endpoint for DELETING an existing master jenis penertiban.",
-        tags: ["master jenis penertiban"],
+        description: "This is an endpoint for DELETING an existing master jenis perda perkada.",
+        tags: ["master jenis perda perkada"],
         params: {
-          description: "master jenis_ppenertibanby Id",
+          description: "master jenis perda perkada by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for deleted data master jenis penertiban",
+          description: "Payload for deleted data master jenis perda perkada",
           type: "object",
           properties: {
             deleted_by: { type: "number" },
@@ -268,7 +272,7 @@ module.exports = async function (fastify, opts) {
       const { deleted_by } = request.body;
 
       try {
-        await fastify.master_jenis_penertiban.del(id, deleted_by);
+        await fastify.master_jenis_perda_perkada.del(id, deleted_by);
         reply.send({ message: "success", code: 204 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -276,4 +280,7 @@ module.exports = async function (fastify, opts) {
     }
   );
 };
+
+const master_kota  = require("../../../services/master/master_kota");
+
 
