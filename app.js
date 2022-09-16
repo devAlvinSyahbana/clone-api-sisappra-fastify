@@ -4,6 +4,12 @@ const path = require('path')
 const AutoLoad = require('@fastify/autoload')
 
 module.exports = async function (fastify, opts) {
+  // setting prefix
+  fastify.register(require('@fastify/static'), {
+    root: path.join(__dirname, 'uploads'),
+    prefix: '/uploads/', // optional: default '/'
+  })
+
   // setting up cors
   fastify.register(require("@fastify/cors"), (instance) => {
     return (req, callback) => {
