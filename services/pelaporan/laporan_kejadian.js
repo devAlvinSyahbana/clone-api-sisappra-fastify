@@ -24,9 +24,12 @@ const laporan_kejadian = (db) => {
       "SELECT id, bidang_wilayah, jumlah_kejadian, banjir, hewan_buas_dan_berbisa, kebakaran, kecelakaan, pendampingan_kekerasan_pada_perempuan_dan_anak, kerusakan_konstruksi, kriminalitas, pembunuhan, penemuan_mayat, penyelamatan_orang, pohon_tumbang, tawuran, terorisme, unjuk_rasa, keterangan FROM laporan_kejadian WHERE id = $1 AND is_deleted = 0",
       [id]
     );
-
-    return query;
-  };
+    
+    if (query) {
+      return query;
+    };
+    return false;
+  }
 
   const update = (id, bidang_wilayah, jumlah_kejadian, banjir, hewan_buas_dan_berbisa, kebakaran, kecelakaan, pendampingan_kekerasan_pada_perempuan_dan_anak, kerusakan_konstruksi, kriminalitas, pembunuhan, penemuan_mayat, penyelamatan_orang, pohon_tumbang, tawuran, terorisme, unjuk_rasa, keterangan) => {
     db.one(
