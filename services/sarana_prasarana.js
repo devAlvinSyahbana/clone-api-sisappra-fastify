@@ -1,6 +1,15 @@
 const fp = require("fastify-plugin");
 
 const sarana_prasarana = (db) => {
+  const findone = (id) => {
+    const query = db.one(
+      "select sp.id, jsp.id as jenis_sarana_prasarana_id, jsp.jenis_sarana_prasarana as jenis_sarana_prasarana_name, ssp.id as status_sarana_prasarana_id, ssp.status_sarana_prasarana as status_sarana_prasarana_name, sp.jumlah, ksp.id as kondisi_id, ksp.kondisi_sarana_prasarana as kondisi_name, sp.keterangan, sp.file_dokumentasi as dokumentasi from sarana_prasarana sp left join jenis_sarana_prasarana jsp on sp.jenis_sarana_prasarana = jsp.id left join status_sarana_prasarana ssp on sp.status_sarana_prasarana  = ssp.id left join kondisi_sarana_prasarana ksp on sp.kondisi = ksp.id where sp.is_deleted = 0 AND sp.id = $1",
+      [id]
+    );
+
+    return query;
+  };
+
   const create = (
     jenis_sarana_prasarana,
     status_sarana_prasarana,
@@ -17,7 +26,7 @@ const sarana_prasarana = (db) => {
         jumlah,
         kondisi,
         keterangan,
-        created_by
+        created_by,
       ]
     );
 
@@ -94,18 +103,10 @@ const sarana_prasarana = (db) => {
     );
   };
 
-  const updateFile = (
-    id,
-    file_dokumentasi,
-    updated_by
-  ) => {
+  const updateFile = (id, file_dokumentasi, updated_by) => {
     db.one(
       "UPDATE sarana_prasarana SET file_dokumentasi = $1, updated_at = CURRENT_TIMESTAMP, updated_by = $2 WHERE id = $3 RETURNING id",
-      [
-        file_dokumentasi,
-        updated_by,
-        id,
-      ]
+      [file_dokumentasi, updated_by, id]
     );
   };
 
@@ -133,6 +134,7 @@ const sarana_prasarana = (db) => {
   };
 
   return {
+    findone,
     create,
     update,
     del,
@@ -142,7 +144,7 @@ const sarana_prasarana = (db) => {
     filter,
     countAllFilter,
     unduh,
-    updateFile
+    updateFile,
   };
 };
 
