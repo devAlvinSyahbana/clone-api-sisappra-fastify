@@ -33,6 +33,62 @@ module.exports = async function (fastify, opts) {
   }
 
   fastify.get(
+    "/findone/:id",
+    {
+      schema: {
+        description:
+          "This is an endpoint for fetching a sarana_prasarana by id",
+        tags: ["sarana_prasarana"],
+        params: {
+          description: "Find one sarana_prasarana by id",
+          type: "object",
+          properties: {
+            id: { type: "number" },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+              data: {
+                type: "object",
+                properties: {
+                  id: { type: "number" },
+                  jenis_sarana_prasarana_id: { type: "number" },
+                  jenis_sarana_prasarana_name: { type: "string" },
+                  status_sarana_prasarana_id: { type: "number" },
+                  status_sarana_prasarana_name: { type: "string" },
+                  jumlah: { type: "number" },
+                  kondisi_id: { type: "number" },
+                  kondisi_name: { type: "string" },
+                  keterangan: { type: "string" },
+                  dokumentasi: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+      const exec = await fastify.sarana_prasarana.findone(id);
+      try {
+        if (exec) {
+          reply.send({ message: "success", code: 200, data: exec });
+        } else {
+          reply.send({ message: "success", code: 204 });
+        }
+      } catch (error) {
+        reply.send({ message: error, code: 500 });
+      }
+    }
+  );
+
+  fastify.get(
     "/findjenis/:jenis_sarana_prasarana",
     {
       schema: {
@@ -371,13 +427,12 @@ module.exports = async function (fastify, opts) {
       preHandler: upload.fields([{ name: "file_dokumentasi", maxCount: 1 }]),
     },
     async (request, reply) => {
-      console.log("request.files", request.files);
       const { id } = request.params;
       const file_dokumentasi = request.files["file_dokumentasi"]
         ? await truePath(request.files["file_dokumentasi"][0].path)
         : "";
       try {
-        await fastify.sarana_prasarana.updateFile(id, file_dokumentasi, '');
+        await fastify.sarana_prasarana.updateFile(id, file_dokumentasi, "");
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -484,7 +539,7 @@ module.exports = async function (fastify, opts) {
       const { id } = request.params;
 
       try {
-        await fastify.sarana_prasarana.del(id, '');
+        await fastify.sarana_prasarana.del(id, "");
         reply.send({ message: "success", code: 204 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
