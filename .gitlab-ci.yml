@@ -24,7 +24,7 @@ after_script:
 build1:
   stage: build
   script:
-    - ssh -i $DIGITAL_OCEAN_KEY root@167.71.208.184
+    - ssh $DIGITAL_OCEAN_KEY root@167.71.208.184
 
 test1:
   stage: test
