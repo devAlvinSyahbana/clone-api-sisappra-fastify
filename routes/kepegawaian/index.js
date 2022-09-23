@@ -1,10 +1,12 @@
 const kepegawaian_pns = require("../../services/kepegawaian/kepegawaian_pns");
 const kepegawaian_non_pns = require("../../services/kepegawaian/kepegawaian_non_pns");
+const kepegawaian_rekapitulasi = require("../../services/kepegawaian/kepegawaian_rekapitulasi");
 const multer = require("fastify-multer");
 
 module.exports = async function (fastify, opts) {
   fastify.register(kepegawaian_pns);
   fastify.register(kepegawaian_non_pns);
+  fastify.register(kepegawaian_rekapitulasi);
   fastify.register(multer.contentParser);
   //------------ Define the Storage to Store files------------
   var filename = "";
@@ -1146,4 +1148,62 @@ module.exports = async function (fastify, opts) {
   //     }
   //   }
   // );
+
+  // Rekapitulasi pegawai
+  fastify.get(
+    "/jumlah-pegawai-polpp",
+    {
+      schema: {
+        description: "This is an endpoint for fetching a jumlah pegawai polpp",
+        tags: ["endpoint kepegawaian"],
+        querystring: {
+          description: "Find one jumlah pegawai polpp id",
+          type: "object",
+          properties: {
+            provinsi: { type: "string" },
+            kota: { type: "string" },
+            kecamatan: { type: "string" },
+            kelurahan: { type: "string" },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+              data: {
+                type: "object",
+                properties: {
+                  jmlh_seluruh_pegawai_satpol: { type: "number" },
+                  jmlh_seluruh_pns: { type: "number" },
+                  jmlh_seluruh_cpns: { type: "number" },
+                  jmlh_seluruh_non_pns: { type: "number" },
+                  jmlh_seluruh_non_pns_ptt: { type: "number" },
+                  jmlh_seluruh_non_pns_pjlp: { type: "number" },
+                  jmlh_seluruh_ppns_satpolpp: { type: "number" },
+                  jmlh_seluruh_ppns_unit_kerja_lain: { type: "number" }, 
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { provinsi, kota, kecamatan, kelurahan } = request.query;
+      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp(provinsi, kota, kecamatan, kelurahan);
+
+      try {
+        if (exec) {
+          reply.send({ message: "success", code: 200, data: exec });
+        } else {
+          reply.send({ message: "success", code: 204 });
+        }
+      } catch (error) {
+        reply.send({ message: error, code: 500 });
+      }
+    }
+  );
 };
