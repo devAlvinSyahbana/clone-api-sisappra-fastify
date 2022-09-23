@@ -33,7 +33,12 @@ const master_jenis_kegiatan = (db) => {
       "SELECT MAX(id) FROM master_jenis_kegiatan"
     );
 
-    let a = romanize((parseInt(max) + 1));
+    let a = "";
+    if (max == undefined ) {
+      a = "I";
+    } else {
+      a = romanize((parseInt(max) + 1));
+    }
 
     const query = db.one(
       "INSERT INTO master_jenis_kegiatan (nama, kode, is_deleted, created_by) VALUES ($1, $2, 0, $3) RETURNING id",
