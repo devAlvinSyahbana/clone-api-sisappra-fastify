@@ -1101,49 +1101,49 @@ module.exports = async function (fastify, opts) {
   //   }
   // );
 
-  // fastify.delete(
-  //   "/delete/:id",
-  //   {
-  //     schema: {
-  //       description:
-  //         "This is an endpoint for DELETING an existing endpoint kepegawaian.",
-  //       tags: ["endpoint kepegawaian"],
-  //       params: {
-  //         description: "endpoint kepegawaian by Id",
-  //         type: "object",
-  //         properties: {
-  //           id: { type: "number" },
-  //         },
-  //       },
-  //       body: {
-  //         description: "Payload for deleted data endpoint kepegawaian",
-  //         type: "object",
-  //         properties: {
-  //           deleted_by: { type: "number" },
-  //         },
-  //       },
-  //       response: {
-  //         204: {
-  //           description: "Success Response",
-  //           type: "object",
-  //           properties: {
-  //             message: { type: "string" },
-  //             code: { type: "string" },
-  //           },
-  //         },
-  //       },
-  //     },
-  //   },
-  //   async (request, reply) => {
-  //     const { id } = request.params;
-  //     const { deleted_by } = request.body;
+  fastify.delete(
+    "/delete-rekapitulasi-pegawai/:id",
+    {
+      schema: {
+        description:
+          "This is an endpoint for DELETING an existing endpoint data rekapitulasi pegawai pejabat struktural.",
+        tags: ["endpoint rekapitulasi pegawai pejabat struktural"],
+        params: {
+          description: "endpoint rekapitulasi pegawai pejabat struktural by Id",
+          type: "object",
+          properties: {
+            id: { type: "number" },
+          },
+        },
+        body: {
+          description: "Payload for deleted data endpoint rekapitulasi pegawai pejabat struktural",
+          type: "object",
+          properties: {
+            deleted_by: { type: "number" },
+          },
+        },
+        response: {
+          204: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+      const { deleted_by } = request.body;
 
-  //     try {
-  //       await fastify.kepegawaian_pns.del(id, deleted_by);
-  //       reply.send({ message: "success", code: 204 });
-  //     } catch (error) {
-  //       reply.send({ message: error.message, code: 500 });
-  //     }
-  //   }
-  // );
+      try {
+        await fastify.kepegawaian_pns.del(id, deleted_by);
+        reply.send({ message: "success", code: 204 });
+      } catch (error) {
+        reply.send({ message: error.message, code: 500 });
+      }
+    }
+  );
 };
