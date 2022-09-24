@@ -1,10 +1,12 @@
 const kepegawaian_pns = require("../../services/kepegawaian/kepegawaian_pns");
 const kepegawaian_non_pns = require("../../services/kepegawaian/kepegawaian_non_pns");
+const kepegawaian_rekapitulasi = require("../../services/kepegawaian/kepegawaian_rekapitulasi");
 const multer = require("fastify-multer");
 
 module.exports = async function (fastify, opts) {
   fastify.register(kepegawaian_pns);
   fastify.register(kepegawaian_non_pns);
+  fastify.register(kepegawaian_rekapitulasi);
   fastify.register(multer.contentParser);
   //------------ Define the Storage to Store files------------
   var filename = "";
@@ -258,6 +260,150 @@ module.exports = async function (fastify, opts) {
   );
 
   // ^ find One
+  fastify.get(
+    "/filter-rekapitulasi-pejabat-struktural", {
+      schema: {
+        description: "Endpoint ini digunakan untuk memfilter data Rekapitulasi Pejabat Struktural",
+        tags: ["endpoint rekapitulasi pejabat struktural"],
+        querystring: {
+          type: "object",
+          properties: {
+            limit: {
+              type: "integer",
+              default: 10,
+            },
+            offset: {
+              type: "integer",
+              default: 1,
+            },
+            nama: {
+              type: "string",
+            },
+            nip: {
+              type: "string",
+            },
+            nrk: {
+              type: "string",
+            },
+            kecamatan_seksi: {
+              type: "string",
+            },
+            kelurahan: {
+              type: "string",
+            },
+            jabatan: {
+              type: "string",
+            },
+          },
+          required: ["limit", "offset"],
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: {
+                      type: "number"
+                    },
+                    nama: {
+                      type: "string"
+                    },
+                    kepegawaian_nip: {
+                      type: "string"
+                    },
+                    kepegawaian_nrk: {
+                      type: "string"
+                    },
+                    kepegawaian_jabatan: {
+                      type: "string"
+                    },
+                    kepegawaian_tempat_tugas: {
+                      type: "string"
+                    },
+                  },
+                },
+              },
+              total_data: {
+                type: "number"
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        limit,
+        offset,
+        nama,
+        nrk,
+        kecamatan_seksi,
+        kelurahan,
+        jabatan,
+        nip
+      } = request.query;
+      let exec = null;
+      let totalDt = 0;
+      let qwhere = "";
+      if (nama) {
+        qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
+      }
+      if (nrk) {
+        qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nrk}%'`;
+      }
+      if (nip) {
+        qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nip}%'`;
+      }
+      if (kecamatan_seksi) {
+        qwhere += ` AND kpns.kepegawaian_subbag_seksi_kecamatan ILIKE '%${kecamatan_seksi}%'`;
+      }
+      if (jabatan) {
+        qwhere += ` AND kpns.kepegawaian_jabatan ILIKE '%${jabatan}%'`;
+      }
+      if (kelurahan) {
+        qwhere += ` AND kpns.kepegawaian_kelurahan ILIKE '%${kelurahan}%'`;
+      }
+      exec = await fastify.kepegawaian_pns.filterRekapitulasiPejabatStruktural(limit, offset, qwhere);
+      const {
+        total
+      } = await fastify.kepegawaian_pns.countAllFilter(
+        qwhere
+      );
+      totalDt = total;
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec,
+            total_data: totalDt,
+          });
+        } else {
+          reply.send({
+            message: "success",
+            code: 204
+          });
+        }
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  )
+
   fastify.get(
     "/findone/:id/:status", {
       schema: {
@@ -1561,42 +1707,421 @@ module.exports = async function (fastify, opts) {
   //   }
   // );
 
-  // fastify.delete(
-  //   "/delete/:id",
-  //   {
-  //     schema: {
-  //       description:
-  //         "This is an endpoint for DELETING an existing endpoint kepegawaian.",
-  //       tags: ["endpoint kepegawaian"],
-  //       params: {
-  //         description: "endpoint kepegawaian by Id",
-  //         type: "object",
-  //         properties: {
-  //           id: { type: "number" },
-  //         },
-  //       },
-  //       body: {
-  //         description: "Payload for deleted data endpoint kepegawaian",
-  //         type: "object",
-  //         properties: {
-  //           deleted_by: { type: "number" },
-  //         },
-  //       },
-  //       response: {
-  //         204: {
-  //           description: "Success Response",
-  //           type: "object",
-  //           properties: {
-  //             message: { type: "string" },
-  //             code: { type: "string" },
-  //           },
-  //         },
-  //       },
-  //     },
-  //   },
-  //   async (request, reply) => {
-  //     const { id } = request.params;
-  //     const { deleted_by } = request.body;
+  fastify.delete(
+    "/delete-rekapitulasi-pegawai/:id", {
+      schema: {
+        description: "This is an endpoint for DELETING an existing endpoint data rekapitulasi pegawai pejabat struktural.",
+        tags: ["endpoint rekapitulasi pegawai pejabat struktural"],
+        params: {
+          description: "endpoint rekapitulasi pegawai pejabat struktural by Id",
+          type: "object",
+          properties: {
+            id: {
+              type: "number"
+            },
+          },
+        },
+        body: {
+          description: "Payload for deleted data endpoint rekapitulasi pegawai pejabat struktural",
+          type: "object",
+          properties: {
+            deleted_by: {
+              type: "number"
+            },
+          },
+        },
+        response: {
+          204: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        id
+      } = request.params;
+      const {
+        deleted_by
+      } = request.body;
+
+      try {
+        await fastify.kepegawaian_pns.del(id, deleted_by);
+        reply.send({
+          message: "success",
+          code: 204
+        });
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
+  fastify.get(
+    "/jumlah-pegawai-polpp", {
+      schema: {
+        description: "This is an endpoint for fetching a jumlah pegawai polpp",
+        tags: ["endpoint kepegawaian"],
+        querystring: {
+          description: "Find one jumlah pegawai polpp id",
+          type: "object",
+          properties: {
+            provinsi: {
+              type: "string"
+            },
+            kota: {
+              type: "string"
+            },
+            kecamatan: {
+              type: "string"
+            },
+            kelurahan: {
+              type: "string"
+            },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+              data: {
+                type: "object",
+                properties: {
+                  jmlh_seluruh_pegawai_satpol: {
+                    type: "number"
+                  },
+                  jmlh_seluruh_pns: {
+                    type: "number"
+                  },
+                  jmlh_seluruh_cpns: {
+                    type: "number"
+                  },
+                  jmlh_seluruh_non_pns: {
+                    type: "number"
+                  },
+                  jmlh_seluruh_non_pns_ptt: {
+                    type: "number"
+                  },
+                  jmlh_seluruh_non_pns_pjlp: {
+                    type: "number"
+                  },
+                  jmlh_seluruh_ppns_satpolpp: {
+                    type: "number"
+                  },
+                  jmlh_seluruh_ppns_unit_kerja_lain: {
+                    type: "number"
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        provinsi,
+        kota,
+        kecamatan,
+        kelurahan
+      } = request.query;
+      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp(provinsi, kota, kecamatan, kelurahan);
+
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec
+          });
+        } else {
+          reply.send({
+            message: "success",
+            code: 204
+          });
+        }
+      } catch (error) {
+        reply.send({
+          message: error,
+          code: 500
+        });
+      }
+    }
+  );
+
+  fastify.get(
+    "/jumlah-pegawai-polpp-by-pendidikan", {
+      schema: {
+        description: "This is an endpoint for fetching a jumlah pegawai polpp by pendidikan",
+        tags: ["endpoint kepegawaian"],
+        querystring: {
+          description: "Find one jumlah pegawai polpp",
+          type: "object",
+          properties: {
+            provinsi: {
+              type: "string"
+            },
+            kota: {
+              type: "string"
+            },
+            kecamatan: {
+              type: "string"
+            },
+            kelurahan: {
+              type: "string"
+            },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    pendidikan: {
+                      type: "string"
+                    },
+                    jumlah: {
+                      type: "number"
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        provinsi,
+        kota,
+        kecamatan,
+        kelurahan
+      } = request.query;
+      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_pendidikan(provinsi, kota, kecamatan, kelurahan);
+
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec
+          });
+        } else {
+          reply.send({
+            message: "success",
+            code: 204
+          });
+        }
+      } catch (error) {
+        reply.send({
+          message: error,
+          code: 500
+        });
+      }
+    }
+  );
+
+  fastify.get(
+    "/jumlah-pegawai-polpp-by-golongan", {
+      schema: {
+        description: "This is an endpoint for fetching a jumlah pegawai polpp by golongan",
+        tags: ["endpoint kepegawaian"],
+        querystring: {
+          description: "Find one jumlah pegawai polpp",
+          type: "object",
+          properties: {
+            provinsi: {
+              type: "string"
+            },
+            kota: {
+              type: "string"
+            },
+            kecamatan: {
+              type: "string"
+            },
+            kelurahan: {
+              type: "string"
+            },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    golongan: {
+                      type: "string"
+                    },
+                    jumlah: {
+                      type: "number"
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        provinsi,
+        kota,
+        kecamatan,
+        kelurahan
+      } = request.query;
+      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_golongan(provinsi, kota, kecamatan, kelurahan);
+
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec
+          });
+        } else {
+          reply.send({
+            message: "success",
+            code: 204
+          });
+        }
+      } catch (error) {
+        reply.send({
+          message: error,
+          code: 500
+        });
+      }
+    }
+  );
+
+  fastify.get(
+    "/jumlah-pegawai-polpp-by-diklat", {
+      schema: {
+        description: "This is an endpoint for fetching a jumlah pegawai polpp by diklat",
+        tags: ["endpoint kepegawaian"],
+        querystring: {
+          description: "Find one jumlah pegawai polpp",
+          type: "object",
+          properties: {
+            provinsi: {
+              type: "string"
+            },
+            kota: {
+              type: "string"
+            },
+            kecamatan: {
+              type: "string"
+            },
+            kelurahan: {
+              type: "string"
+            },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+              data: {
+                type: "object",
+                properties: {
+                  diklat_pol_pp_dasar: {
+                    type: "number"
+                  },
+                  diklat_pol_pp_strutural: {
+                    type: "number"
+                  },
+                  diklat_pol_pp_ppns: {
+                    type: "number"
+                  },
+                  diklat_fungsional_pol_pp: {
+                    type: "number"
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        provinsi,
+        kota,
+        kecamatan,
+        kelurahan
+      } = request.query;
+      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_diklat(provinsi, kota, kecamatan, kelurahan);
+
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec
+          });
+        } else {
+          reply.send({
+            message: "success",
+            code: 204
+          });
+        }
+      } catch (error) {
+        reply.send({
+          message: error,
+          code: 500
+        });
+      }
+    }
+  );
 
   //     try {
   //       await fastify.kepegawaian_pns.del(id, deleted_by);

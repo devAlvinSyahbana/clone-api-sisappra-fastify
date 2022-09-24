@@ -32,7 +32,13 @@ const master_jabatan = (db) => {
     const { max } = await db.one(
         "SELECT MAX(id) FROM master_jabatan"
       );
-      let a = "JBT" + (parseInt(max) + 1);
+
+      let a = "";
+      if (max == undefined ) {
+        a = "JBT1";
+      } else {
+        a = "JBT" + (parseInt(max) + 1);
+      }
 
     const query = db.one(
       "INSERT INTO master_jabatan (nama, kode, is_deleted, created_by) VALUES ($1, $2, 0, $3) RETURNING id",

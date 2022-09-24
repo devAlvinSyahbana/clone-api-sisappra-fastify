@@ -195,7 +195,7 @@ const kepegawaian_non_pns = (db) => {
 
   const del = async (id, deleted_by) => {
     await db.one(
-      "UPDATE kontak_pic SET is_deleted = 1, deleted_by = $2, deleted_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id",
+      "UPDATE kepegawaian_non_pns SET is_deleted = 1, deleted_by = $2, deleted_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id",
       [id, deleted_by]
     );
 

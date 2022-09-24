@@ -367,7 +367,7 @@ const kepegawaian_pns = (db) => {
 
   const del = async (id, deleted_by) => {
     await db.one(
-      "UPDATE kontak_pic SET is_deleted = 1, deleted_by = $2, deleted_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id",
+      "UPDATE kepegawaian_pns SET is_deleted = 1, deleted_by = $2, deleted_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id",
       [id, deleted_by]
     );
 
@@ -380,6 +380,19 @@ const kepegawaian_pns = (db) => {
     const query = db.one(
       "INSERT INTO kontak_pic ( nama, telepon, status_pic, is_deleted, created_by) VALUES ($1, $2, 0, 0, $3) RETURNING id",
       [nama, telepon, created_by]
+    );
+
+    return query;
+  };
+
+  const filterRekapitulasiPejabatStruktural = (limit, offset, qwhere) => {
+    const query = db.any(
+      "SELECT kpns.id, kpns.nama, kpns.kepegawaian_nip, kpns.kepegawaian_nrk, kpns.kepegawaian_jabatan, kpns.kepegawaian_tempat_tugas FROM kepegawaian_pns kpns WHERE kpns.is_deleted = 0" +
+      qwhere +
+      " LIMIT " +
+      limit +
+      " OFFSET " +
+      (parseInt(offset) - 1)
     );
 
     return query;
@@ -404,7 +417,8 @@ const kepegawaian_pns = (db) => {
     findDuk,
     filterDuk,
     findPensiun,
-    filterPensiun
+    filterPensiun,
+    filterRekapitulasiPejabatStruktural,
   };
 };
 

@@ -38,7 +38,13 @@ const master_kelurahan = (db) => {
     const { max } = await db.one(
       "SELECT MAX(id) FROM master_kelurahan"
     );
-    let a = "KEL" + (parseInt(max) + 1);
+
+    let a = "";
+    if (max == undefined ) {
+      a = "KEL1";
+    } else {
+      a = "KEL" + (parseInt(max) + 1);
+    }
 
     const query = db.one(
       "INSERT INTO master_kelurahan (nama, kode, kode_kecamatan, is_deleted, created_by) VALUES ($1, $2, $3, 0, $4) RETURNING id",
