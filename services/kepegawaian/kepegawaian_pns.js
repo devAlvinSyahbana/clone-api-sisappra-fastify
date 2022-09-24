@@ -73,7 +73,7 @@ const kepegawaian_pns = (db) => {
     const query = db.any(
       "SELECT kpns.id, kpns.nama, kpns.tempat_lahir, to_char(kpns.tgl_lahir, 'dd Mon YYYY') AS tgl_lahir, CASE WHEN kpns.jenis_kelamin = 'L' THEN 'Laki-laki' ELSE 'Perempuan' END AS jenis_kelamin, ma.nama as agama, kpns.no_hp, kpns.kepegawaian_nrk, kpns.kepegawaian_status_pegawai, kpns.foto FROM kepegawaian_pns kpns LEFT JOIN master_agama ma ON ma.id = CAST (kpns.agama AS INTEGER) WHERE kpns.is_deleted = 0" +
         qwhere +
-        " LIMIT " +
+        " LIMIT " + 
         limit +
         " OFFSET " +
         (parseInt(offset) - 1)
@@ -320,6 +320,19 @@ const kepegawaian_pns = (db) => {
     return { id };
   };
 
+  const filterRekapitulasiPejabatStruktural = (limit, offset, qwhere) => {
+    const query = db.any(
+      "SELECT kpns.id, kpns.nama, kpns.kepegawaian_nip, kpns.kepegawaian_nrk, kpns.kepegawaian_jabatan, kpns.kepegawaian_tempat_tugas FROM kepegawaian_pns kpns WHERE kpns.is_deleted = 0" +
+        qwhere +
+        " LIMIT " + 
+        limit +
+        " OFFSET " +
+        (parseInt(offset) - 1)
+    );
+
+    return query;
+  };
+
   return {
     updateFile,
     autocompliteFill,
@@ -336,6 +349,7 @@ const kepegawaian_pns = (db) => {
     findone,
     update,
     del,
+    filterRekapitulasiPejabatStruktural,
   };
 };
 

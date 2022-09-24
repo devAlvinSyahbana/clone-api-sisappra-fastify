@@ -208,6 +208,117 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
+    "/filter-rekapitulasi-pejabat-struktural",
+    {
+      schema: {
+        description:
+          "Endpoint ini digunakan untuk memfilter data Rekapitulasi Pejabat Struktural",
+        tags: ["endpoint rekapitulasi pejabat struktural"],
+        querystring: {
+          type: "object",
+          properties: {
+            limit: {
+              type: "integer",
+              default: 10,
+            },
+            offset: {
+              type: "integer",
+              default: 1,
+            },
+            nama: {
+              type: "string",
+            },
+            nip: {
+              type: "string",
+            },
+            nrk: {
+              type: "string",
+            },
+            kecamatan_seksi: {
+              type: "string",
+            },
+            kelurahan: {
+              type: "string",
+            },
+            jabatan: {
+              type: "string",
+            },
+          },
+          required: ["limit", "offset"],
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: { type: "number" },
+                    nama: { type: "string" },
+                    kepegawaian_nip: { type: "string" },
+                    kepegawaian_nrk: { type: "string" },
+                    kepegawaian_jabatan: { type: "string" },
+                    kepegawaian_tempat_tugas: { type: "string" },
+                  },
+                },
+              },
+              total_data: { type: "number" },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { limit, offset, nama, nrk, kecamatan_seksi, kelurahan, jabatan, nip } = request.query;
+      let exec = null;
+      let totalDt = 0;
+      let qwhere = "";
+      if (nama) {
+        qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
+      }
+      if (nrk) {
+        qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nrk}%'`;
+      }
+      if (nip) {
+        qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nip}%'`;
+      }
+      if (kecamatan_seksi) {
+        qwhere += ` AND kpns.kepegawaian_subbag_seksi_kecamatan ILIKE '%${kecamatan_seksi}%'`;
+      }
+      if (jabatan) {
+        qwhere += ` AND kpns.kepegawaian_jabatan ILIKE '%${jabatan}%'`;
+      }
+      if (kelurahan) {
+        qwhere += ` AND kpns.kepegawaian_kelurahan ILIKE '%${kelurahan}%'`;
+      }
+      exec = await fastify.kepegawaian_pns.filterRekapitulasiPejabatStruktural(limit, offset, qwhere);
+      const { total } = await fastify.kepegawaian_pns.countAllFilter(
+        qwhere
+      );
+      totalDt = total;
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec,
+            total_data: totalDt,
+          });
+        } else {
+          reply.send({ message: "success", code: 204 });
+        }
+      } catch (error) {
+        reply.send({ message: error.message, code: 500 });
+      }
+    }
+  )
+
+  fastify.get(
     "/findone/:id/:status",
     {
       schema: {
@@ -990,8 +1101,8 @@ module.exports = async function (fastify, opts) {
           "kepegawaian_sk_pangkat_terakhir"
         ]
           ? await truePath(
-              request.files["kepegawaian_sk_pangkat_terakhir"][0].path
-            )
+            request.files["kepegawaian_sk_pangkat_terakhir"][0].path
+          )
           : "";
 
         const kepegawaian_sk_pns = request.files["kepegawaian_sk_pns"]
@@ -1004,34 +1115,34 @@ module.exports = async function (fastify, opts) {
           "kepegawaian_diklat_pol_pp_ppns_file_sertifikat"
         ]
           ? await truePath(
-              request.files["kepegawaian_diklat_pol_pp_ppns_file_sertifikat"][0]
-                .path
-            )
+            request.files["kepegawaian_diklat_pol_pp_ppns_file_sertifikat"][0]
+              .path
+          )
           : "";
         const kepegawaian_diklat_pol_pp_strutural_file_sertifikat = request
           .files["kepegawaian_diklat_pol_pp_strutural_file_sertifikat"]
           ? await truePath(
-              request.files[
-                "kepegawaian_diklat_pol_pp_strutural_file_sertifikat"
-              ][0].path
-            )
+            request.files[
+              "kepegawaian_diklat_pol_pp_strutural_file_sertifikat"
+            ][0].path
+          )
           : "";
         const kepegawaian_diklat_pol_pp_dasar_file_sertifikat = request.files[
           "kepegawaian_diklat_pol_pp_dasar_file_sertifikat"
         ]
           ? await truePath(
-              request.files[
-                "kepegawaian_diklat_pol_pp_dasar_file_sertifikat"
-              ][0].path
-            )
+            request.files[
+              "kepegawaian_diklat_pol_pp_dasar_file_sertifikat"
+            ][0].path
+          )
           : "";
         const kepegawaian_diklat_fungsional_pol_pp_file_sertifikat = request
           .files["kepegawaian_diklat_fungsional_pol_pp_file_sertifikat"]
           ? await truePath(
-              request.files[
-                "kepegawaian_diklat_fungsional_pol_pp_file_sertifikat"
-              ][0].path
-            )
+            request.files[
+              "kepegawaian_diklat_fungsional_pol_pp_file_sertifikat"
+            ][0].path
+          )
           : "";
         const foto = request.files["foto"]
           ? await truePath(request.files["foto"][0].path)
