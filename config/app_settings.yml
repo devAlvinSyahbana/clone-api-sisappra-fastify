@@ -1,4 +1,5 @@
-
 kepegawaian:
   pns:
+    max_usia_produktif: 58
+  non_pns:
     max_usia_produktif: 58
