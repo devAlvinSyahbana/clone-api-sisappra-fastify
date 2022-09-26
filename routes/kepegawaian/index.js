@@ -136,13 +136,13 @@ module.exports = async function (fastify, opts) {
         } else {
           if (nama || nrk || nopegawai) {
             if (nama) {
-              qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
+              qwhere += ` AND kpnns.nama ILIKE '%${nama}%'`;
             }
             if (nrk) {
-              qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nrk}%'`;
+              qwhere += ` AND kpnns.kepegawaian_nrk ILIKE '%${nrk}%'`;
             }
             if (nopegawai) {
-              qwhere += ` AND kpns.kepegawaian_nptt_npjlp ILIKE '%${nopegawai}%'`;
+              qwhere += ` AND kpnns.kepegawaian_nptt_npjlp ILIKE '%${nopegawai}%'`;
             }
             exec = await fastify.kepegawaian_non_pns.filter(
               limit,
