@@ -1903,18 +1903,27 @@ module.exports = async function (fastify, opts) {
                 type: "string"
               },
               data: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    pendidikan: {
-                      type: "string"
-                    },
-                    jumlah: {
-                      type: "number"
+                type: "object",
+                properties: {
+                  list: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        pendidikan: {
+                          type: "string"
+                        },
+                        jumlah: {
+                          type: "number"
+                        },
+                      },
                     },
                   },
-                },
+                  jmlh_keseluruhan: {
+                    type: "number"
+                  },
+                }
+
               },
             },
           },
@@ -1930,12 +1939,23 @@ module.exports = async function (fastify, opts) {
       } = request.query;
       const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_pendidikan(provinsi, kota, kecamatan, kelurahan);
 
+      let jum = 0
+      for (let index = 0; index < exec.length; index++) {
+        jum = parseInt(exec[index].jumlah) + parseInt(jum);
+      }
+
+      let data = {
+        list: exec,
+        jmlh_keseluruhan: jum,
+      }
+
       try {
         if (exec) {
           reply.send({
             message: "success",
             code: 200,
-            data: exec
+            data: data,
+            
           });
         } else {
           reply.send({
@@ -1987,18 +2007,27 @@ module.exports = async function (fastify, opts) {
                 type: "string"
               },
               data: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    golongan: {
-                      type: "string"
-                    },
-                    jumlah: {
-                      type: "number"
+                type: "object",
+                properties: {
+                  list: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        golongan: {
+                          type: "string"
+                        },
+                        jumlah: {
+                          type: "number"
+                        },
+                      },
                     },
                   },
-                },
+                  jmlh_keseluruhan: {
+                    type: "number"
+                  },
+                }
+
               },
             },
           },
@@ -2014,12 +2043,22 @@ module.exports = async function (fastify, opts) {
       } = request.query;
       const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_golongan(provinsi, kota, kecamatan, kelurahan);
 
+      let jum = 0
+      for (let index = 0; index < exec.length; index++) {
+        jum = parseInt(exec[index].jumlah) + parseInt(jum);
+      }
+
+      let data = {
+        list: exec,
+        jmlh_keseluruhan: jum,
+      }
+
       try {
         if (exec) {
           reply.send({
             message: "success",
             code: 200,
-            data: exec
+            data: data
           });
         } else {
           reply.send({
@@ -2083,6 +2122,9 @@ module.exports = async function (fastify, opts) {
                     type: "number"
                   },
                   diklat_fungsional_pol_pp: {
+                    type: "number"
+                  },
+                  jmlh_keseluruhan: {
                     type: "number"
                   },
                 },
