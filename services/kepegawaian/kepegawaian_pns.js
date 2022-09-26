@@ -427,6 +427,7 @@ const kepegawaian_pns = (db) => {
     findPensiun,
     filterPensiun,
     filterRekapitulasiPejabatStruktural,
+    getDataUnduhPejabatStruktural,
   };
 };
 

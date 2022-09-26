@@ -676,18 +676,19 @@ module.exports = async function (fastify, opts) {
           qwhere += ` AND kpns.kepegawaian_kelurahan ILIKE '%${kelurahan}%'`;
         }
 
+        
         const getData = await fastify.kepegawaian_pns.getDataUnduhPejabatStruktural(qwhere);
-        console.log(getData)
+        
         const convertData = await getData.map(function (item) {
           return Object.values(item);
         });
         dataKepegawaian = convertData;
-
+        console.log(dataKepegawaian)
         // Definisikan rows untuk ditulis ke dalam spreadsheet
         const wsDataKepegawaian = [headerKepegawaian, ...dataKepegawaian];
-
+        console.log(wsDataKepegawaian)
         // Buat Workbook
-        const fileName = "DATA PEGAWAIAN PEJABAT STRUKTURAL ";
+        const fileName = "DATA PEGAWAIAN PEJABAT STRUKTURAL";
         wb.Props = {
           Title: fileName,
           Author: "SISAPPRA - KEPEGAWAIAN",
