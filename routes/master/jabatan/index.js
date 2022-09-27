@@ -24,6 +24,7 @@ module.exports = async function (fastify, opts) {
                     id: { type: "number" },
                     jabatan: { type: "string" },
                     kode: { type: "string" },
+                    status: { type: "string" },
                   },
                 },
               },
@@ -73,6 +74,7 @@ module.exports = async function (fastify, opts) {
                   id: { type: "number" },
                   jabatan: { type: "string" },
                   kode: { type: "string" },
+                  status: { type: "string" },
                 },
               },
             },
@@ -122,6 +124,7 @@ module.exports = async function (fastify, opts) {
                   id: { type: "number" },
                   jabatan: { type: "string" },
                   kode: { type: "string" },
+                  status: { type: "string" },
                 },
               },
             },
@@ -156,6 +159,7 @@ module.exports = async function (fastify, opts) {
           type: "object",
           properties: {
             jabatan: { type: "string" },
+            status: { type: "string" },
             created_by: { type: "number" },
           },
         },
@@ -172,10 +176,10 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {jabatan,created_by} = request.body;
+      const {jabatan, status, created_by} = request.body;
 
       try {
-        await fastify.master_jabatan.create(jabatan,created_by);
+        await fastify.master_jabatan.create(jabatan, status, created_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -201,6 +205,7 @@ module.exports = async function (fastify, opts) {
           type: "object",
           properties: {
             jabatan: { type: "string" },
+            status: { type: "string" },
             updated_by: { type: "number" },
           },
         },
@@ -218,10 +223,10 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const {jabatan, updated_by } = request.body;
+      const {jabatan, status, updated_by } = request.body;
 
       try {
-        await fastify.master_jabatan.update(id,jabatan,updated_by);
+        await fastify.master_jabatan.update(id,jabatan, status, updated_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });

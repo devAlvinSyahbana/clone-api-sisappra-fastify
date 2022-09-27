@@ -599,4 +599,126 @@ module.exports = async function (fastify, opts) {
       }
     }
   );
+
+  fastify.get(
+    "/unduh-data-pegawai-struktural",
+    {
+      schema: {
+        description:
+          "Endpoint ini digunakan untuk mengunduh data pegawai pejabat struktural",
+        tags: ["endpoint pegawai pejabat struktural"],
+        querystring: {
+          type: "object",
+          properties: {
+            nama: {
+              type: "string",
+            },
+            nip: {
+              type: "string",
+            },
+            nrk: {
+              type: "string",
+            },
+            kecamatan_seksi: {
+              type: "string",
+            },
+            kelurahan: {
+              type: "string",
+            },
+            jabatan: {
+              type: "string",
+            },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "string",
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { nama, nrk, kecamatan_seksi, kelurahan, jabatan, nip } = request.query;
+      let headerKepegawaian = [];
+      let dataKepegawaian = [];
+      try {
+        const wb = XLSX.utils.book_new();
+        // Definisikan header
+
+        headerKepegawaian = [
+          "Id",
+          "Nama",
+          "Nip",
+          "Nrk",
+          "Jabatan",
+          "Tempat Tugas",
+          "Keterangan",
+        ];
+        
+        let qwhere = "";
+        if (nama) {
+          qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
+        }
+        if (nrk) {
+          qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nrk}%'`;
+        }
+        if (nip) {
+          qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nip}%'`;
+        }
+        if (kecamatan_seksi) {
+          qwhere += ` AND kpns.kepegawaian_subbag_seksi_kecamatan ILIKE '%${kecamatan_seksi}%'`;
+        }
+        if (jabatan) {
+          qwhere += ` AND kpns.kepegawaian_jabatan ILIKE '%${jabatan}%'`;
+        }
+        if (kelurahan) {
+          qwhere += ` AND kpns.kepegawaian_kelurahan ILIKE '%${kelurahan}%'`;
+        }
+
+        
+        const getData = await fastify.kepegawaian_pns.getDataUnduhPejabatStruktural(qwhere);
+        
+        const convertData = await getData.map(function (item) {
+          return Object.values(item);
+        });
+        dataKepegawaian = convertData;
+        console.log(dataKepegawaian)
+        // Definisikan rows untuk ditulis ke dalam spreadsheet
+        const wsDataKepegawaian = [headerKepegawaian, ...dataKepegawaian];
+        console.log(wsDataKepegawaian)
+        // Buat Workbook
+        const fileName = "DATA PEGAWAIAN PEJABAT STRUKTURAL";
+        wb.Props = {
+          Title: fileName,
+          Author: "SISAPPRA - KEPEGAWAIAN",
+          CreatedDate: new Date(),
+        };
+        // Buat Sheet
+        wb.SheetNames.push("DATA PEJABAT STRUKTURAL");
+
+        // Buat Sheet dengan Data
+        const ws_kepegawaian = XLSX.utils.aoa_to_sheet(wsDataKepegawaian);
+
+        // const ws = XLSX.utils.aoa_to_sheet(wsData);
+        wb.Sheets["DATA KEPEGAWAIAN"] = ws_kepegawaian;
+
+
+        const wopts = { bookType: "xlsx", bookSST: false, type: "buffer" };
+        const wBuffer = XLSX.write(wb, wopts);
+
+        reply.header(
+          "Content-Type",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
+        reply.header(
+          "Content-Disposition",
+          "attachment; filename=" + `${fileName}.xlsx`
+        );
+        reply.send(wBuffer);
+      } catch (error) {
+        reply.send({ message: error.message, code: 500 });
+      }
+    }
+  );
 };

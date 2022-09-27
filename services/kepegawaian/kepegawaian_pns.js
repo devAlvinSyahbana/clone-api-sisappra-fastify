@@ -18,6 +18,14 @@ const kepegawaian_pns = (db) => {
     return query;
   };
 
+  const getDataUnduhPejabatStruktural = (qwhere) => {
+    const query = db.any(
+      "SELECT kpns.id, kpns.nama, kpns.kepegawaian_nip, kpns.kepegawaian_nrk, kpns.kepegawaian_jabatan, kpns.kepegawaian_tempat_tugas, '' as kepegawaian_keterangan_pejabat_struktural FROM kepegawaian_pns kpns WHERE kpns.is_deleted = 0" + qwhere
+    );
+
+    return query;
+  };
+
   const countKeluarga = (id) => {
     const query = db.one(
       "SELECT COUNT(id) as total FROM kepegawaian_pns_keluarga WHERE id_pegawai = " +
@@ -430,6 +438,7 @@ const kepegawaian_pns = (db) => {
     createPensiun,
     autoaAddFillPensiun,
     filterRekapitulasiPejabatStruktural,
+    getDataUnduhPejabatStruktural,
   };
 };
 
