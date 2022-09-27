@@ -20,5 +20,3 @@ module.exports = fp((fastify, options, next) => {
     fastify.decorate("dashboard_plotting_anggota", dashboard_plotting_anggota(fastify.db));
     next();
 });
-
-1

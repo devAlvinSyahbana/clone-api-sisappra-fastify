@@ -37,5 +37,3 @@ module.exports = fp((fastify, options, next) => {
     fastify.decorate("dashboard_tramtibum", dashboard_tramtibum(fastify.db));
     next();
 });
-
-1

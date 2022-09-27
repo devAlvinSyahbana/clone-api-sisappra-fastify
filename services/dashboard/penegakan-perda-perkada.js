@@ -27,5 +27,3 @@ module.exports = fp((fastify, options, next) => {
     fastify.decorate("dashboard_penegakan_perda_perkada", perda(fastify.db));
     next();
 });
-
-1

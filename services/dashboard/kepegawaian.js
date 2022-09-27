@@ -77,5 +77,3 @@ module.exports = fp((fastify, options, next) => {
     fastify.decorate("kepegawaian", kepegawaian(fastify.db));
     next();
 });
-
-1
