@@ -1041,7 +1041,7 @@ module.exports = async function (fastify, opts) {
   fastify.get(
     "/auto-search-pegawai", {
       schema: {
-        description: "Endpoint ini digunakan untuk autocomplite kepegawaian berstatus PNS, PTT, PJLP",
+        description: "Endpoint ini digunakan untuk autocomplete kepegawaian berstatus PNS, PTT, PJLP",
         tags: ["endpoint kepegawaian"],
         querystring: {
           type: "object",
@@ -2123,17 +2123,8 @@ module.exports = async function (fastify, opts) {
     }
   );
 
-  //     try {
-  //       await fastify.kepegawaian_pns.del(id, deleted_by);
-  //       reply.send({ message: "success", code: 204 });
-  //     } catch (error) {
-  //       reply.send({ message: error.message, code: 500 });
-  //     }
-  //   }
-  // );
 
-  // ^  duk
-
+  /* ----------------------------------- duk ---------------------------------- */
   // ^ DUK find table and filter
   fastify.get(
     "/daftar_urut", {
@@ -2512,7 +2503,8 @@ module.exports = async function (fastify, opts) {
     }
   );
 
-  // ^ PENSIUN 
+  /* --------------------------------- pensiun -------------------------------- */
+  // ^ Find and Filter Pensiun 
   fastify.get(
     "/pegawai-pensiun", {
       schema: {
@@ -2693,4 +2685,288 @@ module.exports = async function (fastify, opts) {
       }
     }
   );
+
+  // ^ Tambah Pensiun
+  fastify.put(
+    "/updatePensiun", {
+      schema: {
+        description: "This is an endpoint for creating a endpoint kepegawaian",
+        tags: ["endpoint kepegawaian"],
+        params: {
+          description: "Master area dampak risiko by Id",
+          type: "object",
+          properties: {
+            status: {
+              type: "string"
+            },
+            nomor: {
+              type: "string"
+            }
+          },
+        },
+        body: {
+          description: "Payload for creating a endpoint kepegawaian",
+          type: "object",
+          properties: {
+            no_pegawai: {
+              type: "string"
+            },
+            nama: {
+              type: "number"
+            },
+            kepegawaian_jabatan: {
+              type: "string"
+            },
+            kepegawaian_tempat_tugas: {
+              type: "string"
+            },
+            kepegawaian_subbag_seksi_kecamatan: {
+              type: "number"
+            },
+            tempat_lahir: {
+              type: "string"
+            },
+            tgl_lahir: {
+              type: "string"
+            },
+            tahun_pensiun: {
+              type: "number"
+            },
+            keterangan_pensiun: {
+              type: "number"
+            }
+          },
+        },
+        response: {
+          201: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    status: {
+                      type: "number"
+                    },
+                    nomor: {
+                      type: "number"
+                    },
+                    no_pegawai: {
+                      type: "string"
+                    },
+                    nama: {
+                      type: "string"
+                    },
+                    kepegawaian_jabatan: {
+                      type: "number"
+                    },
+                    kepegawaian_tempat_tugas: {
+                      type: "string"
+                    },
+                    kepegawaian_subbag_seksi_kecamatan: {
+                      type: "string"
+                    },
+                    tempat_lahir: {
+                      type: "string"
+                    },
+                    tgl_lahir: {
+                      type: "number"
+                    },
+                    tahun_pensiun: {
+                      type: "string"
+                    },
+                    keterangan_pensiun: {
+                      type: "string"
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        status,
+        nomor
+      } = request.params;
+      const {
+        no_pegawai,
+        nama,
+        kepegawaian_jabatan,
+        kepegawaian_tempat_tugas,
+        kepegawaian_subbag_seksi_kecamatan,
+        tempat_lahir,
+        tgl_lahir,
+        tahun_pensiun,
+        keterangan_pensiun
+      } = request.body;
+      let exec = null;
+      let qwhere = "";
+      if (status === "PNS") {
+        exec = await fastify.kepegawaian_pns.createPensiun(
+          nomor,
+          no_pegawai,
+          nama,
+          kepegawaian_jabatan,
+          kepegawaian_tempat_tugas,
+          kepegawaian_subbag_seksi_kecamatan,
+          tempat_lahir,
+          tgl_lahir,
+          tahun_pensiun,
+          keterangan_pensiun);
+      } else {
+        exec = await fastify.kepegawaian_non_pns.createPensiun(
+          nomor,
+          no_pegawai,
+          nama,
+          kepegawaian_jabatan,
+          kepegawaian_tempat_tugas,
+          kepegawaian_subbag_seksi_kecamatan,
+          tempat_lahir,
+          tgl_lahir,
+          tahun_pensiun,
+          keterangan_pensiun);
+      }
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec,
+          });
+        } else {
+          reply.send({
+            message: "success",
+            code: 204
+          });
+        }
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
+  // ^ autocomplete add pensiun
+  fastify.get(
+    "/auto-complete-pensiun", {
+      schema: {
+        description: "Endpoint ini digunakan untuk autocomplete kepegawaian berstatus PNS, PTT, PJLP",
+        tags: ["endpoint kepegawaian"],
+        querystring: {
+          type: "object",
+          properties: {
+            status: {
+              type: "string",
+            },
+            nomor: {
+              type: "string",
+            },
+          },
+          required: ["status", "nomor"],
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: {
+                      type: "number"
+                    },
+                    nama: {
+                      type: "string"
+                    },
+                    nomor: {
+                      type: "string"
+                    },
+                    no_pegawai: {
+                      type: "string"
+                    },
+                    kepegawaian_jabatan: {
+                      type: "number"
+                    },
+                    kepegawaian_tempat_tugas: {
+                      type: "string"
+                    },
+                    kepegawaian_subbag_seksi_kecamatan: {
+                      type: "string"
+                    },
+                    tempat_lahir: {
+                      type: "string"
+                    },
+                    tgl_lahir: {
+                      type: "number"
+                    },
+                    tahun_pensiun: {
+                      type: "string"
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        status,
+        nomor
+      } = request.query;
+      let exec = null;
+      let qwhere = "";
+      if (status === "PNS") {
+        qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nomor}%'`;
+        exec = await fastify.kepegawaian_pns.autoaAddFillPensiun(qwhere);
+      } else {
+        qwhere += ` AND kpnns.kepegawaian_nptt_npjlp ILIKE '%${nomor}%'`;
+        exec = await fastify.kepegawaian_non_pns.autocompliteFill(qwhere);
+      }
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec,
+          });
+        } else {
+          reply.send({
+            message: "success",
+            code: 204
+          });
+        }
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
+
+  /* ------------------------------ naik pangkat ------------------------------ */
 };

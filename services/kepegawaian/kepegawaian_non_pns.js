@@ -73,34 +73,6 @@ const kepegawaian_non_pns = (db) => {
     return query;
   };
 
-  // ^ find pensiun
-  const findPensiun = (limit, offset, status) => {
-    const query = db.any(
-      "SELECT nama, kepegawaian_nip, kepegawaian_nptt_npjlp as no_pegawai, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir,   EXTRACT(YEAR FROM tgl_lahir) + 58 as tahun_pensiun, keterangan_pensiun FROM public.kepegawaian_non_pns knpns WHERE is_deleted = 0 AND knpns.kepegawaian_status_pegawai = '" +
-      status +
-      "' ORDER BY created_at DESC LIMIT " +
-      limit +
-      " OFFSET " +
-      offset
-    );
-
-    return query;
-  };
-
-  // ^ find duk
-  const findDuk = (limit, offset, status) => {
-    const query = db.any(
-      "SELECT knpns.id, knpns.nama, knpns.tempat_lahir, to_char(knpns.tgl_lahir, 'dd Mon YYYY') AS tgl_lahir, CASE WHEN knpns.jenis_kelamin = 'L' THEN 'Laki-laki' ELSE 'Perempuan' END AS jenis_kelamin, ma.nama as agama, knpns.nik, knpns.no_kk, knpns.status_perkawinan, knpns.no_hp, knpns.sesuai_ktp_alamat, knpns.sesuai_ktp_rtrw, knpns.sesuai_ktp_provinsi, knpns.sesuai_ktp_kabkota, knpns.sesuai_ktp_kecamatan, knpns.sesuai_ktp_kelurahan, knpns.domisili_alamat, knpns.domisili_rtrw, knpns.domisili_provinsi, knpns.domisili_kabkota, knpns.domisili_kecamatan, knpns.domisili_kelurahan, knpns.kepegawaian_nptt_npjlp, knpns.kepegawaian_nip, mpang.nama as kepegawaian_pangkat, mg.nama as kepegawaian_golongan, knpns.kepegawaian_tmtpangkat, mp.nama as kepegawaian_pendidikan_pada_sk, mj.nama as kepegawaian_jabatan, mes.nama as kepegawaian_eselon, knpns.kepegawaian_tempat_tugas, knpns.kepegawaian_subbag_seksi_kecamatan, knpns.kepegawaian_kelurahan, knpns.kepegawaian_status_pegawai, knpns.kepegawaian_no_rekening, knpns.kepegawaian_no_karpeg, knpns.kepegawaian_no_kasirkasur, knpns.kepegawaian_no_taspen, knpns.kepegawaian_npwp, knpns.kepegawaian_no_bpjs_askes, knpns.kepegawaian_tmt_cpns, knpns.kepegawaian_tmt_pns, knpns.kepegawaian_tgl_sk_pns, knpns.kepegawaian_no_sk_pangkat_terakhir, knpns.kepegawaian_tgl_sk_pangkat_terakhir, knpns.kepegawaian_sk_pangkat_terakhir, knpns.kepegawaian_diklat_pol_pp_dasar, knpns.kepegawaian_diklat_pol_pp_dasar_no_sertifikat, knpns.kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat, knpns.kepegawaian_diklat_pol_pp_strutural, knpns.kepegawaian_diklat_pol_pp_strutural_no_sertifikat, knpns.kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat, knpns.kepegawaian_diklat_pol_pp_ppns, knpns.kepegawaian_diklat_pol_pp_ppns_no_sertifikat, knpns.kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat, knpns.kepegawaian_diklat_fungsional_pol_pp, knpns.kepegawaian_diklat_fungsional_pol_pp_no_sertifikat, knpns.kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat FROM kepegawaian_non_pns knpns LEFT JOIN master_agama ma ON ma.id = CAST (knpns.agama AS INTEGER) LEFT JOIN master_golongan mg ON mg.id = CAST (knpns.kepegawaian_golongan AS INTEGER) LEFT JOIN master_pendidikan mp ON mp.id = CAST (knpns.kepegawaian_pendidikan_pada_sk AS INTEGER) LEFT JOIN master_jabatan mj ON mj.id = CAST (knpns.kepegawaian_jabatan AS INTEGER) LEFT JOIN master_eselon mes ON mes.id = knpns.kepegawaian_eselon LEFT JOIN master_pangkat mpang ON mpang.id = CAST (knpns.kepegawaian_pangkat AS INTEGER) WHERE knpns.is_deleted = 0 AND knpns.kepegawaian_status_pegawai = '" +
-      status +
-      "' ORDER BY mj.id ASC LIMIT " +
-      limit +
-      " OFFSET " +
-      offset
-    );
-
-    return query;
-  };
-
   // ^ filter 
   const filter = (limit, offset, status, qwhere) => {
     const query = db.any(
@@ -111,36 +83,6 @@ const kepegawaian_non_pns = (db) => {
       " LIMIT " +
       limit +
       " OFFSET " +
-      (parseInt(offset) - 1)
-    );
-
-    return query;
-  };
-
-  // ^ filter pensiun
-  const filterPensiun = (limit, offset, qwhere) => {
-    const query = db.any(
-      "SELECT  nama, kepegawaian_nip, kepegawaian_nptt_npjlp as no_pegawai, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir,   EXTRACT(YEAR FROM tgl_lahir) + 58 as tahun_pensiun, keterangan_pensiun FROM public.kepegawaian_non_pns knpns WHERE is_deleted = 0" +
-      qwhere +
-      " LIMIT " +
-      limit +
-      " OFFSET " +
-      (parseInt(offset) - 1)
-    );
-
-    return query;
-  };
-
-  // ^ filter duk
-  const filterDuk = (limit, offset, status, qwhere) => {
-    const query = db.any(
-      "SELECT knpns.id, knpns.nama, knpns.tempat_lahir, to_char(knpns.tgl_lahir, 'dd Mon YYYY') AS tgl_lahir, CASE WHEN knpns.jenis_kelamin = 'L' THEN 'Laki-laki' ELSE 'Perempuan' END AS jenis_kelamin, ma.nama as agama, knpns.nik, knpns.no_kk, knpns.status_perkawinan, knpns.no_hp, knpns.sesuai_ktp_alamat, knpns.sesuai_ktp_rtrw, knpns.sesuai_ktp_provinsi, knpns.sesuai_ktp_kabkota, knpns.sesuai_ktp_kecamatan, knpns.sesuai_ktp_kelurahan, knpns.domisili_alamat, knpns.domisili_rtrw, knpns.domisili_provinsi, knpns.domisili_kabkota, knpns.domisili_kecamatan, knpns.domisili_kelurahan, knpns.kepegawaian_nptt_npjlp, knpns.kepegawaian_nip, mpang.nama as kepegawaian_pangkat, mg.nama as kepegawaian_golongan, knpns.kepegawaian_tmtpangkat, mp.nama as kepegawaian_pendidikan_pada_sk, mj.nama as kepegawaian_jabatan, mes.nama as kepegawaian_eselon, knpns.kepegawaian_tempat_tugas, knpns.kepegawaian_subbag_seksi_kecamatan, knpns.kepegawaian_kelurahan, knpns.kepegawaian_status_pegawai, knpns.kepegawaian_no_rekening, knpns.kepegawaian_no_karpeg, knpns.kepegawaian_no_kasirkasur, knpns.kepegawaian_no_taspen, knpns.kepegawaian_npwp, knpns.kepegawaian_no_bpjs_askes, knpns.kepegawaian_tmt_cpns, knpns.kepegawaian_tmt_pns, knpns.kepegawaian_tgl_sk_pns, knpns.kepegawaian_no_sk_pangkat_terakhir, knpns.kepegawaian_tgl_sk_pangkat_terakhir, knpns.kepegawaian_sk_pangkat_terakhir, knpns.kepegawaian_diklat_pol_pp_dasar, knpns.kepegawaian_diklat_pol_pp_dasar_no_sertifikat, knpns.kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat, knpns.kepegawaian_diklat_pol_pp_strutural, knpns.kepegawaian_diklat_pol_pp_strutural_no_sertifikat, knpns.kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat, knpns.kepegawaian_diklat_pol_pp_ppns, knpns.kepegawaian_diklat_pol_pp_ppns_no_sertifikat, knpns.kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat, knpns.kepegawaian_diklat_fungsional_pol_pp, knpns.kepegawaian_diklat_fungsional_pol_pp_no_sertifikat, knpns.kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat FROM kepegawaian_non_pns knpns LEFT JOIN master_agama ma ON ma.id = CAST (knpns.agama AS INTEGER) LEFT JOIN master_golongan mg ON mg.id = CAST (knpns.kepegawaian_golongan AS INTEGER) LEFT JOIN master_pendidikan mp ON mp.id = CAST (knpns.kepegawaian_pendidikan_pada_sk AS INTEGER) LEFT JOIN master_jabatan mj ON mj.id = CAST (knpns.kepegawaian_jabatan AS INTEGER) LEFT JOIN master_eselon mes ON mes.id = knpns.kepegawaian_eselon LEFT JOIN master_pangkat mpang ON mpang.id = CAST (knpns.kepegawaian_pangkat AS INTEGER)  WHERE knpns.is_deleted = 0 AND knpns.kepegawaian_status_pegawai = '" +
-      status +
-      "'" +
-      qwhere +
-      " LIMIT " +
-      limit +
-      " ORDER BY mj.id ASC OFFSET " +
       (parseInt(offset) - 1)
     );
 
@@ -203,6 +145,94 @@ const kepegawaian_non_pns = (db) => {
       id
     };
   };
+
+  /* ----------------------------------- duk ---------------------------------- */
+
+  // ^ find duk
+  const findDuk = (limit, offset, status) => {
+    const query = db.any(
+      "SELECT knpns.id, knpns.nama, knpns.tempat_lahir, to_char(knpns.tgl_lahir, 'dd Mon YYYY') AS tgl_lahir, CASE WHEN knpns.jenis_kelamin = 'L' THEN 'Laki-laki' ELSE 'Perempuan' END AS jenis_kelamin, ma.nama as agama, knpns.nik, knpns.no_kk, knpns.status_perkawinan, knpns.no_hp, knpns.sesuai_ktp_alamat, knpns.sesuai_ktp_rtrw, knpns.sesuai_ktp_provinsi, knpns.sesuai_ktp_kabkota, knpns.sesuai_ktp_kecamatan, knpns.sesuai_ktp_kelurahan, knpns.domisili_alamat, knpns.domisili_rtrw, knpns.domisili_provinsi, knpns.domisili_kabkota, knpns.domisili_kecamatan, knpns.domisili_kelurahan, knpns.kepegawaian_nptt_npjlp, knpns.kepegawaian_nip, mpang.nama as kepegawaian_pangkat, mg.nama as kepegawaian_golongan, knpns.kepegawaian_tmtpangkat, mp.nama as kepegawaian_pendidikan_pada_sk, mj.nama as kepegawaian_jabatan, mes.nama as kepegawaian_eselon, knpns.kepegawaian_tempat_tugas, knpns.kepegawaian_subbag_seksi_kecamatan, knpns.kepegawaian_kelurahan, knpns.kepegawaian_status_pegawai, knpns.kepegawaian_no_rekening, knpns.kepegawaian_no_karpeg, knpns.kepegawaian_no_kasirkasur, knpns.kepegawaian_no_taspen, knpns.kepegawaian_npwp, knpns.kepegawaian_no_bpjs_askes, knpns.kepegawaian_tmt_cpns, knpns.kepegawaian_tmt_pns, knpns.kepegawaian_tgl_sk_pns, knpns.kepegawaian_no_sk_pangkat_terakhir, knpns.kepegawaian_tgl_sk_pangkat_terakhir, knpns.kepegawaian_sk_pangkat_terakhir, knpns.kepegawaian_diklat_pol_pp_dasar, knpns.kepegawaian_diklat_pol_pp_dasar_no_sertifikat, knpns.kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat, knpns.kepegawaian_diklat_pol_pp_strutural, knpns.kepegawaian_diklat_pol_pp_strutural_no_sertifikat, knpns.kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat, knpns.kepegawaian_diklat_pol_pp_ppns, knpns.kepegawaian_diklat_pol_pp_ppns_no_sertifikat, knpns.kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat, knpns.kepegawaian_diklat_fungsional_pol_pp, knpns.kepegawaian_diklat_fungsional_pol_pp_no_sertifikat, knpns.kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat FROM kepegawaian_non_pns knpns LEFT JOIN master_agama ma ON ma.id = CAST (knpns.agama AS INTEGER) LEFT JOIN master_golongan mg ON mg.id = CAST (knpns.kepegawaian_golongan AS INTEGER) LEFT JOIN master_pendidikan mp ON mp.id = CAST (knpns.kepegawaian_pendidikan_pada_sk AS INTEGER) LEFT JOIN master_jabatan mj ON mj.id = CAST (knpns.kepegawaian_jabatan AS INTEGER) LEFT JOIN master_eselon mes ON mes.id = knpns.kepegawaian_eselon LEFT JOIN master_pangkat mpang ON mpang.id = CAST (knpns.kepegawaian_pangkat AS INTEGER) WHERE knpns.is_deleted = 0 AND knpns.kepegawaian_status_pegawai = '" +
+      status +
+      "' ORDER BY mj.id ASC LIMIT " +
+      limit +
+      " OFFSET " +
+      offset
+    );
+
+    return query;
+  };
+
+  // ^ filter duk
+  const filterDuk = (limit, offset, status, qwhere) => {
+    const query = db.any(
+      "SELECT knpns.id, knpns.nama, knpns.tempat_lahir, to_char(knpns.tgl_lahir, 'dd Mon YYYY') AS tgl_lahir, CASE WHEN knpns.jenis_kelamin = 'L' THEN 'Laki-laki' ELSE 'Perempuan' END AS jenis_kelamin, ma.nama as agama, knpns.nik, knpns.no_kk, knpns.status_perkawinan, knpns.no_hp, knpns.sesuai_ktp_alamat, knpns.sesuai_ktp_rtrw, knpns.sesuai_ktp_provinsi, knpns.sesuai_ktp_kabkota, knpns.sesuai_ktp_kecamatan, knpns.sesuai_ktp_kelurahan, knpns.domisili_alamat, knpns.domisili_rtrw, knpns.domisili_provinsi, knpns.domisili_kabkota, knpns.domisili_kecamatan, knpns.domisili_kelurahan, knpns.kepegawaian_nptt_npjlp, knpns.kepegawaian_nip, mpang.nama as kepegawaian_pangkat, mg.nama as kepegawaian_golongan, knpns.kepegawaian_tmtpangkat, mp.nama as kepegawaian_pendidikan_pada_sk, mj.nama as kepegawaian_jabatan, mes.nama as kepegawaian_eselon, knpns.kepegawaian_tempat_tugas, knpns.kepegawaian_subbag_seksi_kecamatan, knpns.kepegawaian_kelurahan, knpns.kepegawaian_status_pegawai, knpns.kepegawaian_no_rekening, knpns.kepegawaian_no_karpeg, knpns.kepegawaian_no_kasirkasur, knpns.kepegawaian_no_taspen, knpns.kepegawaian_npwp, knpns.kepegawaian_no_bpjs_askes, knpns.kepegawaian_tmt_cpns, knpns.kepegawaian_tmt_pns, knpns.kepegawaian_tgl_sk_pns, knpns.kepegawaian_no_sk_pangkat_terakhir, knpns.kepegawaian_tgl_sk_pangkat_terakhir, knpns.kepegawaian_sk_pangkat_terakhir, knpns.kepegawaian_diklat_pol_pp_dasar, knpns.kepegawaian_diklat_pol_pp_dasar_no_sertifikat, knpns.kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat, knpns.kepegawaian_diklat_pol_pp_strutural, knpns.kepegawaian_diklat_pol_pp_strutural_no_sertifikat, knpns.kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat, knpns.kepegawaian_diklat_pol_pp_ppns, knpns.kepegawaian_diklat_pol_pp_ppns_no_sertifikat, knpns.kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat, knpns.kepegawaian_diklat_fungsional_pol_pp, knpns.kepegawaian_diklat_fungsional_pol_pp_no_sertifikat, knpns.kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat FROM kepegawaian_non_pns knpns LEFT JOIN master_agama ma ON ma.id = CAST (knpns.agama AS INTEGER) LEFT JOIN master_golongan mg ON mg.id = CAST (knpns.kepegawaian_golongan AS INTEGER) LEFT JOIN master_pendidikan mp ON mp.id = CAST (knpns.kepegawaian_pendidikan_pada_sk AS INTEGER) LEFT JOIN master_jabatan mj ON mj.id = CAST (knpns.kepegawaian_jabatan AS INTEGER) LEFT JOIN master_eselon mes ON mes.id = knpns.kepegawaian_eselon LEFT JOIN master_pangkat mpang ON mpang.id = CAST (knpns.kepegawaian_pangkat AS INTEGER)  WHERE knpns.is_deleted = 0 AND knpns.kepegawaian_status_pegawai = '" +
+      status +
+      "'" +
+      qwhere +
+      " LIMIT " +
+      limit +
+      " ORDER BY mj.id ASC OFFSET " +
+      (parseInt(offset) - 1)
+    );
+
+    return query;
+  };
+
+  /* --------------------------------- pensiun -------------------------------- */
+
+  // ^ find pensiun
+  const findPensiun = (limit, offset, status) => {
+    const query = db.any(
+      "SELECT nama, kepegawaian_nip, kepegawaian_nptt_npjlp as no_pegawai, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir,   EXTRACT(YEAR FROM tgl_lahir) + 58 as tahun_pensiun, keterangan_pensiun FROM public.kepegawaian_non_pns knpns WHERE is_deleted = 0 AND knpns.kepegawaian_status_pegawai = '" +
+      status +
+      "' ORDER BY created_at DESC LIMIT " +
+      limit +
+      " OFFSET " +
+      offset
+    );
+
+    return query;
+  };
+
+  // ^ filter pensiun
+  const filterPensiun = (limit, offset, qwhere) => {
+    const query = db.any(
+      "SELECT  nama, kepegawaian_nip, kepegawaian_nptt_npjlp as no_pegawai, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir,   EXTRACT(YEAR FROM tgl_lahir) + 58 as tahun_pensiun, keterangan_pensiun FROM public.kepegawaian_non_pns knpns WHERE is_deleted = 0" +
+      qwhere +
+      " LIMIT " +
+      limit +
+      " OFFSET " +
+      (parseInt(offset) - 1)
+    );
+
+    return query;
+  };
+
+  // ^ autofill add pensiun
+  const autoaAddFillPensiun = (limit, offset) => {
+    const query = db.any(
+      "SELECT nama, kepegawaian_nip, kepegawaian_nptt_npjlp, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir, EXTRACT(YEAR FROM tgl_lahir) + 58 as tahun_pensiun FROM public.kepegawaian_non_pns kpns WHERE is_deleted = 0 ORDER BY created_at DESC LIMIT " +
+      limit +
+      " OFFSET " +
+      offset
+    );
+
+    return query;
+  };
+
+  // ^ Update Pensiun
+  const updatePensiun = (keterangan_pensiun) => {
+    const query = db.one(
+      "UPDATE kepegawaian_non_pns SET keterangan_pensiun = $1 WHERE kepegawaian_nip = $2, kepegawaian_nptt_npjlp = $3, nama = $4, kepegawaian_jabatan = $5, kepegawaian_tempat_tugas = $6, kepegawaian_subbag_seksi_kecamatan = $7, tempat_lahir = $8, tgl_lahir = $9 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      [keterangan_pensiun, nomor, kepegawaian_nptt_npjlp, nama, kepegawaian_jabatan,
+        kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan,
+        tempat_lahir, tgl_lahir,
+      ]
+    );
+
+    return query;
+  };
+
 
   return {
     autocompliteFill,
