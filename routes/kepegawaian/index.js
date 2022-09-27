@@ -1955,7 +1955,7 @@ module.exports = async function (fastify, opts) {
             message: "success",
             code: 200,
             data: data,
-            
+
           });
         } else {
           reply.send({
@@ -2855,7 +2855,7 @@ module.exports = async function (fastify, opts) {
       let exec = null;
       let qwhere = "";
       if (status === "PNS") {
-        exec = await fastify.kepegawaian_pns.createPensiun(
+        exec = await fastify.kepegawaian_pns.updatePensiun(
           nomor,
           no_pegawai,
           nama,
@@ -2867,7 +2867,7 @@ module.exports = async function (fastify, opts) {
           tahun_pensiun,
           keterangan_pensiun);
       } else {
-        exec = await fastify.kepegawaian_non_pns.createPensiun(
+        exec = await fastify.kepegawaian_non_pns.updatePensiun(
           nomor,
           no_pegawai,
           nama,

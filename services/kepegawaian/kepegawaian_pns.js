@@ -435,7 +435,7 @@ const kepegawaian_pns = (db) => {
     filterDuk,
     findPensiun,
     filterPensiun,
-    createPensiun,
+    updatePensiun,
     autoaAddFillPensiun,
     filterRekapitulasiPejabatStruktural,
     getDataUnduhPejabatStruktural,

@@ -252,7 +252,8 @@ const kepegawaian_non_pns = (db) => {
     findDuk,
     filterDuk,
     findPensiun,
-    filterPensiun
+    filterPensiun,
+    updatePensiun
   };
 };
 
