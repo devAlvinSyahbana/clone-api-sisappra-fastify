@@ -20,5 +20,3 @@ module.exports = fp((fastify, options, next) => {
     fastify.decorate("sarana_prasarana", sarana_prasarana(fastify.db));
     next();
 });
-
-1

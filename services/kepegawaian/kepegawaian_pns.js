@@ -426,7 +426,6 @@ const kepegawaian_pns = (db) => {
     filter,
     countAllFilter,
     countAll,
-    create,
     find,
     findone,
     update,

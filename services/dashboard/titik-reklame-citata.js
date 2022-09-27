@@ -20,5 +20,3 @@ module.exports = fp((fastify, options, next) => {
     fastify.decorate("dashboard_titik_reklame_citata", dashboard_titik_reklame_citata(fastify.db));
     next();
 });
-
-1
