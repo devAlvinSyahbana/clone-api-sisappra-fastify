@@ -2148,10 +2148,22 @@ module.exports = async function (fastify, opts) {
               type: "integer",
               default: 1,
             },
+            nama: {
+              type: "string",
+            },
+            nrk: {
+              type: "string",
+            },
+            id_jabatan: {
+              type: "number",
+            },
             tempat_tugas: {
               type: "string",
             },
             seksi_kecamatan: {
+              type: "string",
+            },
+            kelurahan: {
               type: "string",
             },
           },
@@ -2203,9 +2215,9 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { limit, offset, tempat_tugas, seksi_kecamatan} = request.query;
-      const exec = await fastify.kepegawaian_rekapitulasi.find_rekapitulasi_jft(limit, offset, tempat_tugas, seksi_kecamatan);
-      const {count} = await fastify.kepegawaian_rekapitulasi.count_rekapitulasi_jft(tempat_tugas, seksi_kecamatan);
+      const { limit, offset,nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan} = request.query;
+      const exec = await fastify.kepegawaian_rekapitulasi.find_rekapitulasi_jft(limit, offset,nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan);
+      const {count} = await fastify.kepegawaian_rekapitulasi.count_rekapitulasi_jft(nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan);
       let total = count;
 
       try {
@@ -2241,11 +2253,23 @@ module.exports = async function (fastify, opts) {
           description: "Find one jumlah pegawai polpp",
           type: "object",
           properties: {
+            nama: {
+              type: "string",
+            },
+            nrk: {
+              type: "string",
+            },
+            id_jabatan: {
+              type: "number",
+            },
             tempat_tugas: {
-              type: "string"
+              type: "string",
             },
             seksi_kecamatan: {
-              type: "string"
+              type: "string",
+            },
+            kelurahan: {
+              type: "string",
             },
           },
         },
@@ -2258,15 +2282,15 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {tempat_tugas, seksi_kecamatan} = request.query;
+      const { nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan} = request.query;
       let headerData = [];
-      // let data = [];
+      let data = [];
       try {
         const wb = XLSX.utils.book_new();
         // Definisikan header
         headerData = ["No", "Nama", "NIP", "NRK", "Jabatan", "Tempat Tugas"];
 
-        const getData = await fastify.kepegawaian_rekapitulasi.unduh_rekapitulasi_jft(tempat_tugas, seksi_kecamatan);
+        const getData = await fastify.kepegawaian_rekapitulasi.unduh_rekapitulasi_jft(nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan);
 
         const convertData = getData.map(function (item) {
           return Object.values(item);

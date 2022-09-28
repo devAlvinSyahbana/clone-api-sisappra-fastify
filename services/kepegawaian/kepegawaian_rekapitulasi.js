@@ -62,20 +62,22 @@ const kepegawaian_rekapitulasi = (db) => {
     return query;
   };
 
-  const find_rekapitulasi_jft = (limit, offset, tempat_tugas, seksi_kecamatan) => {
-    if (tempat_tugas == undefined){tempat_tugas = ""}
-    if (seksi_kecamatan == undefined){seksi_kecamatan = ""}
+  const find_rekapitulasi_jft = (limit, offset,nama, nrk, jabatan, tempat_tugas, seksi_kecamatan, kelurahan) => {
+    let filter = "";
 
-    tempat_tugas = "%"+tempat_tugas;
-    seksi_kecamatan = "%"+seksi_kecamatan;
+    if (tempat_tugas != undefined){filter = filter + " and kp.kepegawaian_tempat_tugas ilike '" + "%" +tempat_tugas +"'"}
+    if (seksi_kecamatan != undefined){filter = filter + " and kp.kepegawaian_tempat_tugas ilike '" + "%" + seksi_kecamatan+"'"}
+    if (kelurahan != undefined){filter = filter + " and kp.kepegawaian_kelurahan ilike '" + "%" + kelurahan+"'"}
+    if (nama != undefined){filter = filter + " and kp.nama ilike '" + "%"+nama+"'"}
+    if (nrk != undefined){filter = filter + " and kp.kepegawaian_nrk ilike '" + "%" +nrk+"'"}
+    if (jabatan != undefined){filter = filter + " and kp.kepegawaian_jabatan = " + jabatan}
+
+    console.log(filter)
+
 
     const query = db.any(
-      "select kp.id, kp.nama, kp.kepegawaian_nip as nip, kp.kepegawaian_nrk as nrk, mj.nama as jabatan, kp.kepegawaian_tempat_tugas as tempat_tugas from kepegawaian_pns kp inner join master_jabatan mj on kp.kepegawaian_jabatan = mj.id where kp.is_deleted = 0 and mj.status = 'JFT' and kp.kepegawaian_tempat_tugas ilike $1 and kp.kepegawaian_subbag_seksi_kecamatan ilike $2 order by kp.id desc" +
-      " LIMIT " +
-      limit +
-      " OFFSET " +
-      (parseInt(offset) - 1),
-      [tempat_tugas, seksi_kecamatan]
+      "select kp.id, kp.nama, kp.kepegawaian_nip as nip, kp.kepegawaian_nrk as nrk, mj.nama as jabatan, kp.kepegawaian_tempat_tugas as tempat_tugas from kepegawaian_pns kp inner join master_jabatan mj on kp.kepegawaian_jabatan = mj.id where kp.is_deleted = 0 and mj.status = 'JFT' "+filter+" order by kp.id desc LIMIT " + limit + " OFFSET " + (parseInt(offset) - 1),
+      [filter]
     );
 
     return query;
@@ -83,30 +85,36 @@ const kepegawaian_rekapitulasi = (db) => {
 
   
 
-  const count_rekapitulasi_jft = (tempat_tugas, seksi_kecamatan) => {
-    if (tempat_tugas == undefined){tempat_tugas = ""}
-    if (seksi_kecamatan == undefined){seksi_kecamatan = ""}
+  const count_rekapitulasi_jft = (nama, nrk, jabatan, tempat_tugas, seksi_kecamatan, kelurahan) => {
+    let filter = "";
 
-    tempat_tugas = "%"+tempat_tugas;
-    seksi_kecamatan = "%"+seksi_kecamatan;
+    if (tempat_tugas != undefined){filter = filter + " and kp.kepegawaian_tempat_tugas ilike '" + "%" +tempat_tugas+"'"}
+    if (seksi_kecamatan != undefined){filter = filter + " and kp.kepegawaian_tempat_tugas ilike '" + "%" + seksi_kecamatan+"'"}
+    if (kelurahan != undefined){filter = filter + " and kp.kepegawaian_kelurahan ilike '" + "%" + kelurahan+"'"}
+    if (nama != undefined){filter = filter + " and kp.nama ilike '" + "%" + nama+"'"}
+    if (nrk != undefined){filter = filter + " and kp.kepegawaian_nrk ilike '" + "%" +nrk+"'"}
+    if (jabatan != undefined){filter = filter + " and kp.kepegawaian_jabatan = " + jabatan}
 
     const query = db.one(
-      "select count(kp.id) from kepegawaian_pns kp inner join master_jabatan mj on kp.kepegawaian_jabatan = mj.id where kp.is_deleted = 0 and mj.status = 'JFT' and kp.kepegawaian_tempat_tugas ilike $1 and kp.kepegawaian_subbag_seksi_kecamatan ilike $2",
-      [tempat_tugas, seksi_kecamatan]
+      "select count(kp.id) from kepegawaian_pns kp inner join master_jabatan mj on kp.kepegawaian_jabatan = mj.id where kp.is_deleted = 0 and mj.status = 'JFT' "+
+      filter,
     );
 
     return query;
   };
-  const unduh_rekapitulasi_jft = (tempat_tugas, seksi_kecamatan) => {
-    if (tempat_tugas == undefined){tempat_tugas = ""}
-    if (seksi_kecamatan == undefined){seksi_kecamatan = ""}
+  const unduh_rekapitulasi_jft = (nama, nrk, jabatan, tempat_tugas, seksi_kecamatan, kelurahan) => {
+    let filter = "";
 
-    tempat_tugas = "%"+tempat_tugas;
-    seksi_kecamatan = "%"+seksi_kecamatan;
+    if (tempat_tugas != undefined){filter = filter + " and kp.kepegawaian_tempat_tugas ilike '" + "%" +tempat_tugas+"'"}
+    if (seksi_kecamatan != undefined){filter = filter + " and kp.kepegawaian_tempat_tugas ilike '" + "%" + seksi_kecamatan+"'"}
+    if (kelurahan != undefined){filter = filter + " and kp.kepegawaian_kelurahan ilike '" + "%" + kelurahan+"'"}
+    if (nama != undefined){filter = filter + " and kp.nama ilike '" + "%" + nama+"'"}
+    if (nrk != undefined){filter = filter + " and kp.kepegawaian_nrk ilike '" + "%" +nrk+"'"}
+    if (jabatan != undefined){filter = filter + " and kp.kepegawaian_jabatan = " + jabatan}
 
     const query = db.any(
-        "select ROW_NUMBER() OVER (ORDER BY kp.id desc) AS nomor, kp.nama, kp.kepegawaian_nip as nip, kp.kepegawaian_nrk as nrk, mj.nama as jabatan, kp.kepegawaian_tempat_tugas as tempat_tugas from kepegawaian_pns kp inner join master_jabatan mj on kp.kepegawaian_jabatan = mj.id where kp.is_deleted = 0 and mj.status = 'JFT' and kp.kepegawaian_tempat_tugas ilike $1 and kp.kepegawaian_subbag_seksi_kecamatan ilike $2",
-        [tempat_tugas, seksi_kecamatan]
+        "select ROW_NUMBER() OVER (ORDER BY kp.id desc) AS nomor, kp.nama, kp.kepegawaian_nip as nip, kp.kepegawaian_nrk as nrk, mj.nama as jabatan, kp.kepegawaian_tempat_tugas as tempat_tugas from kepegawaian_pns kp inner join master_jabatan mj on kp.kepegawaian_jabatan = mj.id where kp.is_deleted = 0 and mj.status = 'JFT' " +
+        filter,
     );
 
     return query;
