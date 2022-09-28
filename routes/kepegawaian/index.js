@@ -1180,6 +1180,9 @@ module.exports = async function (fastify, opts) {
             id: {
               type: "number"
             },
+            status: {
+              type: "string"
+            },
           },
         },
         body: {
