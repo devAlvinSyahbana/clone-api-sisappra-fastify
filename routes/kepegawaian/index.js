@@ -264,7 +264,7 @@ module.exports = async function (fastify, opts) {
     "/filter-rekapitulasi-pejabat-struktural", {
       schema: {
         description: "Endpoint ini digunakan untuk memfilter data Rekapitulasi Pejabat Struktural",
-        tags: ["endpoint rekapitulasi pejabat struktural"],
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
         querystring: {
           type: "object",
           properties: {
@@ -1177,6 +1177,9 @@ module.exports = async function (fastify, opts) {
           description: "update endpoint kepegawaian by Id",
           type: "object",
           properties: {
+            status: {
+              type: "string"
+            },
             id: {
               type: "number"
             },
@@ -1403,7 +1406,7 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const {
-        id
+        id, status
       } = request.params;
       const {
         nama,
@@ -1463,7 +1466,7 @@ module.exports = async function (fastify, opts) {
         kepegawaian_diklat_fungsional_pol_pp_no_sertifikat,
         kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat,
       } = request.body;
-
+      console.log(status)
       try {
         await fastify.kepegawaian_pns.update(
           id,
@@ -1711,14 +1714,14 @@ module.exports = async function (fastify, opts) {
     "/delete-rekapitulasi-pegawai/:id", {
       schema: {
         description: "This is an endpoint for DELETING an existing endpoint data rekapitulasi pegawai pejabat struktural.",
-        tags: ["endpoint rekapitulasi pegawai pejabat struktural"],
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
         params: {
           description: "endpoint rekapitulasi pegawai pejabat struktural by Id",
           type: "object",
           properties: {
             id: {
               type: "number"
-            },
+            },  
           },
         },
         body: {

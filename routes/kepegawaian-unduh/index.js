@@ -606,7 +606,7 @@ module.exports = async function (fastify, opts) {
       schema: {
         description:
           "Endpoint ini digunakan untuk mengunduh data pegawai pejabat struktural",
-        tags: ["endpoint pegawai pejabat struktural"],
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
         querystring: {
           type: "object",
           properties: {
