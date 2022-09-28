@@ -20,8 +20,7 @@ const kepegawaian_pns = (db) => {
 
   const getDataUnduhPejabatStruktural = (qwhere) => {
     const query = db.any(
-      "SELECT kpns.id, kpns.nama, kpns.kepegawaian_nip, kpns.kepegawaian_nrk, kpns.kepegawaian_jabatan, kpns.kepegawaian_tempat_tugas, '' as kepegawaian_keterangan_pejabat_struktural FROM kepegawaian_pns kpns WHERE kpns.is_deleted = 0" +
-        qwhere
+      "SELECT kpns.id, kpns.nama, kpns.kepegawaian_nip, kpns.kepegawaian_nrk, mj.nama as kepegawaian_jabatan, kpns.kepegawaian_tempat_tugas FROM kepegawaian_pns kpns LEFT JOIN master_jabatan mj ON mj.id = kpns.kepegawaian_jabatan WHERE kpns.is_deleted = 0" + qwhere
     );
 
     return query;

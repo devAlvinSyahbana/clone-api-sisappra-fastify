@@ -606,7 +606,7 @@ module.exports = async function (fastify, opts) {
       schema: {
         description:
           "Endpoint ini digunakan untuk mengunduh data pegawai pejabat struktural",
-        tags: ["endpoint pegawai pejabat struktural"],
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
         querystring: {
           type: "object",
           properties: {
@@ -622,10 +622,10 @@ module.exports = async function (fastify, opts) {
             kecamatan_seksi: {
               type: "string",
             },
-            kelurahan: {
+            jabatan: {
               type: "string",
             },
-            jabatan: {
+            kelurahan: {
               type: "string",
             },
           },
@@ -639,7 +639,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { nama, nrk, kecamatan_seksi, kelurahan, jabatan, nip } = request.query;
+      const { nama, nrk, kecamatan_seksi, jabatan, kelurahan, nip } = request.query;
       let headerKepegawaian = [];
       let dataKepegawaian = [];
       try {
@@ -653,9 +653,8 @@ module.exports = async function (fastify, opts) {
           "Nrk",
           "Jabatan",
           "Tempat Tugas",
-          "Keterangan",
         ];
-        
+
         let qwhere = "";
         if (nama) {
           qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
@@ -676,17 +675,18 @@ module.exports = async function (fastify, opts) {
           qwhere += ` AND kpns.kepegawaian_kelurahan ILIKE '%${kelurahan}%'`;
         }
 
-        
         const getData = await fastify.kepegawaian_pns.getDataUnduhPejabatStruktural(qwhere);
         
         const convertData = await getData.map(function (item) {
           return Object.values(item);
         });
         dataKepegawaian = convertData;
-        console.log(dataKepegawaian)
+        
+
         // Definisikan rows untuk ditulis ke dalam spreadsheet
         const wsDataKepegawaian = [headerKepegawaian, ...dataKepegawaian];
         console.log(wsDataKepegawaian)
+
         // Buat Workbook
         const fileName = "DATA PEGAWAIAN PEJABAT STRUKTURAL";
         wb.Props = {
@@ -701,7 +701,7 @@ module.exports = async function (fastify, opts) {
         const ws_kepegawaian = XLSX.utils.aoa_to_sheet(wsDataKepegawaian);
 
         // const ws = XLSX.utils.aoa_to_sheet(wsData);
-        wb.Sheets["DATA KEPEGAWAIAN"] = ws_kepegawaian;
+        wb.Sheets["DATA PEJABAT STRUKTURAL"] = ws_kepegawaian;
 
 
         const wopts = { bookType: "xlsx", bookSST: false, type: "buffer" };
