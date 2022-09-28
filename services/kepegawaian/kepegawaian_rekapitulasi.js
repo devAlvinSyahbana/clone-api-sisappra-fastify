@@ -83,8 +83,6 @@ const kepegawaian_rekapitulasi = (db) => {
     return query;
   };
 
-  
-
   const count_rekapitulasi_jft = (nama, nrk, jabatan, tempat_tugas, seksi_kecamatan, kelurahan) => {
     let filter = "";
 
@@ -102,6 +100,7 @@ const kepegawaian_rekapitulasi = (db) => {
 
     return query;
   };
+
   const unduh_rekapitulasi_jft = (nama, nrk, jabatan, tempat_tugas, seksi_kecamatan, kelurahan) => {
     let filter = "";
 

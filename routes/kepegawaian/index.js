@@ -2218,6 +2218,7 @@ module.exports = async function (fastify, opts) {
       const { limit, offset,nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan} = request.query;
       const exec = await fastify.kepegawaian_rekapitulasi.find_rekapitulasi_jft(limit, offset,nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan);
       const {count} = await fastify.kepegawaian_rekapitulasi.count_rekapitulasi_jft(nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan);
+      
       let total = count;
 
       try {
