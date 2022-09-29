@@ -3028,26 +3028,26 @@ module.exports = async function (fastify, opts) {
           type: "object",
           properties: {
             limit: {
-              type: "integer",
+              type: "number",
               default: 10,
             },
             skpd: {
+              type: "number",
+            },
+            pejabat_ppns_nama: {
               type: "string",
             },
-            nama: {
+            pejabat_ppns_nip: {
               type: "string",
             },
-            nip: {
+            pejabat_ppns_nrk: {
               type: "string",
             },
-            nrk: {
-              type: "string",
+            pejabat_ppns_pangkat: {
+              type: "number",
             },
-            pangkat: {
-              type: "string",
-            },
-            golongan: {
-              type: "string",
+            pejabat_ppns_golongan: {
+              type: "number",
             }
           },
           required: ["limit"],
@@ -3072,22 +3072,22 @@ module.exports = async function (fastify, opts) {
                       type: "number"
                     },
                     skpd: {
+                      type: "number"
+                    },
+                    pejabat_ppns_nama: {
                       type: "string"
                     },
-                    nama: {
+                    pejabat_ppns_nip: {
                       type: "string"
                     },
-                    nip: {
+                    pejabat_ppns_nrk: {
                       type: "string"
                     },
-                    nrk: {
-                      type: "string"
+                    pejabat_ppns_pangkat: {
+                      type: "number"
                     },
-                    pangkat: {
-                      type: "string"
-                    },
-                    golongan: {
-                      type: "string"
+                    pejabat_ppns_golongan: {
+                      type: "number"
                     },
                     no_sk_ppns: {
                       type: "string"
@@ -3098,7 +3098,7 @@ module.exports = async function (fastify, opts) {
                     wilayah_kerja: {
                       type: "string"
                     },
-                    uu_dikawal: {
+                    uu_yg_dikawal: {
                       type: "string"
                     },
                   },
@@ -3114,32 +3114,32 @@ module.exports = async function (fastify, opts) {
         limit,
         offset,
         skpd,
-        nama,
-        nip,
-        nrk,
-        pangkat,
-        golongan
+        pejabat_ppns_nama,
+        pejabat_ppns_nip,
+        pejabat_ppns_nrk,
+        pejabat_ppns_pangkat,
+        pejabat_ppns_golongan
       } = request.query;
       let exec = null;
       let qwhere = "";
-      if (skpd || nama || nip || nrk || pangkat || golongan) {
+      if (skpd || pejabat_ppns_nama || pejabat_ppns_nip || pejabat_ppns_nrk || pejabat_ppns_pangkat || pejabat_ppns_golongan) {
         if (skpd) {
-          qwhere += ` AND skpd ILIKE '%${skpd}%'`;
+          qwhere += ` AND skpd = ${skpd}`;
         }
-        if (nama) {
-          qwhere += ` AND nama ILIKE '%${nama}%'`;
+        if (pejabat_ppns_nama) {
+          qwhere += ` AND pejabat_ppns_nama ILIKE '%${pejabat_ppns_nama}%'`;
         }
-        if (nip) {
-          qwhere += ` AND nip ILIKE '%${nip}%'`;
+        if (pejabat_ppns_nip) {
+          qwhere += ` AND pejabat_ppns_nip ILIKE '%${pejabat_ppns_nip}%'`;
         }
-        if (nrk) {
-          qwhere += ` AND nrk ILIKE '%${nrk}%'`;
+        if (pejabat_ppns_nrk) {
+          qwhere += ` AND pejabat_ppns_nrk ILIKE '%${pejabat_ppns_nrk}%'`;
         }
-        if (pangkat) {
-          qwhere += ` AND pangkat ILIKE '%${pangkat}%'`;
+        if (pejabat_ppns_pangkat) {
+          qwhere += ` AND pejabat_ppns_pangkat = ${pejabat_ppns_pangkat}`;
         }
-        if (golongan) {
-          qwhere += ` AND golongan ILIKE '%${golongan}%'`;
+        if (pejabat_ppns_golongan) {
+          qwhere += ` AND pejabat_ppns_golongan = ${pejabat_ppns_golongan}`;
         }
         exec = await fastify.kepegawaian_ppns.filter(limit, qwhere);
       } else {
@@ -3204,7 +3204,7 @@ module.exports = async function (fastify, opts) {
             wilayah_kerja: {
               type: "string",
             },
-            uu_dikawal: {
+            uudikawal: {
               type: "string",
             },
           },
@@ -3255,7 +3255,7 @@ module.exports = async function (fastify, opts) {
                     wilayah_kerja: {
                       type: "string"
                     },
-                    uu_dikawal: {
+                    uu_yg_dikawal: {
                       type: "string"
                     },
                   },
