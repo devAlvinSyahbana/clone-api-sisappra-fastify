@@ -73,6 +73,14 @@ const master_kecamatan = (db) => {
     };
   };
 
+  const filter = (q) => {
+    const query = db.any(
+      "SELECT id, nama as kecamatan FROM master_kecamatan WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
+    );
+
+    return query;
+  };
+
   return {
     find,
     findone,
@@ -80,6 +88,7 @@ const master_kecamatan = (db) => {
     create,
     update,
     del,
+    filter
   };
 };
 
