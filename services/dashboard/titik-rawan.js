@@ -48,7 +48,7 @@ const dashboard_titik_rawan = (db) => {
 
     const titik_rawan_tramtibum = () => {
         const query = db.any(
-            "SELECT rawan_terhadap, mkota.nama as nama_kota, mkec.nama as nama_kec, mkel.nama as nama_kel, lokasi, lat, long, kategori FROM public.dashboard_titik_rawan dtr left join master_kota mkota on mkota.kode = dtr.kota left join master_kecamatan mkec on mkec.kode = dtr.kecamatan left join master_kelurahan mkel on mkel.kode = dtr.kelurahan where rawan_terhadap = 'Tramtibum'"
+            "SELECT rawan_terhadap, mkota.nama as nama_kota, mkec.nama as nama_kec, mkel.nama as nama_kel, lokasi, lat, long, kategori FROM public.dashboard_titik_rawan dtr left join master_kota mkota on mkota.kode = dtr.kota left join master_kecamatan mkec on mkec.kode = dtr.kecamatan left join master_kelurahan mkel on mkel.kode = dtr.kelßurahan where rawan_terhadap = 'Tramtibum'"
         );
         return query;
     };
@@ -68,5 +68,3 @@ module.exports = fp((fastify, options, next) => {
     fastify.decorate("dashboard_titik_rawan", dashboard_titik_rawan(fastify.db));
     next();
 });
-
-1

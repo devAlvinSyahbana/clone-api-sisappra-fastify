@@ -120,11 +120,6 @@ const sarana_prasarana = (db) => {
   };
 
   const unduh = (qwhere) => {
-    console.log(
-      "select jsp.jenis_sarana_prasarana, ssp.status_sarana_prasarana, sp.jumlah, ksp.kondisi_sarana_prasarana as kondisi, sp.keterangan from sarana_prasarana sp left join jenis_sarana_prasarana jsp on sp.jenis_sarana_prasarana = jsp.id left join status_sarana_prasarana ssp on sp.status_sarana_prasarana  = ssp.id left join kondisi_sarana_prasarana ksp on sp.kondisi = ksp.id where sp.is_deleted = 0" +
-        qwhere +
-        " order by jsp.jenis_sarana_prasarana ASC"
-    );
     const query = db.any(
       "select jsp.jenis_sarana_prasarana, ssp.status_sarana_prasarana, sp.jumlah, ksp.kondisi_sarana_prasarana as kondisi, sp.keterangan from sarana_prasarana sp left join jenis_sarana_prasarana jsp on sp.jenis_sarana_prasarana = jsp.id left join status_sarana_prasarana ssp on sp.status_sarana_prasarana  = ssp.id left join kondisi_sarana_prasarana ksp on sp.kondisi = ksp.id where sp.is_deleted = 0" +
         qwhere +

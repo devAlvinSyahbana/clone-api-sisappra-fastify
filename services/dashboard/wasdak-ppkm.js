@@ -53,5 +53,3 @@ module.exports = fp((fastify, options, next) => {
     fastify.decorate("dashboard_wasdak_ppkm", dashboard_wasdak_ppkm(fastify.db));
     next();
 });
-
-1

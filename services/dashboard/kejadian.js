@@ -19,5 +19,3 @@ module.exports = fp((fastify, options, next) => {
     fastify.decorate("dashboard_kejadian", dashboard_kejadian(fastify.db));
     next();
 });
-
-1
