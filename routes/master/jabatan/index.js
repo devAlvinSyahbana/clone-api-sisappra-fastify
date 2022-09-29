@@ -278,4 +278,55 @@ module.exports = async function (fastify, opts) {
       }
     }
   );
+
+  fastify.get(
+    "/filter/:q",
+    {
+      schema: {
+        description: "This is an endpoint for filtering a master jabatan",
+        tags: ["master jabatan"],
+        params: {
+          description: "Filter master jabatan by search",
+          type: "object",
+          properties: {
+            q: { type: "string" },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: { type: "number" },
+                    jabatan: { type: "string" },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { q } = request.params;
+      const exec = await fastify.master_jabatan.filter(q);
+
+      try {
+        if (exec) {
+          reply.send({ message: "success", code: 200, data: exec });
+        } else {
+          reply.send({ message: "success", code: 204 });
+        }
+      } catch (error) {
+        reply.send({ message: error, code: 500 });
+      }
+    }
+  );
 };
