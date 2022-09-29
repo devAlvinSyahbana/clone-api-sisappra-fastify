@@ -3,6 +3,7 @@ const kepegawaian_ppns = require("../../services/kepegawaian/kepegawaian_ppns");
 const kepegawaian_non_pns = require("../../services/kepegawaian/kepegawaian_non_pns");
 const kepegawaian_rekapitulasi = require("../../services/kepegawaian/kepegawaian_rekapitulasi");
 const multer = require("fastify-multer");
+const XLSX = require("xlsx");
 
 module.exports = async function (fastify, opts) {
   fastify.register(kepegawaian_pns);
@@ -266,7 +267,7 @@ module.exports = async function (fastify, opts) {
     "/filter-rekapitulasi-pejabat-struktural", {
       schema: {
         description: "Endpoint ini digunakan untuk memfilter data Rekapitulasi Pejabat Struktural",
-        tags: ["endpoint rekapitulasi pejabat struktural"],
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
         querystring: {
           type: "object",
           properties: {
@@ -1179,8 +1180,14 @@ module.exports = async function (fastify, opts) {
           description: "update endpoint kepegawaian by Id",
           type: "object",
           properties: {
+            status: {
+              type: "string"
+            },
             id: {
               type: "number"
+            },
+            status: {
+              type: "string"
             },
           },
         },
@@ -1405,7 +1412,7 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const {
-        id
+        id, status
       } = request.params;
       const {
         nama,
@@ -1465,7 +1472,7 @@ module.exports = async function (fastify, opts) {
         kepegawaian_diklat_fungsional_pol_pp_no_sertifikat,
         kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat,
       } = request.body;
-
+      console.log(status)
       try {
         await fastify.kepegawaian_pns.update(
           id,
@@ -1709,18 +1716,21 @@ module.exports = async function (fastify, opts) {
   //   }
   // );
 
+
+    /* ----------------------------------- rekapitulasi ---------------------------------- */
+
   fastify.delete(
     "/delete-rekapitulasi-pegawai/:id", {
       schema: {
         description: "This is an endpoint for DELETING an existing endpoint data rekapitulasi pegawai pejabat struktural.",
-        tags: ["endpoint rekapitulasi pegawai pejabat struktural"],
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
         params: {
           description: "endpoint rekapitulasi pegawai pejabat struktural by Id",
           type: "object",
           properties: {
             id: {
               type: "number"
-            },
+            },  
           },
         },
         body: {
@@ -1772,24 +1782,18 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/jumlah-pegawai-polpp", {
+    "/rekapitulasi-jumlah-pegawai-polpp", {
       schema: {
         description: "This is an endpoint for fetching a jumlah pegawai polpp",
-        tags: ["endpoint kepegawaian"],
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
         querystring: {
           description: "Find one jumlah pegawai polpp id",
           type: "object",
           properties: {
-            provinsi: {
+            tempat_tugas: {
               type: "string"
             },
-            kota: {
-              type: "string"
-            },
-            kecamatan: {
-              type: "string"
-            },
-            kelurahan: {
+            seksi_kecamatan: {
               type: "string"
             },
           },
@@ -1840,13 +1844,8 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        provinsi,
-        kota,
-        kecamatan,
-        kelurahan
-      } = request.query;
-      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp(provinsi, kota, kecamatan, kelurahan);
+      const {tempat_tugas, seksi_kecamatan} = request.query;
+      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp(tempat_tugas, seksi_kecamatan);
 
       try {
         if (exec) {
@@ -1871,24 +1870,18 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/jumlah-pegawai-polpp-by-pendidikan", {
+    "/rekapitulasi-jumlah-pegawai-polpp-by-pendidikan", {
       schema: {
         description: "This is an endpoint for fetching a jumlah pegawai polpp by pendidikan",
-        tags: ["endpoint kepegawaian"],
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
         querystring: {
           description: "Find one jumlah pegawai polpp",
           type: "object",
           properties: {
-            provinsi: {
+            tempat_tugas: {
               type: "string"
             },
-            kota: {
-              type: "string"
-            },
-            kecamatan: {
-              type: "string"
-            },
-            kelurahan: {
+            seksi_kecamatan: {
               type: "string"
             },
           },
@@ -1933,13 +1926,8 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        provinsi,
-        kota,
-        kecamatan,
-        kelurahan
-      } = request.query;
-      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_pendidikan(provinsi, kota, kecamatan, kelurahan);
+      const {tempat_tugas, seksi_kecamatan} = request.query;
+      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_pendidikan(tempat_tugas, seksi_kecamatan);
 
       let jum = 0
       for (let index = 0; index < exec.length; index++) {
@@ -1975,24 +1963,18 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/jumlah-pegawai-polpp-by-golongan", {
+    "/rekapitulasi-jumlah-pegawai-polpp-by-golongan", {
       schema: {
         description: "This is an endpoint for fetching a jumlah pegawai polpp by golongan",
-        tags: ["endpoint kepegawaian"],
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
         querystring: {
           description: "Find one jumlah pegawai polpp",
           type: "object",
           properties: {
-            provinsi: {
+            tempat_tugas: {
               type: "string"
             },
-            kota: {
-              type: "string"
-            },
-            kecamatan: {
-              type: "string"
-            },
-            kelurahan: {
+            seksi_kecamatan: {
               type: "string"
             },
           },
@@ -2037,13 +2019,8 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        provinsi,
-        kota,
-        kecamatan,
-        kelurahan
-      } = request.query;
-      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_golongan(provinsi, kota, kecamatan, kelurahan);
+      const {tempat_tugas, seksi_kecamatan} = request.query;
+      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_golongan(tempat_tugas, seksi_kecamatan);
 
       let jum = 0
       for (let index = 0; index < exec.length; index++) {
@@ -2078,26 +2055,21 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/jumlah-pegawai-polpp-by-diklat", {
+    "/rekapitulasi-jumlah-pegawai-polpp-by-diklat", {
       schema: {
         description: "This is an endpoint for fetching a jumlah pegawai polpp by diklat",
-        tags: ["endpoint kepegawaian"],
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
         querystring: {
           description: "Find one jumlah pegawai polpp",
           type: "object",
           properties: {
-            provinsi: {
+            tempat_tugas: {
               type: "string"
             },
-            kota: {
+            seksi_kecamatan: {
               type: "string"
             },
-            kecamatan: {
-              type: "string"
-            },
-            kelurahan: {
-              type: "string"
-            },
+          
           },
         },
         response: {
@@ -2163,6 +2135,206 @@ module.exports = async function (fastify, opts) {
           message: error,
           code: 500
         });
+      }
+    }
+  );
+
+  fastify.get(
+    "/rekapitulasi-pegawai-jft/find", {
+      schema: {
+        description: "This is an endpoint for fetching a jumlah pegawai polpp by golongan",
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
+        querystring: {
+          description: "Find one jumlah pegawai polpp",
+          type: "object",
+          properties: {
+            limit: {
+              type: "integer",
+              default: 10,
+            },
+            offset: {
+              type: "integer",
+              default: 1,
+            },
+            nama: {
+              type: "string",
+            },
+            nrk: {
+              type: "string",
+            },
+            id_jabatan: {
+              type: "number",
+            },
+            tempat_tugas: {
+              type: "string",
+            },
+            seksi_kecamatan: {
+              type: "string",
+            },
+            kelurahan: {
+              type: "string",
+            },
+          },
+          required: ["limit", "offset"],
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: {
+                      type: "number"
+                    },
+                    nama: {
+                      type: "string"
+                    },
+                    nip: {
+                      type: "string"
+                    },
+                    nrk: {
+                      type: "number"
+                    },
+                    jabatan: {
+                      type: "string"
+                    },
+                    tempat_tugas: {
+                      type: "string"
+                    },
+                  },
+                },
+              },
+              jumlah: {
+                type: "number"
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { limit, offset,nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan} = request.query;
+      const exec = await fastify.kepegawaian_rekapitulasi.find_rekapitulasi_jft(limit, offset,nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan);
+      const {count} = await fastify.kepegawaian_rekapitulasi.count_rekapitulasi_jft(nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan);
+      let total = count;
+
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec,
+            jumlah: total
+          });
+        } else {
+          reply.send({
+            message: "success",
+            code: 204
+          });
+        }
+      } catch (error) {
+        reply.send({
+          message: error,
+          code: 500
+        });
+      }
+    }
+  );
+
+  fastify.get(
+    "/rekapitulasi-pegawai-jft/unduh",
+    {
+      schema: {
+        description: "This is an endpoint for fetching a jumlah pegawai polpp by golongan",
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
+        querystring: {
+          description: "Find one jumlah pegawai polpp",
+          type: "object",
+          properties: {
+            nama: {
+              type: "string",
+            },
+            nrk: {
+              type: "string",
+            },
+            id_jabatan: {
+              type: "number",
+            },
+            tempat_tugas: {
+              type: "string",
+            },
+            seksi_kecamatan: {
+              type: "string",
+            },
+            kelurahan: {
+              type: "string",
+            },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "string",
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan} = request.query;
+      let headerData = [];
+      let data = [];
+      try {
+        const wb = XLSX.utils.book_new();
+        // Definisikan header
+        headerData = ["No", "Nama", "NIP", "NRK", "Jabatan", "Tempat Tugas"];
+
+        const getData = await fastify.kepegawaian_rekapitulasi.unduh_rekapitulasi_jft(nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan);
+
+        const convertData = getData.map(function (item) {
+          return Object.values(item);
+        });
+        data = convertData;
+
+        // Definisikan rows untuk ditulis ke dalam spreadsheet
+        const wsDataKepegawaian = [headerData, ...data];
+        // Buat Workbook
+        const fileName = "REKAPITULASI PEGAWAI PEJABAT JFT";
+        wb.Props = {
+          Title: fileName,
+          Author: "SISAPPRA - REKAPITULASI PEGAWAI PEJABAT JFT",
+          CreatedDate: new Date(),
+        };
+        // Buat Sheet
+        wb.SheetNames.push("DATA REKAPITULASI JFT");
+        // Buat Sheet dengan Data
+        const ws = XLSX.utils.aoa_to_sheet(wsDataKepegawaian);
+        // const ws = XLSX.utils.aoa_to_sheet(wsData);
+        wb.Sheets["DATA REKAPITULASI JFT"] = ws;
+
+        const wopts = { bookType: "xlsx", bookSST: false, type: "buffer" };
+        const wBuffer = XLSX.write(wb, wopts);
+
+        reply.header(
+          "Content-Type",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
+        reply.header(
+          "Content-Disposition",
+          "attachment; filename=" + `${fileName}.xlsx`
+        );
+        reply.send(wBuffer);
+      } catch (error) {
+        reply.send({ message: error.message, code: 500 });
       }
     }
   );
