@@ -4,10 +4,12 @@ const kepegawaian_rekapitulasi = (db) => {
   const jumlah_pegawai_polpp = (tempat_tugas, seksi_kecamatan, kelurahan) => {
     let filter_1 = ""
     let filter_2 = ""
+    let filter_3 = ""
     
     if(tempat_tugas != undefined){
     filter_1 = filter_1 + " and kp.kepegawaian_tempat_tugas ilike '" + "%" + tempat_tugas + "'";
     filter_2 = filter_2 + " and knp.kepegawaian_tempat_tugas ilike '" + "%" + tempat_tugas + "'";
+    filter_3 = filter_3 + " and kp2.wilayah_kerja ilike '" + "%" + tempat_tugas + "'";
     }
     
     if(seksi_kecamatan != undefined){
@@ -20,7 +22,7 @@ const kepegawaian_rekapitulasi = (db) => {
     filter_2 = filter_2 + " and knp.kepegawaian_kelurahan ilike '" + "%" + kelurahan + "'";
     }
     const query = db.one(
-      "select (z.a + y.a) as jmlh_seluruh_pegawai_satpol, z.b as jmlh_seluruh_pns, z.c as jmlh_seluruh_cpns, y.a as jmlh_seluruh_non_pns, y.b as jmlh_seluruh_non_pns_ptt, y.c as jmlh_seluruh_non_pns_pjlp, x.a as jmlh_seluruh_ppns_satpolpp, x.b as jmlh_seluruh_ppns_unit_kerja_lain from( select count(kp.*) as a, count(case when kp.kepegawaian_status_pegawai  = 'PNS' then 1 end) as b, count(case when kp.kepegawaian_status_pegawai  = 'CPNS' then 1 end) as c from kepegawaian_pns kp where kp.is_deleted = 0 " + filter_1 + " ) as z, ( select  count(knp.*) as a,  count(case when knp.kepegawaian_status_pegawai = 'PTT' then 1 end) as b,  count(case when knp.kepegawaian_status_pegawai = 'PJLP' then 1 end) as c from  kepegawaian_non_pns knp  where  knp.is_deleted = 0  " + filter_2 + " ) as y, ( select  count(kp.*) as a,  count(kp.*) as b from  kepegawaian_pns kp where kp.is_deleted = 0  " + filter_1 + " ) as x",
+      "select (z.a + y.a) as jmlh_seluruh_pegawai_satpol, z.b as jmlh_seluruh_pns, z.c as jmlh_seluruh_cpns, y.a as jmlh_seluruh_non_pns, y.b as jmlh_seluruh_non_pns_ptt, y.c as jmlh_seluruh_non_pns_pjlp, x.a as jmlh_seluruh_ppns_satpolpp, x.b as jmlh_seluruh_ppns_unit_kerja_lain from( select count(kp.*) as a, count(case when kp.kepegawaian_status_pegawai  = 'PNS' then 1 end) as b, count(case when kp.kepegawaian_status_pegawai  = 'CPNS' then 1 end) as c from kepegawaian_pns kp where kp.is_deleted = 0 " + filter_1 + " ) as z, ( select  count(knp.*) as a,  count(case when knp.kepegawaian_status_pegawai = 'PTT' then 1 end) as b,  count(case when knp.kepegawaian_status_pegawai = 'PJLP' then 1 end) as c from  kepegawaian_non_pns knp  where  knp.is_deleted = 0  " + filter_2 + " ) as y, ( select count(case when kp2.skpd = 1 then 1 end) as a, count(case when kp2.skpd != 1 then 1 end) as b from kepegawaian_ppns kp2 where kp2.is_deleted = 0 " + filter_3 + "  ) as x",
     );
 
     return query;
@@ -47,7 +49,6 @@ const kepegawaian_rekapitulasi = (db) => {
 
     const query = db.any(
         "select z.pendidikan, sum(z.jumlah) as jumlah from (select mp.nama as pendidikan, count(kp.*) as jumlah from kepegawaian_pns kp inner join master_pendidikan mp on kp.kepegawaian_pendidikan_pada_sk = mp.id where kp.is_deleted = 0 " + filter_1 +" group by mp.nama union all select mp.nama as pendidikan, count(knp.*) as jumlah from kepegawaian_non_pns knp inner join master_pendidikan mp on knp.kepegawaian_pendidikan_pada_sk = mp.id where knp.is_deleted = 0 " + filter_2 + " group by mp.nama) as z group by z.pendidikan",
-        [tempat_tugas, seksi_kecamatan]
     );
 
     return query;
@@ -57,10 +58,12 @@ const kepegawaian_rekapitulasi = (db) => {
   const jumlah_pegawai_polpp_by_golongan = (tempat_tugas, seksi_kecamatan, kelurahan) => {
     let filter_1 = ""
     let filter_2 = ""
+    let filter_3 = ""
     
     if(tempat_tugas != undefined){
     filter_1 = filter_1 + " and kp.kepegawaian_tempat_tugas ilike '" + "%" + tempat_tugas + "'";
     filter_2 = filter_2 + " and knp.kepegawaian_tempat_tugas ilike '" + "%" + tempat_tugas + "'";
+    filter_3 = filter_3 + " and kp2.wilayah_kerja ilike '" + "%" + tempat_tugas + "'";
     }
     
     if(seksi_kecamatan != undefined){
@@ -74,8 +77,7 @@ const kepegawaian_rekapitulasi = (db) => {
     }
 
     const query = db.any(
-      "select z.golongan, sum(z.jumlah) as jumlah from ( select mg.nama as golongan, count(kp.*) as jumlah from kepegawaian_pns kp inner join master_golongan mg on kp.kepegawaian_golongan = mg.id where kp.is_deleted = 0 " + filter_1 + " group by mg.nama union all select mg.nama as golongan, count(knp.*) as jumlah from kepegawaian_non_pns knp inner join master_golongan mg on knp.kepegawaian_golongan = mg.id where knp.is_deleted = 0 " + filter_2 + " group by mg.nama) as z group by z.golongan",
-      [tempat_tugas, seksi_kecamatan]
+      "select z.golongan, sum(z.jumlah) as jumlah from ( select mg.nama as golongan, count(kp.*) as jumlah from kepegawaian_pns kp inner join master_golongan mg on kp.kepegawaian_golongan = mg.id where kp.is_deleted = 0 " + filter_1 + " group by mg.nama union all select mg.nama as golongan, count(knp.*) as jumlah from kepegawaian_non_pns knp inner join master_golongan mg on knp.kepegawaian_golongan = mg.id where knp.is_deleted = 0 " + filter_2 + " group by mg.nama union all select mg.nama as golongan, count(kp2.*) as jumlah from kepegawaian_ppns kp2 inner join master_golongan mg on kp2.pejabat_ppns_golongan = mg.id where kp2.is_deleted = 0 " + filter_3 + " group by mg.nama) as z group by z.golongan",
     );
 
     return query;
