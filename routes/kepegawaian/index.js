@@ -1,4 +1,5 @@
 const kepegawaian_pns = require("../../services/kepegawaian/kepegawaian_pns");
+const kepegawaian_ppns = require("../../services/kepegawaian/kepegawaian_ppns");
 const kepegawaian_non_pns = require("../../services/kepegawaian/kepegawaian_non_pns");
 const kepegawaian_rekapitulasi = require("../../services/kepegawaian/kepegawaian_rekapitulasi");
 const multer = require("fastify-multer");
@@ -6,6 +7,7 @@ const multer = require("fastify-multer");
 module.exports = async function (fastify, opts) {
   fastify.register(kepegawaian_pns);
   fastify.register(kepegawaian_non_pns);
+  fastify.register(kepegawaian_ppns);
   fastify.register(kepegawaian_rekapitulasi);
   fastify.register(multer.contentParser);
   //------------ Define the Storage to Store files------------
@@ -3010,5 +3012,305 @@ module.exports = async function (fastify, opts) {
   );
 
 
-  /* ------------------------------ naik pangkat ------------------------------ */
+  // ─── Naik Pangkat ───────────────────────────────────────────────────────────────
+
+  // ────────────────────────────────────────────────────────────────────────────────
+
+
+  // ─── Ppns ───────────────────────────────────────────────────────────────────────
+  // ^ find
+  fastify.get(
+    "/PPNS", {
+      schema: {
+        description: "Endpoint ini digunakan untuk mengambil seluruh data kepegawaian berstatus PPNS",
+        tags: ["endpoint kepegawaian"],
+        querystring: {
+          type: "object",
+          properties: {
+            limit: {
+              type: "integer",
+              default: 10,
+            },
+            skpd: {
+              type: "string",
+            },
+            nama: {
+              type: "string",
+            },
+            nip: {
+              type: "string",
+            },
+            nrk: {
+              type: "string",
+            },
+            pangkat: {
+              type: "string",
+            },
+            golongan: {
+              type: "string",
+            }
+          },
+          required: ["limit"],
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: {
+                      type: "number"
+                    },
+                    skpd: {
+                      type: "string"
+                    },
+                    nama: {
+                      type: "string"
+                    },
+                    nip: {
+                      type: "string"
+                    },
+                    nrk: {
+                      type: "string"
+                    },
+                    pangkat: {
+                      type: "string"
+                    },
+                    golongan: {
+                      type: "string"
+                    },
+                    no_sk_ppns: {
+                      type: "string"
+                    },
+                    no_ktp_ppns: {
+                      type: "string"
+                    },
+                    wilayah_kerja: {
+                      type: "string"
+                    },
+                    uu_dikawal: {
+                      type: "string"
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        limit,
+        offset,
+        skpd,
+        nama,
+        nip,
+        nrk,
+        pangkat,
+        golongan
+      } = request.query;
+      let exec = null;
+      let qwhere = "";
+      if (skpd || nama || nip || nrk || pangkat || golongan) {
+        if (skpd) {
+          qwhere += ` AND skpd ILIKE '%${skpd}%'`;
+        }
+        if (nama) {
+          qwhere += ` AND nama ILIKE '%${nama}%'`;
+        }
+        if (nip) {
+          qwhere += ` AND nip ILIKE '%${nip}%'`;
+        }
+        if (nrk) {
+          qwhere += ` AND nrk ILIKE '%${nrk}%'`;
+        }
+        if (pangkat) {
+          qwhere += ` AND pangkat ILIKE '%${pangkat}%'`;
+        }
+        if (golongan) {
+          qwhere += ` AND golongan ILIKE '%${golongan}%'`;
+        }
+        exec = await fastify.kepegawaian_ppns.filter(limit, qwhere);
+      } else {
+        exec = await fastify.kepegawaian_ppns.find(limit);
+      }
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec
+          });
+        } else {
+          reply.send({
+            message: "success",
+            code: 204
+          });
+        }
+
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
+  fastify.post(
+    "/create-PPNS", {
+      schema: {
+        description: "This is an endpoint for creating data PPNS",
+        tags: ["endpoint kepegawaian"],
+        body: {
+          description: "Payload for creating data PPNS",
+          type: "object",
+          properties: {
+            skpd: {
+              type: "string",
+            },
+            nama: {
+              type: "string",
+            },
+            nip: {
+              type: "string",
+            },
+            nrk: {
+              type: "string",
+            },
+            pangkat: {
+              type: "string",
+            },
+            golongan: {
+              type: "string",
+            },
+            no_sk_ppns: {
+              type: "string",
+            },
+            no_ktp_ppns: {
+              type: "string",
+            },
+            wilayah_kerja: {
+              type: "string",
+            },
+            uu_dikawal: {
+              type: "string",
+            },
+          },
+        },
+        response: {
+          201: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    return_id: {
+                      type: "number"
+                    },
+                    skpd: {
+                      type: "string"
+                    },
+                    nama: {
+                      type: "string"
+                    },
+                    nip: {
+                      type: "string"
+                    },
+                    nrk: {
+                      type: "string"
+                    },
+                    pangkat: {
+                      type: "string"
+                    },
+                    golongan: {
+                      type: "string"
+                    },
+                    no_sk_ppns: {
+                      type: "string"
+                    },
+                    no_ktp_ppns: {
+                      type: "string"
+                    },
+                    wilayah_kerja: {
+                      type: "string"
+                    },
+                    uu_dikawal: {
+                      type: "string"
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        skpd,
+        nama,
+        nip,
+        nrk,
+        pangkat,
+        golongan,
+        no_sk_ppns,
+        no_ktp_ppns,
+        wilayah_kerja,
+        uu_dikawal
+      } = request.body;
+      try {
+        const {
+          id
+        } = await fastify.kepegawaian_ppns.create(
+          skpd,
+          nama,
+          nip,
+          nrk,
+          pangkat,
+          golongan,
+          no_sk_ppns,
+          no_ktp_ppns,
+          wilayah_kerja,
+          uu_dikawal
+        );
+        reply.send({
+          message: "success",
+          code: 200,
+          data: {
+            return_id: id
+          }
+        });
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+  // ────────────────────────────────────────────────────────────────────────────────
+
+
+
 };
