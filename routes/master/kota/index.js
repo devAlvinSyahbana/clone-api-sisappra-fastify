@@ -275,7 +275,7 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/filter/:q",
+    "/filter-kota/:q",
     {
       schema: {
         description: "This is an endpoint for filtering a master kota",
@@ -301,6 +301,7 @@ module.exports = async function (fastify, opts) {
                   properties: {
                     id: { type: "number" },
                     kota: { type: "string" },
+                    kode: { type: "string" },
                   },
                 },
               },

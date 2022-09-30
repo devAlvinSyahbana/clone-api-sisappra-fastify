@@ -23,8 +23,8 @@ const master_kecamatan = (db) => {
     if (kota == undefined){kota = ""}
     if (kecamatan == undefined){kecamatan = ""}
 
-    let a = "%"+ kota;
-    let b = "%"+ kecamatan;
+    let a = kota + "%";
+    let b = kecamatan + "%";
  
     const query = db.any(
       "SELECT mk.id, mk.kode as kode_kecamatan, mk.nama as kecamatan, mk.kode_kota, mkot.nama as kota FROM master_kecamatan mk JOIN master_kota mkot on mk.kode_kota = mkot.kode WHERE mk.nama ilike $1 AND mkot.nama ilike $2 AND mk.is_deleted = 0 " ,

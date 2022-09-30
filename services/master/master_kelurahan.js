@@ -23,11 +23,11 @@ const master_kelurahan = (db) => {
     if (kecamatan == undefined){kecamatan = ""}
     if (kelurahan == undefined){kelurahan = ""}
 
-    let a = "%"+kelurahan;
-    let b = "%"+kecamatan;
+    let a = kelurahan + "%";
+    let b = kecamatan + "%";
 
     const query = db.any(
-      "SELECT mk.id, mk.kode as kode_kelurahan, mk.nama as kelurahan, mk.kode_kecamatan, mkec.nama as kecamatan FROM master_kelurahan mk JOIN master_kecamatan mkec on mk.kode_kecamatan = mkec.kode WHERE mk.nama LIKE $1 AND mkec.nama LIKE $2 AND mk.is_deleted = 0",
+      "SELECT mk.id, mk.kode as kode_kelurahan, mk.nama as kelurahan, mk.kode_kecamatan, mkec.nama as kecamatan FROM master_kelurahan mk JOIN master_kecamatan mkec on mk.kode_kecamatan = mkec.kode WHERE mk.nama ILIKE $1 AND mkec.nama ILIKE $2 AND mk.is_deleted = 0",
       [a, b]
     );
 

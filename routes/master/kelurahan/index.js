@@ -287,7 +287,7 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/filter/:q",
+    "/filter-kelurahan/:q",
     {
       schema: {
         description: "This is an endpoint for filtering a master kelurahan",
@@ -312,7 +312,8 @@ module.exports = async function (fastify, opts) {
                   type: "object",
                   properties: {
                     id: { type: "number" },
-                    kecamatan: { type: "string" },
+                    kelurahan: { type: "string" },
+                    kode: { type: "string" },
                   },
                 },
               },
