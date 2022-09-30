@@ -1,4 +1,4 @@
-const master_kota  = require("../../../services/master/master_kota");
+const master_kota = require("../../../services/master/master_kota");
 
 module.exports = async function (fastify, opts) {
   fastify.register(master_kota);
@@ -172,10 +172,10 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {kota,created_by} = request.body;
+      const { kota, created_by } = request.body;
 
       try {
-        await fastify.master_kota.create(kota,created_by);
+        await fastify.master_kota.create(kota, created_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -218,10 +218,10 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const {kota, updated_by } = request.body;
+      const { kota, updated_by } = request.body;
 
       try {
-        await fastify.master_kota.update(id,kota,updated_by);
+        await fastify.master_kota.update(id, kota, updated_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
