@@ -1,4 +1,5 @@
 const kepegawaian_pns = require("../../services/kepegawaian/kepegawaian_pns");
+const kepegawaian_ppns = require("../../services/kepegawaian/kepegawaian_ppns");
 const kepegawaian_non_pns = require("../../services/kepegawaian/kepegawaian_non_pns");
 const kepegawaian_rekapitulasi = require("../../services/kepegawaian/kepegawaian_rekapitulasi");
 const multer = require("fastify-multer");
@@ -7,6 +8,7 @@ const XLSX = require("xlsx");
 module.exports = async function (fastify, opts) {
   fastify.register(kepegawaian_pns);
   fastify.register(kepegawaian_non_pns);
+  fastify.register(kepegawaian_ppns);
   fastify.register(kepegawaian_rekapitulasi);
   fastify.register(multer.contentParser);
   //------------ Define the Storage to Store files------------
@@ -1794,6 +1796,9 @@ module.exports = async function (fastify, opts) {
             seksi_kecamatan: {
               type: "string"
             },
+            kelurahan: {
+              type: "string",
+            },
           },
         },
         response: {
@@ -1882,6 +1887,9 @@ module.exports = async function (fastify, opts) {
             seksi_kecamatan: {
               type: "string"
             },
+            kelurahan: {
+              type: "string",
+            },
           },
         },
         response: {
@@ -1924,8 +1932,8 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {tempat_tugas, seksi_kecamatan} = request.query;
-      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_pendidikan(tempat_tugas, seksi_kecamatan);
+      const {tempat_tugas, seksi_kecamatan, kelurahan} = request.query;
+      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_pendidikan(tempat_tugas, seksi_kecamatan, kelurahan);
 
       let jum = 0
       for (let index = 0; index < exec.length; index++) {
@@ -1975,6 +1983,9 @@ module.exports = async function (fastify, opts) {
             seksi_kecamatan: {
               type: "string"
             },
+            kelurahan: {
+              type: "string",
+            },
           },
         },
         response: {
@@ -2017,8 +2028,8 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {tempat_tugas, seksi_kecamatan} = request.query;
-      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_golongan(tempat_tugas, seksi_kecamatan);
+      const {tempat_tugas, seksi_kecamatan, kelurahan} = request.query;
+      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_golongan(tempat_tugas, seksi_kecamatan, kelurahan);
 
       let jum = 0
       for (let index = 0; index < exec.length; index++) {
@@ -2067,6 +2078,9 @@ module.exports = async function (fastify, opts) {
             seksi_kecamatan: {
               type: "string"
             },
+            kelurahan: {
+              type: "string",
+            },
           
           },
         },
@@ -2107,13 +2121,8 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        provinsi,
-        kota,
-        kecamatan,
-        kelurahan
-      } = request.query;
-      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_diklat(provinsi, kota, kecamatan, kelurahan);
+      const {tempat_tugas, seksi_kecamatan, kelurahan} = request.query;
+      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_diklat(tempat_tugas, seksi_kecamatan, kelurahan);
 
       try {
         if (exec) {
@@ -2224,6 +2233,7 @@ module.exports = async function (fastify, opts) {
       const { limit, offset,nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan} = request.query;
       const exec = await fastify.kepegawaian_rekapitulasi.find_rekapitulasi_jft(limit, offset,nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan);
       const {count} = await fastify.kepegawaian_rekapitulasi.count_rekapitulasi_jft(nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan);
+      
       let total = count;
 
       try {
@@ -3182,5 +3192,305 @@ module.exports = async function (fastify, opts) {
   );
 
 
-  /* ------------------------------ naik pangkat ------------------------------ */
+  // ─── Naik Pangkat ───────────────────────────────────────────────────────────────
+
+  // ────────────────────────────────────────────────────────────────────────────────
+
+
+  // ─── Ppns ───────────────────────────────────────────────────────────────────────
+  // ^ find
+  fastify.get(
+    "/PPNS", {
+      schema: {
+        description: "Endpoint ini digunakan untuk mengambil seluruh data kepegawaian berstatus PPNS",
+        tags: ["endpoint kepegawaian"],
+        querystring: {
+          type: "object",
+          properties: {
+            limit: {
+              type: "number",
+              default: 10,
+            },
+            skpd: {
+              type: "number",
+            },
+            pejabat_ppns_nama: {
+              type: "string",
+            },
+            pejabat_ppns_nip: {
+              type: "string",
+            },
+            pejabat_ppns_nrk: {
+              type: "string",
+            },
+            pejabat_ppns_pangkat: {
+              type: "number",
+            },
+            pejabat_ppns_golongan: {
+              type: "number",
+            }
+          },
+          required: ["limit"],
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: {
+                      type: "number"
+                    },
+                    skpd: {
+                      type: "number"
+                    },
+                    pejabat_ppns_nama: {
+                      type: "string"
+                    },
+                    pejabat_ppns_nip: {
+                      type: "string"
+                    },
+                    pejabat_ppns_nrk: {
+                      type: "string"
+                    },
+                    pejabat_ppns_pangkat: {
+                      type: "number"
+                    },
+                    pejabat_ppns_golongan: {
+                      type: "number"
+                    },
+                    no_sk_ppns: {
+                      type: "string"
+                    },
+                    no_ktp_ppns: {
+                      type: "string"
+                    },
+                    wilayah_kerja: {
+                      type: "string"
+                    },
+                    uu_yg_dikawal: {
+                      type: "string"
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        limit,
+        offset,
+        skpd,
+        pejabat_ppns_nama,
+        pejabat_ppns_nip,
+        pejabat_ppns_nrk,
+        pejabat_ppns_pangkat,
+        pejabat_ppns_golongan
+      } = request.query;
+      let exec = null;
+      let qwhere = "";
+      if (skpd || pejabat_ppns_nama || pejabat_ppns_nip || pejabat_ppns_nrk || pejabat_ppns_pangkat || pejabat_ppns_golongan) {
+        if (skpd) {
+          qwhere += ` AND skpd = ${skpd}`;
+        }
+        if (pejabat_ppns_nama) {
+          qwhere += ` AND pejabat_ppns_nama ILIKE '%${pejabat_ppns_nama}%'`;
+        }
+        if (pejabat_ppns_nip) {
+          qwhere += ` AND pejabat_ppns_nip ILIKE '%${pejabat_ppns_nip}%'`;
+        }
+        if (pejabat_ppns_nrk) {
+          qwhere += ` AND pejabat_ppns_nrk ILIKE '%${pejabat_ppns_nrk}%'`;
+        }
+        if (pejabat_ppns_pangkat) {
+          qwhere += ` AND pejabat_ppns_pangkat = ${pejabat_ppns_pangkat}`;
+        }
+        if (pejabat_ppns_golongan) {
+          qwhere += ` AND pejabat_ppns_golongan = ${pejabat_ppns_golongan}`;
+        }
+        exec = await fastify.kepegawaian_ppns.filter(limit, qwhere);
+      } else {
+        exec = await fastify.kepegawaian_ppns.find(limit);
+      }
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec
+          });
+        } else {
+          reply.send({
+            message: "success",
+            code: 204
+          });
+        }
+
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
+  fastify.post(
+    "/create-PPNS", {
+      schema: {
+        description: "This is an endpoint for creating data PPNS",
+        tags: ["endpoint kepegawaian"],
+        body: {
+          description: "Payload for creating data PPNS",
+          type: "object",
+          properties: {
+            skpd: {
+              type: "string",
+            },
+            nama: {
+              type: "string",
+            },
+            nip: {
+              type: "string",
+            },
+            nrk: {
+              type: "string",
+            },
+            pangkat: {
+              type: "string",
+            },
+            golongan: {
+              type: "string",
+            },
+            no_sk_ppns: {
+              type: "string",
+            },
+            no_ktp_ppns: {
+              type: "string",
+            },
+            wilayah_kerja: {
+              type: "string",
+            },
+            uudikawal: {
+              type: "string",
+            },
+          },
+        },
+        response: {
+          201: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    return_id: {
+                      type: "number"
+                    },
+                    skpd: {
+                      type: "string"
+                    },
+                    nama: {
+                      type: "string"
+                    },
+                    nip: {
+                      type: "string"
+                    },
+                    nrk: {
+                      type: "string"
+                    },
+                    pangkat: {
+                      type: "string"
+                    },
+                    golongan: {
+                      type: "string"
+                    },
+                    no_sk_ppns: {
+                      type: "string"
+                    },
+                    no_ktp_ppns: {
+                      type: "string"
+                    },
+                    wilayah_kerja: {
+                      type: "string"
+                    },
+                    uu_yg_dikawal: {
+                      type: "string"
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        skpd,
+        nama,
+        nip,
+        nrk,
+        pangkat,
+        golongan,
+        no_sk_ppns,
+        no_ktp_ppns,
+        wilayah_kerja,
+        uu_dikawal
+      } = request.body;
+      try {
+        const {
+          id
+        } = await fastify.kepegawaian_ppns.create(
+          skpd,
+          nama,
+          nip,
+          nrk,
+          pangkat,
+          golongan,
+          no_sk_ppns,
+          no_ktp_ppns,
+          wilayah_kerja,
+          uu_dikawal
+        );
+        reply.send({
+          message: "success",
+          code: 200,
+          data: {
+            return_id: id
+          }
+        });
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+  // ────────────────────────────────────────────────────────────────────────────────
+
+
+
 };

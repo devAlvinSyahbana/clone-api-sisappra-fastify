@@ -3,7 +3,7 @@ const fp = require("fastify-plugin");
 const login = (db) => {
 
   const find_token = (token) => {
-    const query = db.any(
+    const query = db.one(
       "SELECT id_pengguna, token FROM auth_token WHERE token = $1",
       [token]
     );
