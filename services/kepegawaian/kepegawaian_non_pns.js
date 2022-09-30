@@ -116,7 +116,22 @@ const kepegawaian_non_pns = (db) => {
       [id]
     );
 
-    return query;
+    if (query) {
+      return query;
+    }
+    return false;
+  };
+
+  const cekByNoPegawai = (id) => {
+    const query = db.one(
+      "SELECT count(kpnns.id) as total FROM kepegawaian_non_pns kpnns WHERE kpnns.kepegawaian_nptt_npjlp = $1 AND kpnns.is_deleted = 0",
+      [id]
+    );
+
+    if (query) {
+      return query;
+    }
+    return false;
   };
 
   const create = (nama, telepon, created_by) => {
@@ -235,6 +250,7 @@ const kepegawaian_non_pns = (db) => {
 
 
   return {
+    cekByNoPegawai,
     autocompliteFill,
     getDataUnduh,
     countKeluarga,
