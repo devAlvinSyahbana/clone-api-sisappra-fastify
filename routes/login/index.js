@@ -315,17 +315,26 @@ module.exports = async function (fastify, opts) {
         );
       }
       if (getDataPengguna && getDataPengguna.no_pegawai) {
-        const cekisPNS = await fastify.kepegawaian_pns.cekByNoPegawai(getDataPengguna.no_pegawai);
-        const cekisNonPNS = await fastify.kepegawaian_non_pns.cekByNoPegawai(getDataPengguna.no_pegawai);
+        const cekisPNS = await fastify.kepegawaian_pns.cekByNoPegawai(
+          getDataPengguna.no_pegawai
+        );
+        const cekisNonPNS = await fastify.kepegawaian_non_pns.cekByNoPegawai(
+          getDataPengguna.no_pegawai
+        );
         if (parseInt(cekisPNS.total) > 0) {
           getDataPegawai = await fastify.kepegawaian_pns.findone(
             getDataPengguna.id_pegawai
           );
-        }
-        if (parseInt(cekisNonPNS.total) > 0) {
+        } else if (parseInt(cekisNonPNS.total) > 0) {
           getDataPegawai = await fastify.kepegawaian_non_pns.findone(
             getDataPengguna.id_pegawai
           );
+        } else {
+          getDataPegawai = {
+            id: null,
+            foto: null,
+            nama: "Administrator",
+          };
         }
       }
       const resdata = {
