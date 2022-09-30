@@ -7,19 +7,19 @@ const kepegawaian_rekapitulasi = (db) => {
     let filter_3 = ""
     
     if(tempat_tugas != undefined){
-    filter_1 = filter_1 + " and kp.kepegawaian_tempat_tugas ilike '" + "%" + tempat_tugas + "'";
-    filter_2 = filter_2 + " and knp.kepegawaian_tempat_tugas ilike '" + "%" + tempat_tugas + "'";
-    filter_3 = filter_3 + " and kp2.wilayah_kerja ilike '" + "%" + tempat_tugas + "'";
+    filter_1 = filter_1 + " and kp.kepegawaian_tempat_tugas ilike '" + tempat_tugas + "%" + "'";
+    filter_2 = filter_2 + " and knp.kepegawaian_tempat_tugas ilike '" + tempat_tugas + "%" + "'";
+    filter_3 = filter_3 + " and kp2.wilayah_kerja ilike '" + tempat_tugas + "'";
     }
     
     if(seksi_kecamatan != undefined){
-    filter_1 = filter_1 + " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" + "%" + seksi_kecamatan + "'";
-    filter_2 = filter_2 + " and knp.kepegawaian_subbag_seksi_kecamatan ilike '" + "%" + seksi_kecamatan + "'";
+    filter_1 = filter_1 + " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" + seksi_kecamatan + "%" + "'";
+    filter_2 = filter_2 + " and knp.kepegawaian_subbag_seksi_kecamatan ilike '" + seksi_kecamatan + "%" + "'";
     }
     
     if(kelurahan != undefined){
-    filter_1 = filter_1 + " and kp.kepegawaian_kelurahan ilike '" + "%" + kelurahan + "'";
-    filter_2 = filter_2 + " and knp.kepegawaian_kelurahan ilike '" + "%" + kelurahan + "'";
+    filter_1 = filter_1 + " and kp.kepegawaian_kelurahan ilike '" + kelurahan + "%" + "'";
+    filter_2 = filter_2 + " and knp.kepegawaian_kelurahan ilike '" + kelurahan + "%" + "'";
     }
     const query = db.one(
       "select (z.a + y.a) as jmlh_seluruh_pegawai_satpol, z.b as jmlh_seluruh_pns, z.c as jmlh_seluruh_cpns, y.a as jmlh_seluruh_non_pns, y.b as jmlh_seluruh_non_pns_ptt, y.c as jmlh_seluruh_non_pns_pjlp, x.a as jmlh_seluruh_ppns_satpolpp, x.b as jmlh_seluruh_ppns_unit_kerja_lain from( select count(kp.*) as a, count(case when kp.kepegawaian_status_pegawai  = 'PNS' then 1 end) as b, count(case when kp.kepegawaian_status_pegawai  = 'CPNS' then 1 end) as c from kepegawaian_pns kp where kp.is_deleted = 0 " + filter_1 + " ) as z, ( select  count(knp.*) as a,  count(case when knp.kepegawaian_status_pegawai = 'PTT' then 1 end) as b,  count(case when knp.kepegawaian_status_pegawai = 'PJLP' then 1 end) as c from  kepegawaian_non_pns knp  where  knp.is_deleted = 0  " + filter_2 + " ) as y, ( select count(case when kp2.skpd = 1 then 1 end) as a, count(case when kp2.skpd != 1 then 1 end) as b from kepegawaian_ppns kp2 where kp2.is_deleted = 0 " + filter_3 + "  ) as x",
@@ -33,18 +33,18 @@ const kepegawaian_rekapitulasi = (db) => {
     let filter_2 = ""
     
     if(tempat_tugas != undefined){
-    filter_1 = filter_1 + " and kp.kepegawaian_tempat_tugas ilike '" + "%" + tempat_tugas + "'";
-    filter_2 = filter_2 + " and knp.kepegawaian_tempat_tugas ilike '" + "%" + tempat_tugas + "'";
+    filter_1 = filter_1 + " and kp.kepegawaian_tempat_tugas ilike '" + tempat_tugas + "%" + "'";
+    filter_2 = filter_2 + " and knp.kepegawaian_tempat_tugas ilike '" + tempat_tugas + "%" + "'";
     }
     
     if(seksi_kecamatan != undefined){
-    filter_1 = filter_1 + " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" + "%" + seksi_kecamatan + "'";
-    filter_2 = filter_2 + " and knp.kepegawaian_subbag_seksi_kecamatan ilike '" + "%" + seksi_kecamatan + "'";
+    filter_1 = filter_1 + " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" + seksi_kecamatan + "%" + "'";
+    filter_2 = filter_2 + " and knp.kepegawaian_subbag_seksi_kecamatan ilike '" + seksi_kecamatan + "%" + "'";
     }
     
     if(kelurahan != undefined){
-    filter_1 = filter_1 + " and kp.kepegawaian_kelurahan ilike '" + "%" + kelurahan + "'";
-    filter_2 = filter_2 + " and knp.kepegawaian_kelurahan ilike '" + "%" + kelurahan + "'";
+    filter_1 = filter_1 + " and kp.kepegawaian_kelurahan ilike '" + kelurahan + "%" + "'";
+    filter_2 = filter_2 + " and knp.kepegawaian_kelurahan ilike '" + kelurahan + "%" + "'";
     }
 
     const query = db.any(
@@ -61,19 +61,19 @@ const kepegawaian_rekapitulasi = (db) => {
     let filter_3 = ""
     
     if(tempat_tugas != undefined){
-    filter_1 = filter_1 + " and kp.kepegawaian_tempat_tugas ilike '" + "%" + tempat_tugas + "'";
-    filter_2 = filter_2 + " and knp.kepegawaian_tempat_tugas ilike '" + "%" + tempat_tugas + "'";
-    filter_3 = filter_3 + " and kp2.wilayah_kerja ilike '" + "%" + tempat_tugas + "'";
+    filter_1 = filter_1 + " and kp.kepegawaian_tempat_tugas ilike '" + tempat_tugas + "%" + "'";
+    filter_2 = filter_2 + " and knp.kepegawaian_tempat_tugas ilike '" + tempat_tugas + "%" + "'";
+    filter_3 = filter_3 + " and kp2.wilayah_kerja ilike '" + tempat_tugas + "'";
     }
     
     if(seksi_kecamatan != undefined){
-    filter_1 = filter_1 + " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" + "%" + seksi_kecamatan + "'";
-    filter_2 = filter_2 + " and knp.kepegawaian_subbag_seksi_kecamatan ilike '" + "%" + seksi_kecamatan + "'";
+    filter_1 = filter_1 + " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" + seksi_kecamatan + "%" + "'";
+    filter_2 = filter_2 + " and knp.kepegawaian_subbag_seksi_kecamatan ilike '" + seksi_kecamatan + "%" + "'";
     }
     
     if(kelurahan != undefined){
-    filter_1 = filter_1 + " and kp.kepegawaian_kelurahan ilike '" + "%" + kelurahan + "'";
-    filter_2 = filter_2 + " and knp.kepegawaian_kelurahan ilike '" + "%" + kelurahan + "'";
+    filter_1 = filter_1 + " and kp.kepegawaian_kelurahan ilike '" + kelurahan + "%" + "'";
+    filter_2 = filter_2 + " and knp.kepegawaian_kelurahan ilike '" + kelurahan + "%" + "'";
     }
 
     const query = db.any(
@@ -88,18 +88,18 @@ const kepegawaian_rekapitulasi = (db) => {
     let filter_2 = ""
     
     if(tempat_tugas != undefined){
-    filter_1 = filter_1 + " and kp.kepegawaian_tempat_tugas ilike '" + "%" + tempat_tugas + "'";
-    filter_2 = filter_2 + " and knp.kepegawaian_tempat_tugas ilike '" + "%" + tempat_tugas + "'";
+    filter_1 = filter_1 + " and kp.kepegawaian_tempat_tugas ilike '" + tempat_tugas + "%" + "'";
+    filter_2 = filter_2 + " and knp.kepegawaian_tempat_tugas ilike '" + tempat_tugas + "%" + "'";
     }
     
     if(seksi_kecamatan != undefined){
-    filter_1 = filter_1 + " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" + "%" + seksi_kecamatan + "'";
-    filter_2 = filter_2 + " and knp.kepegawaian_subbag_seksi_kecamatan ilike '" + "%" + seksi_kecamatan + "'";
+    filter_1 = filter_1 + " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" + seksi_kecamatan + "%" + "'";
+    filter_2 = filter_2 + " and knp.kepegawaian_subbag_seksi_kecamatan ilike '" + seksi_kecamatan + "%" + "'";
     }
     
     if(kelurahan != undefined){
-    filter_1 = filter_1 + " and kp.kepegawaian_kelurahan ilike '" + "%" + kelurahan + "'";
-    filter_2 = filter_2 + " and knp.kepegawaian_kelurahan ilike '" + "%" + kelurahan + "'";
+    filter_1 = filter_1 + " and kp.kepegawaian_kelurahan ilike '" + kelurahan + "%" + "'";
+    filter_2 = filter_2 + " and knp.kepegawaian_kelurahan ilike '" + kelurahan + "%" + "'";
     }
 
     const query = db.one(
@@ -112,12 +112,12 @@ const kepegawaian_rekapitulasi = (db) => {
   const find_rekapitulasi_jft = (limit, offset,nama, nrk, jabatan, tempat_tugas, seksi_kecamatan, kelurahan) => {
     let filter = "";
 
-    if (tempat_tugas != undefined){filter = filter + " and kp.kepegawaian_tempat_tugas ilike '" + "%" +tempat_tugas +"'"}
-    if (seksi_kecamatan != undefined){filter = filter + " and kp.kepegawaian_tempat_tugas ilike '" + "%" + seksi_kecamatan+"'"}
-    if (kelurahan != undefined){filter = filter + " and kp.kepegawaian_kelurahan ilike '" + "%" + kelurahan+"'"}
-    if (nama != undefined){filter = filter + " and kp.nama ilike '" + "%"+nama+"'"}
-    if (nrk != undefined){filter = filter + " and kp.kepegawaian_nrk ilike '" + "%" +nrk+"'"}
-    if (jabatan != undefined){filter = filter + " and kp.kepegawaian_jabatan = " + jabatan}
+    if (tempat_tugas != undefined){filter = filter + " and kp.kepegawaian_tempat_tugas ilike '"  +tempat_tugas + "%" + "'"}
+    if (seksi_kecamatan != undefined){filter = filter + " and kp.kepegawaian_tempat_tugas ilike '" + seksi_kecamatan + "%" + "'"}
+    if (kelurahan != undefined){filter = filter + " and kp.kepegawaian_kelurahan ilike '" + kelurahan+ "%" + "'"}
+    if (nama != undefined){filter = filter + " and kp.nama ilike '" + nama + "%" + "'"}
+    if (nrk != undefined){filter = filter + " and kp.kepegawaian_nrk ilike '"  + nrk + "%" + "'"}
+    if (jabatan != undefined){filter = filter + " and kp.kepegawaian_jabatan = " + "%" + jabatan}
 
     console.log(filter)
 
@@ -133,12 +133,12 @@ const kepegawaian_rekapitulasi = (db) => {
   const count_rekapitulasi_jft = (nama, nrk, jabatan, tempat_tugas, seksi_kecamatan, kelurahan) => {
     let filter = "";
 
-    if (tempat_tugas != undefined){filter = filter + " and kp.kepegawaian_tempat_tugas ilike '" + "%" +tempat_tugas+"'"}
-    if (seksi_kecamatan != undefined){filter = filter + " and kp.kepegawaian_tempat_tugas ilike '" + "%" + seksi_kecamatan+"'"}
-    if (kelurahan != undefined){filter = filter + " and kp.kepegawaian_kelurahan ilike '" + "%" + kelurahan+"'"}
-    if (nama != undefined){filter = filter + " and kp.nama ilike '" + "%" + nama+"'"}
-    if (nrk != undefined){filter = filter + " and kp.kepegawaian_nrk ilike '" + "%" +nrk+"'"}
-    if (jabatan != undefined){filter = filter + " and kp.kepegawaian_jabatan = " + jabatan}
+    if (tempat_tugas != undefined){filter = filter + " and kp.kepegawaian_tempat_tugas ilike '"  + tempat_tugas + "%" + "'"}
+    if (seksi_kecamatan != undefined){filter = filter + " and kp.kepegawaian_tempat_tugas ilike '" + seksi_kecamatan+ "%" + "'"}
+    if (kelurahan != undefined){filter = filter + " and kp.kepegawaian_kelurahan ilike '" + kelurahan+ "%" + "'"}
+    if (nama != undefined){filter = filter + " and kp.nama ilike '" + nama + "%" + "'"}
+    if (nrk != undefined){filter = filter + " and kp.kepegawaian_nrk ilike '"  + nrk + "%" + "'"}
+    if (jabatan != undefined){filter = filter + " and kp.kepegawaian_jabatan = " + "%" + jabatan}
 
     const query = db.one(
       "select count(kp.id) from kepegawaian_pns kp inner join master_jabatan mj on kp.kepegawaian_jabatan = mj.id where kp.is_deleted = 0 and mj.status = 'JFT' "+
@@ -151,11 +151,11 @@ const kepegawaian_rekapitulasi = (db) => {
   const unduh_rekapitulasi_jft = (nama, nrk, jabatan, tempat_tugas, seksi_kecamatan, kelurahan) => {
     let filter = "";
 
-    if (tempat_tugas != undefined){filter = filter + " and kp.kepegawaian_tempat_tugas ilike '" + "%" +tempat_tugas+"'"}
-    if (seksi_kecamatan != undefined){filter = filter + " and kp.kepegawaian_tempat_tugas ilike '" + "%" + seksi_kecamatan+"'"}
-    if (kelurahan != undefined){filter = filter + " and kp.kepegawaian_kelurahan ilike '" + "%" + kelurahan+"'"}
-    if (nama != undefined){filter = filter + " and kp.nama ilike '" + "%" + nama+"'"}
-    if (nrk != undefined){filter = filter + " and kp.kepegawaian_nrk ilike '" + "%" +nrk+"'"}
+    if (tempat_tugas != undefined){filter = filter + " and kp.kepegawaian_tempat_tugas ilike '"  + tempat_tugas + "%" +  "'"}
+    if (seksi_kecamatan != undefined){filter = filter + " and kp.kepegawaian_tempat_tugas ilike '" + seksi_kecamatan + "%" +  "'"}
+    if (kelurahan != undefined){filter = filter + " and kp.kepegawaian_kelurahan ilike '" + kelurahan + "%" +  "'"}
+    if (nama != undefined){filter = filter + " and kp.nama ilike '" + nama + "%" +  "'"}
+    if (nrk != undefined){filter = filter + " and kp.kepegawaian_nrk ilike '"  + nrk + "%" +  "'"}
     if (jabatan != undefined){filter = filter + " and kp.kepegawaian_jabatan = " + jabatan}
 
     const query = db.any(
