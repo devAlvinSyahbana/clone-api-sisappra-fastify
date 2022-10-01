@@ -1,9 +1,13 @@
 const login = require("../../services/login");
 const bcrypt = require("fastify-bcrypt");
 const jwtToken = require("@fastify/jwt");
+const kepegawaian_pns = require("../../services/kepegawaian/kepegawaian_pns");
+const kepegawaian_non_pns = require("../../services/kepegawaian/kepegawaian_non_pns");
 
 module.exports = async function (fastify, opts) {
   fastify.register(login);
+  fastify.register(kepegawaian_pns);
+  fastify.register(kepegawaian_non_pns);
   fastify.register(bcrypt, {
     saltWorkFactor: 10,
   });
@@ -165,7 +169,6 @@ module.exports = async function (fastify, opts) {
         if (await fastify.bcrypt.compare(kata_sandi, exec.kata_sandi)) {
           try {
             let token = fastify.jwt.sign({ foo: "bar" });
-            console.log('token', token)
             await fastify.login.create_token(exec.id, token);
 
             reply.send({
@@ -273,8 +276,27 @@ module.exports = async function (fastify, opts) {
               data: {
                 type: "object",
                 properties: {
-                  id_penguna: { type: "string" },
                   token: { type: "string" },
+                  data_user: {
+                    type: "object",
+                    properties: {
+                      id: { type: "number" },
+                      id_pegawai: { type: "string" },
+                      no_pegawai: { type: "string" },
+                      email: { type: "string" },
+                      hak_akses: { type: "number" },
+                      status_pengguna: { type: "number" },
+                    },
+                  },
+                  data_pegawai: {
+                    type: "object",
+                    properties: {
+                      id: { type: "number" },
+                      foto: { type: "string" },
+                      nama: { type: "string" },
+                      no_pegawai: { type: "string" },
+                    },
+                  },
                 },
               },
             },
@@ -285,10 +307,56 @@ module.exports = async function (fastify, opts) {
     async (request, reply) => {
       const { api_token } = request.body;
       const exec = await fastify.login.find_token(api_token);
-
+      let getDataPengguna = null;
+      let getDataPegawai = null;
+      if (exec && exec.id_pengguna) {
+        getDataPengguna = await fastify.login.findone(
+          parseInt(exec.id_pengguna)
+        );
+      }
+      if (getDataPengguna && getDataPengguna.no_pegawai) {
+        const cekisPNS = await fastify.kepegawaian_pns.cekByNoPegawai(
+          getDataPengguna.no_pegawai
+        );
+        const cekisNonPNS = await fastify.kepegawaian_non_pns.cekByNoPegawai(
+          getDataPengguna.no_pegawai
+        );
+        if (parseInt(cekisPNS.total) > 0) {
+          getDataPegawai = await fastify.kepegawaian_pns.findone(
+            getDataPengguna.id_pegawai
+          );
+        } else if (parseInt(cekisNonPNS.total) > 0) {
+          getDataPegawai = await fastify.kepegawaian_non_pns.findone(
+            getDataPengguna.id_pegawai
+          );
+        } else {
+          getDataPegawai = {
+            id: null,
+            foto: null,
+            nama: "Administrator",
+          };
+        }
+      }
+      const resdata = {
+        token: exec.token,
+        data_user: {
+          id: getDataPengguna.id,
+          id_pegawai: getDataPengguna.id_pegawai,
+          no_pegawai: getDataPengguna.no_pegawai,
+          email: getDataPengguna.email,
+          hak_akses: getDataPengguna.hak_akses,
+          status_pengguna: getDataPengguna.status_pengguna,
+        },
+        data_pegawai: {
+          id: getDataPegawai.id,
+          foto: getDataPegawai.foto,
+          nama: getDataPegawai.nama,
+          no_pegawai: getDataPengguna.no_pegawai,
+        },
+      };
       try {
         if (exec) {
-          reply.send({ message: "success", code: 200, data: exec });
+          reply.send({ message: "success", code: 200, data: resdata });
         } else {
           reply.send({ message: "success", code: 204 });
         }

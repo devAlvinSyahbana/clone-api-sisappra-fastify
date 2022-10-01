@@ -1797,6 +1797,9 @@ module.exports = async function (fastify, opts) {
             seksi_kecamatan: {
               type: "string"
             },
+            kelurahan: {
+              type: "string",
+            },
           },
         },
         response: {
@@ -1888,6 +1891,9 @@ module.exports = async function (fastify, opts) {
             seksi_kecamatan: {
               type: "string"
             },
+            kelurahan: {
+              type: "string",
+            },
           },
         },
         response: {
@@ -1932,9 +1938,10 @@ module.exports = async function (fastify, opts) {
     async (request, reply) => {
       const {
         tempat_tugas,
-        seksi_kecamatan
+        seksi_kecamatan,
+        kelurahan
       } = request.query;
-      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_pendidikan(tempat_tugas, seksi_kecamatan);
+      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_pendidikan(tempat_tugas, seksi_kecamatan, kelurahan);
 
       let jum = 0
       for (let index = 0; index < exec.length; index++) {
@@ -1984,6 +1991,9 @@ module.exports = async function (fastify, opts) {
             seksi_kecamatan: {
               type: "string"
             },
+            kelurahan: {
+              type: "string",
+            },
           },
         },
         response: {
@@ -2028,9 +2038,10 @@ module.exports = async function (fastify, opts) {
     async (request, reply) => {
       const {
         tempat_tugas,
-        seksi_kecamatan
+        seksi_kecamatan,
+        kelurahan
       } = request.query;
-      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_golongan(tempat_tugas, seksi_kecamatan);
+      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_golongan(tempat_tugas, seksi_kecamatan, kelurahan);
 
       let jum = 0
       for (let index = 0; index < exec.length; index++) {
@@ -2079,6 +2090,9 @@ module.exports = async function (fastify, opts) {
             seksi_kecamatan: {
               type: "string"
             },
+            kelurahan: {
+              type: "string",
+            },
 
           },
         },
@@ -2120,12 +2134,11 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const {
-        provinsi,
-        kota,
-        kecamatan,
+        tempat_tugas,
+        seksi_kecamatan,
         kelurahan
       } = request.query;
-      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_diklat(provinsi, kota, kecamatan, kelurahan);
+      const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_diklat(tempat_tugas, seksi_kecamatan, kelurahan);
 
       try {
         if (exec) {

@@ -121,6 +121,18 @@ const kepegawaian_pns = (db) => {
     return false;
   };
 
+  const cekByNoPegawai = (id) => {
+    const query = db.one(
+      "SELECT count(kpns.id) as total FROM kepegawaian_pns kpns WHERE kpns.kepegawaian_nrk = $1 AND kpns.is_deleted = 0",
+      [id]
+    );
+
+    if (query) {
+      return query;
+    }
+    return false;
+  };
+
   const update = (
     id,
     nama,
@@ -423,6 +435,7 @@ const kepegawaian_pns = (db) => {
   };
 
   return {
+    cekByNoPegawai,
     updateFile,
     autocompliteFill,
     getDataUnduh,
