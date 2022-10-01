@@ -1412,7 +1412,8 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const {
-        id, status
+        id,
+        status
       } = request.params;
       const {
         nama,
@@ -1717,7 +1718,7 @@ module.exports = async function (fastify, opts) {
   // );
 
 
-    /* ----------------------------------- rekapitulasi ---------------------------------- */
+  /* ----------------------------------- rekapitulasi ---------------------------------- */
 
   fastify.delete(
     "/delete-rekapitulasi-pegawai/:id", {
@@ -1730,7 +1731,7 @@ module.exports = async function (fastify, opts) {
           properties: {
             id: {
               type: "number"
-            },  
+            },
           },
         },
         body: {
@@ -1844,7 +1845,10 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {tempat_tugas, seksi_kecamatan} = request.query;
+      const {
+        tempat_tugas,
+        seksi_kecamatan
+      } = request.query;
       const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp(tempat_tugas, seksi_kecamatan);
 
       try {
@@ -1926,7 +1930,10 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {tempat_tugas, seksi_kecamatan} = request.query;
+      const {
+        tempat_tugas,
+        seksi_kecamatan
+      } = request.query;
       const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_pendidikan(tempat_tugas, seksi_kecamatan);
 
       let jum = 0
@@ -2019,7 +2026,10 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {tempat_tugas, seksi_kecamatan} = request.query;
+      const {
+        tempat_tugas,
+        seksi_kecamatan
+      } = request.query;
       const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_golongan(tempat_tugas, seksi_kecamatan);
 
       let jum = 0
@@ -2069,7 +2079,7 @@ module.exports = async function (fastify, opts) {
             seksi_kecamatan: {
               type: "string"
             },
-          
+
           },
         },
         response: {
@@ -2223,9 +2233,20 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { limit, offset,nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan} = request.query;
-      const exec = await fastify.kepegawaian_rekapitulasi.find_rekapitulasi_jft(limit, offset,nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan);
-      const {count} = await fastify.kepegawaian_rekapitulasi.count_rekapitulasi_jft(nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan);
+      const {
+        limit,
+        offset,
+        nama,
+        nrk,
+        id_jabatan,
+        tempat_tugas,
+        seksi_kecamatan,
+        kelurahan
+      } = request.query;
+      const exec = await fastify.kepegawaian_rekapitulasi.find_rekapitulasi_jft(limit, offset, nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan);
+      const {
+        count
+      } = await fastify.kepegawaian_rekapitulasi.count_rekapitulasi_jft(nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan);
       let total = count;
 
       try {
@@ -2252,8 +2273,7 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/rekapitulasi-pegawai-jft/unduh",
-    {
+    "/rekapitulasi-pegawai-jft/unduh", {
       schema: {
         description: "This is an endpoint for fetching a jumlah pegawai polpp by golongan",
         tags: ["endpoint rekapitulasi pegawai pejabat"],
@@ -2290,7 +2310,14 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan} = request.query;
+      const {
+        nama,
+        nrk,
+        id_jabatan,
+        tempat_tugas,
+        seksi_kecamatan,
+        kelurahan
+      } = request.query;
       let headerData = [];
       let data = [];
       try {
@@ -2321,7 +2348,11 @@ module.exports = async function (fastify, opts) {
         // const ws = XLSX.utils.aoa_to_sheet(wsData);
         wb.Sheets["DATA REKAPITULASI JFT"] = ws;
 
-        const wopts = { bookType: "xlsx", bookSST: false, type: "buffer" };
+        const wopts = {
+          bookType: "xlsx",
+          bookSST: false,
+          type: "buffer"
+        };
         const wBuffer = XLSX.write(wb, wopts);
 
         reply.header(
@@ -2334,7 +2365,10 @@ module.exports = async function (fastify, opts) {
         );
         reply.send(wBuffer);
       } catch (error) {
-        reply.send({ message: error.message, code: 500 });
+        reply.send({
+          message: error.message,
+          code: 500
+        });
       }
     }
   );
@@ -3204,23 +3238,23 @@ module.exports = async function (fastify, opts) {
               default: 10,
             },
             skpd: {
-              type: "number",
+              type: "number"
             },
             pejabat_ppns_nama: {
-              type: "string",
+              type: "string"
             },
             pejabat_ppns_nip: {
-              type: "string",
+              type: "string"
             },
             pejabat_ppns_nrk: {
-              type: "string",
+              type: "string"
             },
             pejabat_ppns_pangkat: {
-              type: "number",
+              type: "number"
             },
             pejabat_ppns_golongan: {
-              type: "number",
-            }
+              type: "number"
+            },
           },
           required: ["limit"],
         },
@@ -3340,6 +3374,109 @@ module.exports = async function (fastify, opts) {
     }
   );
 
+  // ^ Unduh
+  fastify.get(
+    "/PPNS-unduh", {
+      schema: {
+        description: "This is an endpoint for fetching a jumlah pegawai polpp by golongan",
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
+        querystring: {
+          description: "Find one jumlah pegawai polpp",
+          type: "object",
+          properties: {
+            nama: {
+              type: "string",
+            },
+            nrk: {
+              type: "string",
+            },
+            id_jabatan: {
+              type: "number",
+            },
+            tempat_tugas: {
+              type: "string",
+            },
+            seksi_kecamatan: {
+              type: "string",
+            },
+            kelurahan: {
+              type: "string",
+            },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "string",
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        nama,
+        nrk,
+        id_jabatan,
+        tempat_tugas,
+        seksi_kecamatan,
+        kelurahan
+      } = request.query;
+      let headerData = [];
+      let data = [];
+      try {
+        const wb = XLSX.utils.book_new();
+        // Definisikan header
+        headerData = ["No", "Nama", "NIP", "NRK", "Jabatan", "Tempat Tugas"];
+
+        const getData = await fastify.kepegawaian_rekapitulasi.unduh_rekapitulasi_jft(nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan);
+
+        const convertData = getData.map(function (item) {
+          return Object.values(item);
+        });
+        data = convertData;
+
+        // Definisikan rows untuk ditulis ke dalam spreadsheet
+        const wsDataKepegawaian = [headerData, ...data];
+        // Buat Workbook
+        const fileName = "REKAPITULASI PEGAWAI PEJABAT JFT";
+        wb.Props = {
+          Title: fileName,
+          Author: "SISAPPRA - REKAPITULASI PEGAWAI PEJABAT JFT",
+          CreatedDate: new Date(),
+        };
+        // Buat Sheet
+        wb.SheetNames.push("DATA REKAPITULASI JFT");
+        // Buat Sheet dengan Data
+        const ws = XLSX.utils.aoa_to_sheet(wsDataKepegawaian);
+        // const ws = XLSX.utils.aoa_to_sheet(wsData);
+        wb.Sheets["DATA REKAPITULASI JFT"] = ws;
+
+        const wopts = {
+          bookType: "xlsx",
+          bookSST: false,
+          type: "buffer"
+        };
+        const wBuffer = XLSX.write(wb, wopts);
+
+        reply.header(
+          "Content-Type",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
+        reply.header(
+          "Content-Disposition",
+          "attachment; filename=" + `${fileName}.xlsx`
+        );
+        reply.send(wBuffer);
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
+  // ^ Post
   fastify.post(
     "/create-PPNS", {
       schema: {
@@ -3350,34 +3487,34 @@ module.exports = async function (fastify, opts) {
           type: "object",
           properties: {
             skpd: {
-              type: "string",
+              type: "number"
             },
-            nama: {
-              type: "string",
+            pejabat_ppns_nama: {
+              type: "string"
             },
-            nip: {
-              type: "string",
+            pejabat_ppns_nip: {
+              type: "string"
             },
-            nrk: {
-              type: "string",
+            pejabat_ppns_nrk: {
+              type: "string"
             },
-            pangkat: {
-              type: "string",
+            pejabat_ppns_pangkat: {
+              type: "number"
             },
-            golongan: {
-              type: "string",
+            pejabat_ppns_golongan: {
+              type: "number"
             },
             no_sk_ppns: {
-              type: "string",
+              type: "string"
             },
             no_ktp_ppns: {
-              type: "string",
+              type: "string"
             },
             wilayah_kerja: {
-              type: "string",
+              type: "string"
             },
-            uudikawal: {
-              type: "string",
+            uu_yg_dikawal: {
+              type: "string"
             },
           },
         },
@@ -3393,43 +3530,40 @@ module.exports = async function (fastify, opts) {
                 type: "string"
               },
               data: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    return_id: {
-                      type: "number"
-                    },
-                    skpd: {
-                      type: "string"
-                    },
-                    nama: {
-                      type: "string"
-                    },
-                    nip: {
-                      type: "string"
-                    },
-                    nrk: {
-                      type: "string"
-                    },
-                    pangkat: {
-                      type: "string"
-                    },
-                    golongan: {
-                      type: "string"
-                    },
-                    no_sk_ppns: {
-                      type: "string"
-                    },
-                    no_ktp_ppns: {
-                      type: "string"
-                    },
-                    wilayah_kerja: {
-                      type: "string"
-                    },
-                    uu_yg_dikawal: {
-                      type: "string"
-                    },
+                type: "object",
+                properties: {
+                  id: {
+                    type: "number"
+                  },
+                  skpd: {
+                    type: "number"
+                  },
+                  pejabat_ppns_nama: {
+                    type: "string"
+                  },
+                  pejabat_ppns_nip: {
+                    type: "string"
+                  },
+                  pejabat_ppns_nrk: {
+                    type: "string"
+                  },
+                  pejabat_ppns_pangkat: {
+                    type: "number"
+                  },
+                  pejabat_ppns_golongan: {
+                    type: "number"
+                  },
+                  no_sk_ppns: {
+                    type: "string"
+                  },
+                  no_ktp_ppns: {
+                    type: "string"
+                  },
+                  wilayah_kerja: {
+                    type: "string"
+                  },
+                  uu_yg_dikawal: {
+                    type: "string"
                   },
                 },
               },
@@ -3441,30 +3575,30 @@ module.exports = async function (fastify, opts) {
     async (request, reply) => {
       const {
         skpd,
-        nama,
-        nip,
-        nrk,
-        pangkat,
-        golongan,
+        pejabat_ppns_nama,
+        pejabat_ppns_nip,
+        pejabat_ppns_nrk,
+        pejabat_ppns_pangkat,
+        pejabat_ppns_golongan,
         no_sk_ppns,
         no_ktp_ppns,
         wilayah_kerja,
-        uu_dikawal
+        uu_yg_dikawal
       } = request.body;
       try {
         const {
           id
         } = await fastify.kepegawaian_ppns.create(
           skpd,
-          nama,
-          nip,
-          nrk,
-          pangkat,
-          golongan,
+          pejabat_ppns_nama,
+          pejabat_ppns_nip,
+          pejabat_ppns_nrk,
+          pejabat_ppns_pangkat,
+          pejabat_ppns_golongan,
           no_sk_ppns,
           no_ktp_ppns,
           wilayah_kerja,
-          uu_dikawal
+          uu_yg_dikawal
         );
         reply.send({
           message: "success",
@@ -3481,6 +3615,115 @@ module.exports = async function (fastify, opts) {
       }
     }
   );
+
+  // ^ Edit
+  fastify.put(
+    "/update-ppns/:id", {
+      schema: {
+        description: "Endpoint ini digunakan untuk mengubah data kepegawaian dari salah satu pegawai berstatus PPNS berdasarkan id",
+        tags: ["endpoint kepegawaian"],
+        params: {
+          description: "update endpoint kepegawaian by Id",
+          type: "object",
+          properties: {
+            id: {
+              type: "number"
+            },
+          },
+        },
+        body: {
+          description: "Parameter yang digunakan",
+          type: "object",
+          properties: {
+            skpd: {
+              type: "number"
+            },
+            pejabat_ppns_nama: {
+              type: "string"
+            },
+            pejabat_ppns_nip: {
+              type: "string"
+            },
+            pejabat_ppns_nrk: {
+              type: "string"
+            },
+            pejabat_ppns_pangkat: {
+              type: "number"
+            },
+            pejabat_ppns_golongan: {
+              type: "number"
+            },
+            no_sk_ppns: {
+              type: "string"
+            },
+            no_ktp_ppns: {
+              type: "string"
+            },
+            wilayah_kerja: {
+              type: "string"
+            },
+            uu_yg_dikawal: {
+              type: "string"
+            },
+            updated_by: {
+              type: "string"
+            },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        id,
+      } = request.params;
+      const {
+        skpd,
+        pejabat_ppns_nama,
+        pejabat_ppns_nip,
+        pejabat_ppns_nrk,
+        pejabat_ppns_pangkat,
+        pejabat_ppns_golongan,
+        no_sk_ppns,
+        no_ktp_ppns,
+        wilayah_kerja,
+        uu_yg_dikawal,
+        updated_by
+      } = request.body;
+      try {
+        await fastify.kepegawaian_ppns.update(
+          skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat, pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal, updated_by, id
+        );
+        reply.send({
+          message: "success",
+          code: 200,
+          data: {
+            return_id: id
+          }
+        });
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
+
   // ────────────────────────────────────────────────────────────────────────────────
 
 
