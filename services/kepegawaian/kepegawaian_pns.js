@@ -379,7 +379,7 @@ const kepegawaian_pns = (db) => {
   // ^ find pensiun
   const findPensiun = (limit, offset) => {
     const query = db.any(
-      "SELECT nama, kepegawaian_nip, kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir, EXTRACT(YEAR FROM tgl_lahir) + 58 as tahun_pensiun, keterangan_pensiun FROM public.kepegawaian_pns kpns WHERE is_deleted = 0 ORDER BY created_at DESC LIMIT " +
+      "SELECT nama, kepegawaian_nip, kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir, CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END AS tahun_pensiun FROM public.kepegawaian_pns kpns WHERE is_deleted = 0 ORDER BY created_at DESC LIMIT " +
       limit +
       " OFFSET " +
       offset
@@ -391,44 +391,12 @@ const kepegawaian_pns = (db) => {
   // ^ filter pensiun
   const filterPensiun = (limit, offset, qwhere) => {
     const query = db.any(
-      "SELECT  nama, kepegawaian_nip, kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir,   EXTRACT(YEAR FROM tgl_lahir) + 58 as tahun_pensiun, keterangan_pensiun FROM public.kepegawaian_pns kpns WHERE is_deleted = 0" +
+      "SELECT  nama, kepegawaian_nip, kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir, kepegawaian_eselon, CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END AS tahun_pensiun FROM public.kepegawaian_pns kpns WHERE is_deleted = 0" +
       qwhere +
       " LIMIT " +
       limit +
       " OFFSET " +
       (parseInt(offset) - 1)
-    );
-
-    return query;
-  };
-
-  // ^ autofill add pensiun
-  const autoaAddFillPensiun = (limit, offset) => {
-    const query = db.any(
-      "SELECT nama, kepegawaian_nip, kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir, EXTRACT(YEAR FROM tgl_lahir) + 58 as tahun_pensiun FROM public.kepegawaian_pns kpns WHERE is_deleted = 0 ORDER BY created_at DESC LIMIT " +
-      limit +
-      " OFFSET " +
-      offset
-    );
-
-    return query;
-  };
-
-  // ^ Update Pensiun
-  const updatePensiun = (keterangan_pensiun) => {
-    const query = db.one(
-      "UPDATE kepegawaian_pns SET keterangan_pensiun = $1 WHERE kepegawaian_nip = $2, kepegawaian_nrk = $3, nama = $4, kepegawaian_jabatan = $5, kepegawaian_tempat_tugas = $6, kepegawaian_subbag_seksi_kecamatan = $7, tempat_lahir = $8, tgl_lahir = $9 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-      [
-        keterangan_pensiun,
-        nomor,
-        no_pegawai,
-        nama,
-        kepegawaian_jabatan,
-        kepegawaian_tempat_tugas,
-        kepegawaian_subbag_seksi_kecamatan,
-        tempat_lahir,
-        tgl_lahir,
-      ]
     );
 
     return query;
@@ -454,8 +422,6 @@ const kepegawaian_pns = (db) => {
     filterDuk,
     findPensiun,
     filterPensiun,
-    updatePensiun,
-    autoaAddFillPensiun,
     filterRekapitulasiPejabatStruktural,
     getDataUnduhPejabatStruktural,
   };
