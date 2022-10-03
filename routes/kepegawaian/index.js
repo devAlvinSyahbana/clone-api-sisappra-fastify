@@ -2822,7 +2822,10 @@ module.exports = async function (fastify, opts) {
                     nama: {
                       type: "string"
                     },
-                    nopegawai: {
+                    kepegawaian_nip: {
+                      type: "string"
+                    },
+                    kepegawaian_nrk: {
                       type: "string"
                     },
                     kepegawaian_jabatan: {
@@ -2879,7 +2882,7 @@ module.exports = async function (fastify, opts) {
             qwhere += ` AND kpns.tempat_tugas_kecamatan ILIKE '%${tempat_tugas_kecamatan}%'`;
           }
           if (tahun_pensiun) {
-            qwhere += ` AND CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 1 THEN EXTRACT(YEAR FROM tgl_lahir) + 60    ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END AS tahun_pensiun = ${tahun_pensiun}`;
+            qwhere += ` AND CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END = ${tahun_pensiun}`;
           }
           exec = await fastify.kepegawaian_pns.filterPensiun(limit, offset, qwhere);
         } else {
@@ -2888,22 +2891,22 @@ module.exports = async function (fastify, opts) {
       } else {
         if (nama || nopegawai || tempat_tugas_bidang || tempat_tugas_kecamatan || status || tahun_pensiun) {
           if (nama) {
-            qwhere += ` AND knpns.nama ILIKE '%${nama}%'`;
+            qwhere += ` AND nama ILIKE '%${nama}%'`;
           }
           if (nopegawai) {
-            qwhere += ` AND knpns.kepegawaian_nptt_npjlp ILIKE '%${nopegawai}%'`;
+            qwhere += ` AND kepegawaian_nptt_npjlp ILIKE '%${nopegawai}%'`;
           }
           if (tempat_tugas_bidang) {
-            qwhere += ` AND knpns.tempat_tugas_bidang ILIKE '%${tempat_tugas_bidang}%'`;
+            qwhere += ` AND tempat_tugas_bidang ILIKE '%${tempat_tugas_bidang}%'`;
           }
           if (tempat_tugas_kecamatan) {
-            qwhere += ` AND knpns.tempat_tugas_kecamatan ILIKE '%${tempat_tugas_kecamatan}%'`;
+            qwhere += ` AND tempat_tugas_kecamatan ILIKE '%${tempat_tugas_kecamatan}%'`;
           }
           if (status) {
-            qwhere += ` AND knpns.kepegawaian_status_pegawai ILIKE '%${status}%'`;
+            qwhere += ` AND kepegawaian_status_pegawai ILIKE '%${status}%'`;
           }
           if (tahun_pensiun) {
-            qwhere += ` AND knpns.tahun_pensiun = ${tahun_pensiun}`;
+            qwhere += ` AND CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END = ${tahun_pensiun}`;
           }
           exec = await fastify.kepegawaian_non_pns.filterPensiun(
             limit,
@@ -2942,6 +2945,179 @@ module.exports = async function (fastify, opts) {
   );
 
   // ─── Naik Pangkat ───────────────────────────────────────────────────────────────
+  // ^ find
+  fastify.get(
+    "/pegawai-naik-jabatan", {
+      schema: {
+        description: "Endpoint ini digunakan untuk mengambil seluruh data kepegawaian naik jabatan",
+        tags: ["endpoint kepegawaian"],
+        querystring: {
+          type: "object",
+          properties: {
+            limit: {
+              type: "number",
+              default: 10,
+            },
+            nama: {
+              type: "number"
+            },
+            nrk: {
+              type: "string"
+            },
+            nip: {
+              type: "string"
+            },
+            tempat_tugas_bidang: {
+              type: "string"
+            },
+            tempat_tugas_kecamatan: {
+              type: "number"
+            },
+            pangkat: {
+              type: "string"
+            },
+            jabatan: {
+              type: "string"
+            },
+            status_kenaikan: {
+              type: "number"
+            },
+            jadwal_kenaikan: {
+              type: "number"
+            },
+          },
+          required: ["limit"],
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    nama: {
+                      type: "number"
+                    },
+                    kepegawaian_nip: {
+                      type: "string"
+                    },
+                    kepegawaian_nrk: {
+                      type: "string"
+                    },
+                    kepegawaian_jabatan: {
+                      type: "number"
+                    },
+                    tempat_tugas_bidang: {
+                      type: "number"
+                    },
+                    tempat_tugas_kecamatan: {
+                      type: "string"
+                    },
+                    kepegawaian_pangkat: {
+                      type: "string"
+                    },
+                    kepegawaian_golongan: {
+                      type: "string"
+                    },
+                    kepegawaian_tmtpangkat: {
+                      type: "string"
+                    },
+                    kepegawaian_eselon: {
+                      type: "string"
+                    },
+                    status_kenaikan: {
+                      type: "string"
+                    },
+                    jadwal_kenaikan: {
+                      type: "string"
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        limit,
+        offset,
+        nama,
+        nrk,
+        nip,
+        tempat_tugas_bidang,
+        tempat_tugas_kecamatan,
+        pangkat,
+        jabatan,
+        status_kenaikan,
+        jadwal_kenaikan
+      } = request.query;
+      let exec = null;
+      let qwhere = "";
+      if (nama || nrk || nip || tempat_tugas_bidang || tempat_tugas_kecamatan || pangkat || jabatan || status_kenaikan || jadwal_kenaikan) {
+        if (nama) {
+          qwhere += ` AND nama = ${nama}`;
+        }
+        if (nrk) {
+          qwhere += ` AND kepegawaian_nrk ILIKE '%${nrk}%'`;
+        }
+        if (nip) {
+          qwhere += ` AND kepegawaian_nip ILIKE '%${nip}%'`;
+        }
+        if (tempat_tugas_bidang) {
+          qwhere += ` AND kepegawaian_tempat_tugas_bidang ILIKE '%${tempat_tugas_bidang}%'`;
+        }
+        if (tempat_tugas_kecamatan) {
+          qwhere += ` AND kepegawaian_subbag_seksi_kecamatan = ${tempat_tugas_kecamatan}`;
+        }
+        if (pangkat) {
+          qwhere += ` AND kepegawaian_pangkat ILIKE '%${pangkat}%'`;
+        }
+        if (jabatan) {
+          qwhere += ` AND kepegawaian_jabatan ILIKE '%${jabatan}%'`;
+        }
+        if (status_kenaikan) {
+          qwhere += ` AND status_kenaikan = ${status_kenaikan}`;
+        }
+        if (jadwal_kenaikan) {
+          qwhere += ` AND jadwal_kenaikan = ${jadwal_kenaikan}`;
+        }
+        exec = await fastify.kepegawaian_pns.filterNaikPangkat(limit, qwhere);
+      } else {
+        exec = await fastify.kepegawaian_pns.findNaikPangkat(limit);
+      }
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec
+          });
+        } else {
+          reply.send({
+            message: "success",
+            code: 204
+          });
+        }
+
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
 
   // ────────────────────────────────────────────────────────────────────────────────
 
@@ -3343,9 +3519,8 @@ module.exports = async function (fastify, opts) {
       }
     }
   );
-
-
   // ────────────────────────────────────────────────────────────────────────────────
+
 
 
 

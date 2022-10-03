@@ -375,7 +375,35 @@ const kepegawaian_pns = (db) => {
     return query;
   };
 
-  /* --------------------------------- pensiun -------------------------------- */
+  // ─── NAIK PANGKAT ────────────────────────────────────────────────────────────
+
+  // ^ find pensiun
+  const findNaikPangkat = (limit, offset) => {
+    const query = db.any(
+      "SELECT nama, kepegawaian_nip, kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, kepegawaian_pangkat, kepegawaian_golongan, kepegawaian_tmtpangkat, kepegawaian_eselon, status_kenaikan FROM kepegawaian_pns WHERE is_deleted = 0 ORDER BY created_at DESC LIMIT " +
+      limit +
+      " OFFSET " +
+      offset
+    );
+
+    return query;
+  };
+
+  // ^ filter pensiun
+  const filterNaikPangkat = (limit, offset, qwhere) => {
+    const query = db.any(
+      "SELECT nama, kepegawaian_nip, kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, kepegawaian_pangkat, kepegawaian_golongan, kepegawaian_tmtpangkat, kepegawaian_eselon, status_kenaikan FROM kepegawaian_pns WHERE is_deleted = 0" +
+      qwhere +
+      " LIMIT " +
+      limit +
+      " OFFSET " +
+      (parseInt(offset) - 1)
+    );
+
+    return query;
+  };
+
+  // ─── PENSIUN ─────────────────────────────────────────────────────────────────
   // ^ find pensiun
   const findPensiun = (limit, offset) => {
     const query = db.any(
@@ -420,6 +448,8 @@ const kepegawaian_pns = (db) => {
     del,
     findDuk,
     filterDuk,
+    findNaikPangkat,
+    filterNaikPangkat,
     findPensiun,
     filterPensiun,
     filterRekapitulasiPejabatStruktural,

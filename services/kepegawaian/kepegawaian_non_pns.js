@@ -198,7 +198,7 @@ const kepegawaian_non_pns = (db) => {
   // ^ find pensiun
   const findPensiun = (limit, offset, status) => {
     const query = db.any(
-      "SELECT nama, kepegawaian_nip, kepegawaian_nptt_npjlp as no_pegawai, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir, CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END AS tahun_pensiun FROM public.kepegawaian_non_pns knpns WHERE is_deleted = 0 AND knpns.kepegawaian_status_pegawai = '" +
+      "SELECT nama, kepegawaian_nip, kepegawaian_nptt_npjlp as kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir, CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END AS tahun_pensiun FROM public.kepegawaian_non_pns WHERE is_deleted = 0 AND kepegawaian_status_pegawai = '" +
       status +
       "' ORDER BY created_at DESC LIMIT " +
       limit +
@@ -210,10 +210,10 @@ const kepegawaian_non_pns = (db) => {
   };
 
   // ^ filter pensiun
-  const filterPensiun = (limit, offset, qwhere) => {
+  const filterPensiun = (limit, offset, status, qwhere) => {
     const query = db.any(
-      "SELECT  nama, kepegawaian_nip, kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir, CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END AS tahun_pensiun FROM public.kepegawaian_non_pns knpns WHERE is_deleted = 0" +
-      qwhere +
+      "SELECT nama, kepegawaian_nip, kepegawaian_nptt_npjlp as kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir, CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END AS tahun_pensiun FROM public.kepegawaian_non_pns WHERE is_deleted = 0 and kepegawaian_status_pegawai = '" +
+      status + "'" + qwhere +
       " LIMIT " +
       limit +
       " OFFSET " +
