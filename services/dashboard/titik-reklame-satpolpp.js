@@ -6,7 +6,7 @@ const dashboard_titik_reklame_satpolpp = (db) => {
 
     const get_dashboard_titik_reklame_satpolpp = (qwhere) => {
         const query = db.any(
-            "SELECT produk, pemilik_reklame, konstruksi_reklame, dtrs.nrk, dtrs.nama, tgl_pengecekan,    kawasan_kendali, status, keterangan, lokasi, lat, long, posisi, ukuran FROM public.dashboard_titik_reklame_satpolpp dtrs left join kepegawaian_pns kpns on kpns.kepegawaian_nrk = dtrs.nrk and kpns.nama = dtrs.nama WHERE dtrs.is_deleted = 0" + qwhere
+            "SELECT produk, pemilik_reklame, konstruksi_reklame, dtrs.nrk, dtrs.nama, tgl_pengecekan,    kawasan_kendali, status, keterangan, lokasi, lat, long, posisi, ukuran FROM public.dashboard_titik_reklame_satpolpp dtrs right join kepegawaian_pns kpns on kpns.kepegawaian_nrk = dtrs.nrk and kpns.nama = dtrs.nama WHERE dtrs.is_deleted = 0" + qwhere
         );
         return query;
     };
