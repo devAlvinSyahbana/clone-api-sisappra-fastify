@@ -75,7 +75,7 @@ const master_kelurahan = (db) => {
 
   const filter = (q) => {
     const query = db.any(
-      "SELECT id, nama as kelurahan, kode FROM master_kelurahan WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
+      "SELECT id, nama as kelurahan FROM master_kelurahan WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
     );
 
     return query;

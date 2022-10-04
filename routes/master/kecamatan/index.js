@@ -1,4 +1,4 @@
-const master_kecamatan  = require("../../../services/master/master_kecamatan");
+const master_kecamatan = require("../../../services/master/master_kecamatan");
 
 module.exports = async function (fastify, opts) {
   fastify.register(master_kecamatan);
@@ -184,7 +184,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {kode_kota,kecamatan, created_by} = request.body;
+      const { kode_kota, kecamatan, created_by } = request.body;
 
       try {
         await fastify.master_kecamatan.create(kode_kota, kecamatan, created_by);
@@ -231,7 +231,7 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const {kode_kota, kecamatan, updated_by } = request.body;
+      const { kode_kota, kecamatan, updated_by } = request.body;
 
       try {
         await fastify.master_kecamatan.update(id, kecamatan, kode_kota, updated_by);
