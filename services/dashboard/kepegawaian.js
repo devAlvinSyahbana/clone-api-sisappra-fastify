@@ -57,7 +57,6 @@ const kepegawaian = (db) => {
 
     return {
         create,
-        get_total_pegawai_provinsi,
         get_status_kepegawaian,
         get_pendidikan_terakhir,
         get_golongan,
