@@ -2859,7 +2859,17 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {nama, nip, nrk_nptt_pjlp, status_pegawai, tempat_tugas, seksi_kecamatan, kelurahan, limit, offset} = request.query;
+      const {
+        nama,
+        nip,
+        nrk_nptt_pjlp,
+        status_pegawai,
+        tempat_tugas,
+        seksi_kecamatan,
+        kelurahan,
+        limit,
+        offset
+      } = request.query;
       const exec = await fastify.kepegawaian_rekapitulasi.duk_rekapitulasi_pegawai(nama, nip, nrk_nptt_pjlp, status_pegawai, tempat_tugas, seksi_kecamatan, kelurahan, limit, offset);
       console.log(exec)
       try {
@@ -2884,7 +2894,7 @@ module.exports = async function (fastify, opts) {
     }
   );
 
-  
+
 
   /* --------------------------------- pensiun -------------------------------- */
   // ^ Find and Filter Pensiun 
@@ -3705,7 +3715,7 @@ module.exports = async function (fastify, opts) {
 
   // ^ bawah table
   fastify.get(
-    "/PPNS-rekapitulasi", {
+    "/PPNS-rekapitulasi-jumlah", {
       schema: {
         description: "Endpoint ini digunakan untuk mengambil seluruh Rekapitulasi data kepegawaian berstatus PPNS",
         tags: ["endpoint kepegawaian"],
