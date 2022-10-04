@@ -3521,6 +3521,131 @@ module.exports = async function (fastify, opts) {
   );
   // ────────────────────────────────────────────────────────────────────────────────
 
+  // ─── Rekap PPNS ──────────────────────────────────────────────────────────────
+  // ^ table
+  fastify.get(
+    "/PPNS-rekapitulasi", {
+      schema: {
+        description: "Endpoint ini digunakan untuk mengambil seluruh Rekapitulasi data kepegawaian berstatus PPNS",
+        tags: ["endpoint kepegawaian"],
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    skpd: {
+                      type: "string"
+                    },
+                    jumlah: {
+                      type: "number"
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const exec = await fastify.kepegawaian_ppns.find_rekap();
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec
+          });
+        } else {
+          reply.send({
+            message: "success",
+            code: 204
+          });
+        }
+
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
+  // ^ bawah table
+  fastify.get(
+    "/PPNS-rekapitulasi", {
+      schema: {
+        description: "Endpoint ini digunakan untuk mengambil seluruh Rekapitulasi data kepegawaian berstatus PPNS",
+        tags: ["endpoint kepegawaian"],
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+              data: {
+                type: "object",
+                properties: {
+                  ppns: {
+                    type: "number"
+                  },
+                  satpol_pp: {
+                    type: "number"
+                  },
+                  spkd_lain: {
+                    type: "number"
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const exec = await fastify.kepegawaian_ppns.find_rekap_jumlah();
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec
+          });
+        } else {
+          reply.send({
+            message: "success",
+            code: 204
+          });
+        }
+
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
+  // ─────────────────────────────────────────────────────────────────────────────
+
 
 
 

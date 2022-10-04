@@ -10,6 +10,20 @@ const kepegawaian_ppns = (db) => {
         return query;
     };
 
+    const find_rekap = (limit) => {
+        const query = db.any(
+            "SELECT mskpd.nama as skpd, count (kppns.skpd) as jumlah FROM public.kepegawaian_ppns kppns left join master_skpd mskpd on kppns.skpd = mskpd.id group by mskpd.nama UNION ALL SELECT 'Jumlah Keseluruhan' skpd, COUNT(skpd) FROM public.kepegawaian_ppns"
+        );
+        return query;
+    };
+
+    const find_rekap_jumlah = (limit) => {
+        const query = db.any(
+            "SELECT mskpd.nama as skpd, count (kppns.skpd) as jumlah FROM public.kepegawaian_ppns kppns left join master_skpd mskpd on kppns.skpd = mskpd.id group by mskpd.nama UNION ALL SELECT 'Jumlah Keseluruhan' skpd, COUNT(skpd) FROM public.kepegawaian_ppns"
+        );
+        return query;
+    };
+
     const getDataUnduh = (qwhere) => {
         const query = db.any(
             "SELECT kppns.id, mskpd.nama, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, mpangkat.nama, mgol.nama, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns kppns left join master_skpd mskpd on kppns.skpd =  mskpd.id left join master_pangkat mpangkat on kppns.pejabat_ppns_pangkat = mpangkat.id left join master_golongan mgol on kppns.pejabat_ppns_golongan = mgol.id WHERE kppns.is_deleted = 0" +
@@ -68,6 +82,8 @@ const kepegawaian_ppns = (db) => {
 
     return {
         find,
+        find_rekap,
+        find_rekap_jumlah,
         filter,
         create,
         update,
