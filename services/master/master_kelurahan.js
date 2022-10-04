@@ -33,6 +33,15 @@ const master_kelurahan = (db) => {
 
     return query;
   };
+  
+  const find_by_kode_kecamatan = (kode_kecamatan) => {
+    const query = db.any(
+      "SELECT mk.id, mk.kode as kode_kelurahan, mk.nama as kelurahan, mk.kode_kecamatan, mkec.nama as kecamatan FROM master_kelurahan mk JOIN master_kecamatan mkec on mk.kode_kecamatan = mkec.kode WHERE mk.kode_kecamatan ILIKE $1 AND mk.is_deleted = 0",
+      [kode_kecamatan]
+    );
+
+    return query;
+  };
 
   const create = async(kelurahan, kode_kecamatan, created_by) => {
     const { max } = await db.one(
@@ -85,6 +94,7 @@ const master_kelurahan = (db) => {
     find,
     findone,
     findone_by_kelurahan,
+    find_by_kode_kecamatan,
     create,
     update,
     del,
