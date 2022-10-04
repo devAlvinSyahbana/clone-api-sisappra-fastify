@@ -434,6 +434,65 @@ const kepegawaian_pns = (db) => {
     return query;
   };
 
+  const createKeluargaPNS = (
+    hubungan,
+    nama,
+    tempat_lahir,
+    tgl_lahir,
+    jenis_kelamin,
+    id_pegawai
+  ) => {
+    const query = db.one(
+      "INSERT INTO kepegawaian_pns_keluarga (hubungan, nama, tempat_lahir, tgl_lahir, jenis_kelamin, id_pegawai) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+      [
+        hubungan,
+        nama,
+        tempat_lahir,
+        tgl_lahir,
+        jenis_kelamin,
+        id_pegawai,
+      ]
+    );
+
+    return query;
+  };
+
+  const updateKeluargaPNS = (
+    id,
+    hubungan,
+    nama,
+    tempat_lahir,
+    tgl_lahir,
+    jenis_kelamin,
+    id_pegawai,
+    updated_by
+  ) => {
+    db.one(
+      "UPDATE kepegawaian_pns_keluarga SET hubungan = $1, nama = $2, tempat_lahir = $3, tgl_lahir = $4, jenis_kelamin = $5, id_pegawai = $6, updated_at = CURRENT_TIMESTAMP, updated_by = $7 WHERE id = $8 RETURNING id",
+      [
+        hubungan,
+        nama,
+        tempat_lahir,
+        tgl_lahir,
+        jenis_kelamin,
+        id_pegawai,
+        updated_by,
+        id,
+      ]
+    );
+
+    return query;
+  };
+
+  // const delKelPNS = async (id, deleted_by) => {
+  //   await db.one(
+  //     "UPDATE kepegawaian_pns_keluarga SET is_deleted = 1, deleted_by = $2, deleted_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id",
+  //     [id, deleted_by]
+  //   );
+
+  //   return { id };
+  // };
+
   return {
     cekByNoPegawai,
     updateFile,
@@ -458,6 +517,9 @@ const kepegawaian_pns = (db) => {
     autoaAddFillPensiun,
     filterRekapitulasiPejabatStruktural,
     getDataUnduhPejabatStruktural,
+    createKeluargaPNS,
+    updateKeluargaPNS,
+    // delKelPNS,
   };
 };
 
