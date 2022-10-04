@@ -12,12 +12,6 @@ const kepegawaian = (db) => {
         return query;
     };
 
-    const get_total_pegawai_provinsi = () => {
-        const query = db.one(
-            "SELECT SUM(vdk.provinsi_count + vdk.sekretariat_count + vdk.bidang_penegakan_count + vdk.bidang_penyidik_pns_count + vdk.bidang_tramtibum_count + vdk.bidang_pengawasan_tempat_usaha_count + vdk.bidang_perlindungan_masyarakat_count) AS jumlah_provinsi   FROM v_dashboard_kepegawaian_provinsi vdk;"
-        );
-        return query;
-    };
 
     const get_status_kepegawaian = () => {
         const query = db.any(
