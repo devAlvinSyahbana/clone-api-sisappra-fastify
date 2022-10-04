@@ -34,6 +34,16 @@ const master_kecamatan = (db) => {
     return query;
   };
 
+  const find_by_kode_kota = (kode_kota) => {
+
+    const query = db.any(
+      "SELECT mk.id, mk.kode as kode_kecamatan, mk.nama as kecamatan, mk.kode_kota, mkot.nama as kota FROM master_kecamatan mk JOIN master_kota mkot on mk.kode_kota = mkot.kode WHERE mk.kode_kota ilike $1 AND mk.is_deleted = 0 " ,
+      [kode_kota]
+    );
+
+    return query;
+  };
+
   const create = async(kode_kota, kecamatan, created_by) => {
     const { max } = await db.one(
       "SELECT MAX(id) FROM master_kecamatan"
@@ -85,6 +95,7 @@ const master_kecamatan = (db) => {
     find,
     findone,
     findone_by_kecamatan,
+    find_by_kode_kota,
     create,
     update,
     del,

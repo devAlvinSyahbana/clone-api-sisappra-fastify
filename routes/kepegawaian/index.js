@@ -2766,6 +2766,126 @@ module.exports = async function (fastify, opts) {
     }
   );
 
+  fastify.get(
+    "/duk-pegawai/filter", {
+      schema: {
+        description: "This is an endpoint for fetching a duk rekapitulasi",
+        tags: ["endpoint kepegawaian"],
+        querystring: {
+          description: "Find one duk rekapitulasi pegawai polpp",
+          type: "object",
+          properties: {
+            limit: {
+              type: "integer",
+              default: 10,
+            },
+            offset: {
+              type: "integer",
+              default: 1,
+            },
+            nama: {
+              type: "string",
+            },
+            nrk_nptt_pjlp: {
+              type: "string",
+            },
+            nip: {
+              type: "string",
+            },
+            status_pegawai: {
+              type: "string",
+            },
+            tempat_tugas: {
+              type: "string",
+            },
+            seksi_kecamatan: {
+              type: "string",
+            },
+            kelurahan: {
+              type: "string",
+            },
+          },
+          required: ["limit", "offset"],
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    nama: {
+                      type: "string"
+                    },
+                    nip: {
+                      type: "string"
+                    },
+                    nrk_nptt_npjlp: {
+                      type: "number"
+                    },
+                    jabatan: {
+                      type: "string"
+                    },
+                    status_pegawai: {
+                      type: "string"
+                    },
+                    tempat_tugas: {
+                      type: "string"
+                    },
+                    tempat_lahir: {
+                      type: "string"
+                    },
+                    agama: {
+                      type: "string"
+                    },
+                    alamat: {
+                      type: "string"
+                    },
+                  },
+                },
+              }
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {nama, nip, nrk_nptt_pjlp, status_pegawai, tempat_tugas, seksi_kecamatan, kelurahan, limit, offset} = request.query;
+      const exec = await fastify.kepegawaian_rekapitulasi.duk_rekapitulasi_pegawai(nama, nip, nrk_nptt_pjlp, status_pegawai, tempat_tugas, seksi_kecamatan, kelurahan, limit, offset);
+      console.log(exec)
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec
+          });
+        } else {
+          reply.send({
+            message: "success",
+            code: 204
+          });
+        }
+      } catch (error) {
+        reply.send({
+          message: error,
+          code: 500
+        });
+      }
+    }
+  );
+
+  
+
   /* --------------------------------- pensiun -------------------------------- */
   // ^ Find and Filter Pensiun 
   fastify.get(
