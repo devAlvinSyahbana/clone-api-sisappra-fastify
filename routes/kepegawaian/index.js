@@ -2841,7 +2841,7 @@ module.exports = async function (fastify, opts) {
                     tempat_tugas: {
                       type: "string"
                     },
-                    tempat_lahir: {
+                    tanggal_lahir: {
                       type: "string"
                     },
                     agama: {
