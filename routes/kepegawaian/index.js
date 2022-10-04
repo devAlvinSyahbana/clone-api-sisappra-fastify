@@ -3818,7 +3818,7 @@ module.exports = async function (fastify, opts) {
 
   // post keluarga PNS
   fastify.put(
-    "update-keluarga-PNS",
+    "/update-keluarga-PNS/:id",
     {
       schema: {
         description:
@@ -3828,13 +3828,11 @@ module.exports = async function (fastify, opts) {
           description: "Payload for updating data keluarga pns",
           type: "object",
           properties: {
-            id: {
-              type: "number",
-            },
+            id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for updating data keluarga pns",
+          description: "Payload for updating keluarga pns",
           type: "object",
           properties: {
             hubungan: { type: "string" },
@@ -3867,62 +3865,57 @@ module.exports = async function (fastify, opts) {
         jenis_kelamin,
         id_pegawai,
       } = request.body;
+      const exec = await fastify.kepegawaian_pns.updateKeluargaPNS(
+        id,
+        hubungan,
+        nama,
+        tempat_lahir,
+        tgl_lahir,
+        jenis_kelamin,
+        id_pegawai
+      );
 
+      return exec;
+    }
+  );
+
+  // delete keluarga PNS
+  fastify.delete(
+    "/delete/:id",
+    {
+      schema: {
+        description:
+          "This is an endpoint for deleting keluarga pns",
+        tags: ["endpoint kepegawaian"],
+        params: {
+          description: "Payload for deleting data keluarga pns",
+          type: "object",
+          properties: {
+            id: { type: "number" },
+          },
+        },
+        response: {
+          204: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
       try {
-        await fastify.kepegawaian_pns.updateKeluargaPNS(
-          id,
-          hubungan,
-          nama,
-          tempat_lahir,
-          tgl_lahir,
-          jenis_kelamin,
-          id_pegawai
-        );
-
-        reply.send({ message: "success", code: 200 });
+        await fastify.kepegawaian_pns.delKelPNS(id, "");
+        reply.send({ message: "success", code: 204 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
       }
     }
   );
-
-  // delete keluarga PNS
-  // fastify.delKeluargaPNS(
-  //   "/delete/:id",
-  //   {
-  //     schema: {
-  //       description:
-  //         "This is an endpoint for deleting keluarga pns",
-  //       tags: ["endpoint kepegawaian"],
-  //       params: {
-  //         description: "Payload for deleting data keluarga pns",
-  //         type: "object",
-  //         properties: {
-  //           id: { type: "number" },
-  //         },
-  //       },
-  //       response: {
-  //         204: {
-  //           description: "Success Response",
-  //           type: "object",
-  //           properties: {
-  //             message: { type: "string" },
-  //             code: { type: "string" },
-  //           },
-  //         },
-  //       },
-  //     },
-  //   },
-  //   async (request, reply) => {
-  //     const { id } = request.params;
-  //     try {
-  //       await fastify.kepegawaian_pns.delKelPNS(id, "");
-  //       reply.send({ message: "success", code: 204 });
-  //     } catch (error) {
-  //       reply.send({ message: error.message, code: 500 });
-  //     }
-  //   }
-  // );
 
 
 
