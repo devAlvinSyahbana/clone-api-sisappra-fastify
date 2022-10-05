@@ -3865,23 +3865,26 @@ module.exports = async function (fastify, opts) {
         jenis_kelamin,
         id_pegawai,
       } = request.body;
-      const exec = await fastify.kepegawaian_pns.updateKeluargaPNS(
-        id,
-        hubungan,
-        nama,
-        tempat_lahir,
-        tgl_lahir,
-        jenis_kelamin,
-        id_pegawai
-      );
-
-      return exec;
+      try {
+        const exec = await fastify.kepegawaian_pns.updateKeluargaPNS(
+          id,
+          hubungan,
+          nama,
+          tempat_lahir,
+          tgl_lahir,
+          jenis_kelamin,
+          id_pegawai
+        );
+        reply.send({ message: "success", code: 200});
+      } catch (error) {
+        reply.send({ message: error.message, code: 500 });
+      }
     }
   );
 
   // delete keluarga PNS
   fastify.delete(
-    "/delete/:id",
+    "/delete-keluarga-PNS/:id",
     {
       schema: {
         description:
