@@ -2766,8 +2766,6 @@ module.exports = async function (fastify, opts) {
     }
   );
 
-  /* --------------------------------- pensiun -------------------------------- */
-  // ^ Find and Filter Pensiun 
   fastify.get(
     "/pegawai-pensiun", {
     schema: {
@@ -2862,77 +2860,24 @@ module.exports = async function (fastify, opts) {
   },
     async (request, reply) => {
       const {
-        limit,
-        offset,
         nama,
-        nrk,
-        nopegawai,
-        tempat_tugas_bidang,
-        tempat_tugas_kecamatan,
-        status
+        nip,
+        nrk_nptt_pjlp,
+        status_pegawai,
+        tempat_tugas,
+        seksi_kecamatan,
+        kelurahan,
+        limit,
+        offset
       } = request.query;
-      let exec = null;
-      let qwhere = "";
-      if (status) {
-        if (status === "PNS") {
-          if (nama || nrk || nopegawai) {
-            if (nama) {
-              qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
-            }
-            if (nrk) {
-              qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nrk}%'`;
-            }
-            if (nopegawai) {
-              qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nopegawai}%'`;
-            }
-            exec = await fastify.kepegawaian_pns.filterPensiun(limit, offset, qwhere);
-          } else {
-            exec = await fastify.kepegawaian_pns.findPensiun(limit, offset);
-          }
-        } else {
-          if (nama || nopegawai) {
-            if (nama) {
-              qwhere += ` AND knpns.nama ILIKE '%${nama}%'`;
-            }
-            if (nopegawai) {
-              qwhere += ` AND kpnns.kepegawaian_nptt_npjlp ILIKE '%${nopegawai}%'`;
-            }
-            exec = await fastify.kepegawaian_non_pns.filterPensiun(
-              limit,
-              offset,
-              status,
-              qwhere
-            );
-          } else {
-            exec = await fastify.kepegawaian_non_pns.findPensiun(
-              limit,
-              offset,
-              status
-            );
-          }
-        }
-      } else {
-        if (nama || nrk || nopegawai) {
-          if (nama) {
-            qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
-          }
-          if (nrk) {
-            qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nrk}%'`;
-          }
-          if (nopegawai) {
-            qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nopegawai}%'`;
-          }
-          exec = await fastify.kepegawaian_pns.filterPensiun(limit, offset, qwhere);
-        } else {
-          exec = await fastify.kepegawaian_pns.findPensiun(limit, offset);
-        }
-      }
+      const exec = await fastify.kepegawaian_rekapitulasi.duk_rekapitulasi_pegawai(nama, nip, nrk_nptt_pjlp, status_pegawai, tempat_tugas, seksi_kecamatan, kelurahan, limit, offset);
+      console.log(exec)
       try {
         if (exec) {
           reply.send({
             message: "success",
             code: 200,
-            data: exec,
+            data: exec
           });
         } else {
           reply.send({
@@ -2942,7 +2887,7 @@ module.exports = async function (fastify, opts) {
         }
       } catch (error) {
         reply.send({
-          message: error.message,
+          message: error,
           code: 500
         });
       }
@@ -3049,8 +2994,8 @@ module.exports = async function (fastify, opts) {
                   keterangan_pensiun: {
                     type: "string"
                   },
-                },
-              },
+                }
+              }
             },
           },
         },
@@ -3059,46 +3004,71 @@ module.exports = async function (fastify, opts) {
   },
     async (request, reply) => {
       const {
-        status,
-        nomor
-      } = request.params;
-      const {
-        no_pegawai,
+        limit,
+        offset,
         nama,
-        kepegawaian_jabatan,
-        kepegawaian_tempat_tugas,
-        kepegawaian_subbag_seksi_kecamatan,
-        tempat_lahir,
-        tgl_lahir,
-        tahun_pensiun,
-        keterangan_pensiun
-      } = request.body;
+        nopegawai,
+        tempat_tugas_bidang,
+        tempat_tugas_kecamatan,
+        status,
+        tahun_pensiun
+      } = request.query;
       let exec = null;
       let qwhere = "";
       if (status === "PNS") {
-        exec = await fastify.kepegawaian_pns.updatePensiun(
-          nomor,
-          no_pegawai,
-          nama,
-          kepegawaian_jabatan,
-          kepegawaian_tempat_tugas,
-          kepegawaian_subbag_seksi_kecamatan,
-          tempat_lahir,
-          tgl_lahir,
-          tahun_pensiun,
-          keterangan_pensiun);
+        if (nama || nopegawai || tempat_tugas_bidang || tempat_tugas_kecamatan || tahun_pensiun) {
+          if (nama) {
+            qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
+          }
+          if (nopegawai) {
+            qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nopegawai}%'`;
+          }
+          if (tempat_tugas_bidang) {
+            qwhere += ` AND kpns.tempat_tugas_bidang ILIKE '%${tempat_tugas_bidang}%'`;
+          }
+          if (tempat_tugas_kecamatan) {
+            qwhere += ` AND kpns.tempat_tugas_kecamatan ILIKE '%${tempat_tugas_kecamatan}%'`;
+          }
+          if (tahun_pensiun) {
+            qwhere += ` AND CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END = ${tahun_pensiun}`;
+          }
+          exec = await fastify.kepegawaian_pns.filterPensiun(limit, offset, qwhere);
+        } else {
+          exec = await fastify.kepegawaian_pns.findPensiun(limit, offset);
+        }
       } else {
-        exec = await fastify.kepegawaian_non_pns.updatePensiun(
-          nomor,
-          no_pegawai,
-          nama,
-          kepegawaian_jabatan,
-          kepegawaian_tempat_tugas,
-          kepegawaian_subbag_seksi_kecamatan,
-          tempat_lahir,
-          tgl_lahir,
-          tahun_pensiun,
-          keterangan_pensiun);
+        if (nama || nopegawai || tempat_tugas_bidang || tempat_tugas_kecamatan || status || tahun_pensiun) {
+          if (nama) {
+            qwhere += ` AND nama ILIKE '%${nama}%'`;
+          }
+          if (nopegawai) {
+            qwhere += ` AND kepegawaian_nptt_npjlp ILIKE '%${nopegawai}%'`;
+          }
+          if (tempat_tugas_bidang) {
+            qwhere += ` AND tempat_tugas_bidang ILIKE '%${tempat_tugas_bidang}%'`;
+          }
+          if (tempat_tugas_kecamatan) {
+            qwhere += ` AND tempat_tugas_kecamatan ILIKE '%${tempat_tugas_kecamatan}%'`;
+          }
+          if (status) {
+            qwhere += ` AND kepegawaian_status_pegawai ILIKE '%${status}%'`;
+          }
+          if (tahun_pensiun) {
+            qwhere += ` AND CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END = ${tahun_pensiun}`;
+          }
+          exec = await fastify.kepegawaian_non_pns.filterPensiun(
+            limit,
+            offset,
+            status,
+            qwhere
+          );
+        } else {
+          exec = await fastify.kepegawaian_non_pns.findPensiun(
+            limit,
+            offset,
+            status
+          );
+        }
       }
       try {
         if (exec) {
@@ -3122,7 +3092,8 @@ module.exports = async function (fastify, opts) {
     }
   );
 
-  // ^ autocomplete add pensiun
+  // ─── Naik Pangkat ───────────────────────────────────────────────────────────────
+  // ^ find
   fastify.get(
     "/auto-complete-pensiun", {
     schema: {
@@ -3196,24 +3167,58 @@ module.exports = async function (fastify, opts) {
   },
     async (request, reply) => {
       const {
-        status,
-        nomor
+        limit,
+        offset,
+        nama,
+        nrk,
+        nip,
+        tempat_tugas_bidang,
+        tempat_tugas_kecamatan,
+        pangkat,
+        jabatan,
+        status_kenaikan,
+        jadwal_kenaikan
       } = request.query;
       let exec = null;
       let qwhere = "";
-      if (status === "PNS") {
-        qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nomor}%'`;
-        exec = await fastify.kepegawaian_pns.autoaAddFillPensiun(qwhere);
+      if (nama || nrk || nip || tempat_tugas_bidang || tempat_tugas_kecamatan || pangkat || jabatan || status_kenaikan || jadwal_kenaikan) {
+        if (nama) {
+          qwhere += ` AND nama = ${nama}`;
+        }
+        if (nrk) {
+          qwhere += ` AND kepegawaian_nrk ILIKE '%${nrk}%'`;
+        }
+        if (nip) {
+          qwhere += ` AND kepegawaian_nip ILIKE '%${nip}%'`;
+        }
+        if (tempat_tugas_bidang) {
+          qwhere += ` AND kepegawaian_tempat_tugas_bidang ILIKE '%${tempat_tugas_bidang}%'`;
+        }
+        if (tempat_tugas_kecamatan) {
+          qwhere += ` AND kepegawaian_subbag_seksi_kecamatan = ${tempat_tugas_kecamatan}`;
+        }
+        if (pangkat) {
+          qwhere += ` AND kepegawaian_pangkat ILIKE '%${pangkat}%'`;
+        }
+        if (jabatan) {
+          qwhere += ` AND kepegawaian_jabatan ILIKE '%${jabatan}%'`;
+        }
+        if (status_kenaikan) {
+          qwhere += ` AND status_kenaikan = ${status_kenaikan}`;
+        }
+        if (jadwal_kenaikan) {
+          qwhere += ` AND jadwal_kenaikan = ${jadwal_kenaikan}`;
+        }
+        exec = await fastify.kepegawaian_pns.filterNaikPangkat(limit, qwhere);
       } else {
-        qwhere += ` AND kpnns.kepegawaian_nptt_npjlp ILIKE '%${nomor}%'`;
-        exec = await fastify.kepegawaian_non_pns.autocompliteFill(qwhere);
+        exec = await fastify.kepegawaian_pns.findNaikPangkat(limit);
       }
       try {
         if (exec) {
           reply.send({
             message: "success",
             code: 200,
-            data: exec,
+            data: exec
           });
         } else {
           reply.send({
@@ -3221,6 +3226,7 @@ module.exports = async function (fastify, opts) {
             code: 204
           });
         }
+
       } catch (error) {
         reply.send({
           message: error.message,
@@ -3229,9 +3235,6 @@ module.exports = async function (fastify, opts) {
       }
     }
   );
-
-
-  // ─── Naik Pangkat ───────────────────────────────────────────────────────────────
 
   // ────────────────────────────────────────────────────────────────────────────────
 
@@ -3735,6 +3738,7 @@ module.exports = async function (fastify, opts) {
       }
     }
   );
+  // ────────────────────────────────────────────────────────────────────────────────
 
   // create keluarga PNS
   fastify.post(
@@ -3922,7 +3926,6 @@ module.exports = async function (fastify, opts) {
 
 
 
-  // ────────────────────────────────────────────────────────────────────────────────
 
 
 

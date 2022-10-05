@@ -156,6 +156,61 @@ module.exports = async function (fastify, opts) {
     }
   );
 
+  fastify.get(
+    "/find-by-kode-kota",
+    {
+      schema: {
+        description: "This is an endpoint for fetching a master kecamatan",
+        tags: ["master kecamatan"],
+        querystring: {
+          description: "Find one master kecamatan by kecamatan",
+          type: "object",
+          properties: {
+            kode_kota: { type: "string" },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: { type: "number" },
+                    kode_kecamatan: { type: "string" },
+                    kecamatan: { type: "string" },
+                    kode_kota: { type: "string" },
+                    kota: { type: "string" },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { kode_kota } = request.query;
+      const exec = await fastify.master_kecamatan.find_by_kode_kota(kode_kota);
+      console.log(exec)
+
+      try {
+        if (exec) {
+          reply.send({ message: "success", code: 200, data: exec });
+        } else {
+          reply.send({ message: "success", code: 204 });
+        }
+      } catch (error) {
+        reply.send({ message: error, code: 500 });
+      }
+    }
+  );
+
   fastify.post(
     "/create",
     {
