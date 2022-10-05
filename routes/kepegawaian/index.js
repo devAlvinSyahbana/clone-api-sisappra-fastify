@@ -2545,7 +2545,7 @@ module.exports = async function (fastify, opts) {
                     pendidikan_file_ijazah: {
                       type: "string"
                     },
-                    kepegawaian_nrk: {
+                    no_kepegawaian: {
                       type: "string"
                     },
                     kepegawaian_nip: {
@@ -2859,7 +2859,17 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {nama, nip, nrk_nptt_pjlp, status_pegawai, tempat_tugas, seksi_kecamatan, kelurahan, limit, offset} = request.query;
+      const {
+        nama,
+        nip,
+        nrk_nptt_pjlp,
+        status_pegawai,
+        tempat_tugas,
+        seksi_kecamatan,
+        kelurahan,
+        limit,
+        offset
+      } = request.query;
       const exec = await fastify.kepegawaian_rekapitulasi.duk_rekapitulasi_pegawai(nama, nip, nrk_nptt_pjlp, status_pegawai, tempat_tugas, seksi_kecamatan, kelurahan, limit, offset);
       console.log(exec)
       try {
@@ -2884,14 +2894,14 @@ module.exports = async function (fastify, opts) {
     }
   );
 
-  
+
 
   /* --------------------------------- pensiun -------------------------------- */
   // ^ Find and Filter Pensiun 
   fastify.get(
     "/pegawai-pensiun", {
       schema: {
-        description: "This is an endpoint for updating all duk",
+        description: "This is an endpoint for updating all pensiun",
         tags: ["endpoint kepegawaian"],
         querystring: {
           type: "object",
@@ -2907,10 +2917,7 @@ module.exports = async function (fastify, opts) {
             nama: {
               type: "string",
             },
-            nrk: {
-              type: "string",
-            },
-            nip: {
+            nopegawai: {
               type: "string",
             },
             tempat_tugas_bidang: {
@@ -2922,8 +2929,11 @@ module.exports = async function (fastify, opts) {
             status: {
               type: "string",
             },
+            tahun_pensiun: {
+              type: "string",
+            },
           },
-          required: ["limit", "offset"],
+          required: ["limit", "offset", "status"],
         },
         response: {
           200: {
@@ -2948,9 +2958,6 @@ module.exports = async function (fastify, opts) {
                     kepegawaian_nrk: {
                       type: "string"
                     },
-                    no_pegawai: {
-                      type: "string"
-                    },
                     kepegawaian_jabatan: {
                       type: "string"
                     },
@@ -2967,9 +2974,6 @@ module.exports = async function (fastify, opts) {
                       type: "string"
                     },
                     tahun_pensiun: {
-                      type: "string"
-                    },
-                    keterangan_pensiun: {
                       type: "string"
                     },
                   },
@@ -2985,240 +2989,68 @@ module.exports = async function (fastify, opts) {
         limit,
         offset,
         nama,
-        nrk,
         nopegawai,
         tempat_tugas_bidang,
         tempat_tugas_kecamatan,
-        status
+        status,
+        tahun_pensiun
       } = request.query;
       let exec = null;
       let qwhere = "";
-      if (status) {
-        if (status === "PNS") {
-          if (nama || nrk || nopegawai) {
-            if (nama) {
-              qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
-            }
-            if (nrk) {
-              qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nrk}%'`;
-            }
-            if (nopegawai) {
-              qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nopegawai}%'`;
-            }
-            exec = await fastify.kepegawaian_pns.filterPensiun(limit, offset, qwhere);
-          } else {
-            exec = await fastify.kepegawaian_pns.findPensiun(limit, offset);
-          }
-        } else {
-          if (nama || nopegawai) {
-            if (nama) {
-              qwhere += ` AND knpns.nama ILIKE '%${nama}%'`;
-            }
-            if (nopegawai) {
-              qwhere += ` AND kpnns.kepegawaian_nptt_npjlp ILIKE '%${nopegawai}%'`;
-            }
-            exec = await fastify.kepegawaian_non_pns.filterPensiun(
-              limit,
-              offset,
-              status,
-              qwhere
-            );
-          } else {
-            exec = await fastify.kepegawaian_non_pns.findPensiun(
-              limit,
-              offset,
-              status
-            );
-          }
-        }
-      } else {
-        if (nama || nrk || nopegawai) {
+      if (status === "PNS") {
+        if (nama || nopegawai || tempat_tugas_bidang || tempat_tugas_kecamatan || tahun_pensiun) {
           if (nama) {
             qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
           }
-          if (nrk) {
-            qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nrk}%'`;
-          }
           if (nopegawai) {
-            qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nopegawai}%'`;
+            qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nopegawai}%'`;
+          }
+          if (tempat_tugas_bidang) {
+            qwhere += ` AND kpns.tempat_tugas_bidang ILIKE '%${tempat_tugas_bidang}%'`;
+          }
+          if (tempat_tugas_kecamatan) {
+            qwhere += ` AND kpns.tempat_tugas_kecamatan ILIKE '%${tempat_tugas_kecamatan}%'`;
+          }
+          if (tahun_pensiun) {
+            qwhere += ` AND CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END = ${tahun_pensiun}`;
           }
           exec = await fastify.kepegawaian_pns.filterPensiun(limit, offset, qwhere);
         } else {
           exec = await fastify.kepegawaian_pns.findPensiun(limit, offset);
         }
-      }
-      try {
-        if (exec) {
-          reply.send({
-            message: "success",
-            code: 200,
-            data: exec,
-          });
-        } else {
-          reply.send({
-            message: "success",
-            code: 204
-          });
-        }
-      } catch (error) {
-        reply.send({
-          message: error.message,
-          code: 500
-        });
-      }
-    }
-  );
-
-  // ^ Tambah Pensiun
-  fastify.put(
-    "/updatePensiun", {
-      schema: {
-        description: "This is an endpoint for creating a endpoint kepegawaian",
-        tags: ["endpoint kepegawaian"],
-        params: {
-          description: "Master area dampak risiko by Id",
-          type: "object",
-          properties: {
-            status: {
-              type: "string"
-            },
-            nomor: {
-              type: "string"
-            }
-          },
-        },
-        body: {
-          description: "Payload for creating a endpoint kepegawaian",
-          type: "object",
-          properties: {
-            no_pegawai: {
-              type: "string"
-            },
-            nama: {
-              type: "number"
-            },
-            kepegawaian_jabatan: {
-              type: "string"
-            },
-            kepegawaian_tempat_tugas: {
-              type: "string"
-            },
-            kepegawaian_subbag_seksi_kecamatan: {
-              type: "number"
-            },
-            tempat_lahir: {
-              type: "string"
-            },
-            tgl_lahir: {
-              type: "string"
-            },
-            tahun_pensiun: {
-              type: "number"
-            },
-            keterangan_pensiun: {
-              type: "number"
-            }
-          },
-        },
-        response: {
-          201: {
-            description: "Success Response",
-            type: "object",
-            properties: {
-              message: {
-                type: "string"
-              },
-              code: {
-                type: "string"
-              },
-              data: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    status: {
-                      type: "number"
-                    },
-                    nomor: {
-                      type: "number"
-                    },
-                    no_pegawai: {
-                      type: "string"
-                    },
-                    nama: {
-                      type: "string"
-                    },
-                    kepegawaian_jabatan: {
-                      type: "number"
-                    },
-                    kepegawaian_tempat_tugas: {
-                      type: "string"
-                    },
-                    kepegawaian_subbag_seksi_kecamatan: {
-                      type: "string"
-                    },
-                    tempat_lahir: {
-                      type: "string"
-                    },
-                    tgl_lahir: {
-                      type: "number"
-                    },
-                    tahun_pensiun: {
-                      type: "string"
-                    },
-                    keterangan_pensiun: {
-                      type: "string"
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    async (request, reply) => {
-      const {
-        status,
-        nomor
-      } = request.params;
-      const {
-        no_pegawai,
-        nama,
-        kepegawaian_jabatan,
-        kepegawaian_tempat_tugas,
-        kepegawaian_subbag_seksi_kecamatan,
-        tempat_lahir,
-        tgl_lahir,
-        tahun_pensiun,
-        keterangan_pensiun
-      } = request.body;
-      let exec = null;
-      let qwhere = "";
-      if (status === "PNS") {
-        exec = await fastify.kepegawaian_pns.updatePensiun(
-          nomor,
-          no_pegawai,
-          nama,
-          kepegawaian_jabatan,
-          kepegawaian_tempat_tugas,
-          kepegawaian_subbag_seksi_kecamatan,
-          tempat_lahir,
-          tgl_lahir,
-          tahun_pensiun,
-          keterangan_pensiun);
       } else {
-        exec = await fastify.kepegawaian_non_pns.updatePensiun(
-          nomor,
-          no_pegawai,
-          nama,
-          kepegawaian_jabatan,
-          kepegawaian_tempat_tugas,
-          kepegawaian_subbag_seksi_kecamatan,
-          tempat_lahir,
-          tgl_lahir,
-          tahun_pensiun,
-          keterangan_pensiun);
+        if (nama || nopegawai || tempat_tugas_bidang || tempat_tugas_kecamatan || status || tahun_pensiun) {
+          if (nama) {
+            qwhere += ` AND nama ILIKE '%${nama}%'`;
+          }
+          if (nopegawai) {
+            qwhere += ` AND kepegawaian_nptt_npjlp ILIKE '%${nopegawai}%'`;
+          }
+          if (tempat_tugas_bidang) {
+            qwhere += ` AND tempat_tugas_bidang ILIKE '%${tempat_tugas_bidang}%'`;
+          }
+          if (tempat_tugas_kecamatan) {
+            qwhere += ` AND tempat_tugas_kecamatan ILIKE '%${tempat_tugas_kecamatan}%'`;
+          }
+          if (status) {
+            qwhere += ` AND kepegawaian_status_pegawai ILIKE '%${status}%'`;
+          }
+          if (tahun_pensiun) {
+            qwhere += ` AND CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END = ${tahun_pensiun}`;
+          }
+          exec = await fastify.kepegawaian_non_pns.filterPensiun(
+            limit,
+            offset,
+            status,
+            qwhere
+          );
+        } else {
+          exec = await fastify.kepegawaian_non_pns.findPensiun(
+            limit,
+            offset,
+            status
+          );
+        }
       }
       try {
         if (exec) {
@@ -3242,23 +3074,49 @@ module.exports = async function (fastify, opts) {
     }
   );
 
-  // ^ autocomplete add pensiun
+  // ─── Naik Pangkat ───────────────────────────────────────────────────────────────
+  // ^ find
   fastify.get(
-    "/auto-complete-pensiun", {
+    "/pegawai-naik-jabatan", {
       schema: {
-        description: "Endpoint ini digunakan untuk autocomplete kepegawaian berstatus PNS, PTT, PJLP",
+        description: "Endpoint ini digunakan untuk mengambil seluruh data kepegawaian naik jabatan",
         tags: ["endpoint kepegawaian"],
         querystring: {
           type: "object",
           properties: {
-            status: {
-              type: "string",
+            limit: {
+              type: "number",
+              default: 10,
             },
-            nomor: {
-              type: "string",
+            nama: {
+              type: "number"
+            },
+            nrk: {
+              type: "string"
+            },
+            nip: {
+              type: "string"
+            },
+            tempat_tugas_bidang: {
+              type: "string"
+            },
+            tempat_tugas_kecamatan: {
+              type: "number"
+            },
+            pangkat: {
+              type: "string"
+            },
+            jabatan: {
+              type: "string"
+            },
+            status_kenaikan: {
+              type: "number"
+            },
+            jadwal_kenaikan: {
+              type: "number"
             },
           },
-          required: ["status", "nomor"],
+          required: ["limit"],
         },
         response: {
           200: {
@@ -3276,34 +3134,40 @@ module.exports = async function (fastify, opts) {
                 items: {
                   type: "object",
                   properties: {
-                    id: {
+                    nama: {
                       type: "number"
                     },
-                    nama: {
+                    kepegawaian_nip: {
                       type: "string"
                     },
-                    nomor: {
-                      type: "string"
-                    },
-                    no_pegawai: {
+                    kepegawaian_nrk: {
                       type: "string"
                     },
                     kepegawaian_jabatan: {
                       type: "number"
                     },
-                    kepegawaian_tempat_tugas: {
-                      type: "string"
-                    },
-                    kepegawaian_subbag_seksi_kecamatan: {
-                      type: "string"
-                    },
-                    tempat_lahir: {
-                      type: "string"
-                    },
-                    tgl_lahir: {
+                    tempat_tugas_bidang: {
                       type: "number"
                     },
-                    tahun_pensiun: {
+                    tempat_tugas_kecamatan: {
+                      type: "string"
+                    },
+                    kepegawaian_pangkat: {
+                      type: "string"
+                    },
+                    kepegawaian_golongan: {
+                      type: "string"
+                    },
+                    kepegawaian_tmtpangkat: {
+                      type: "string"
+                    },
+                    kepegawaian_eselon: {
+                      type: "string"
+                    },
+                    status_kenaikan: {
+                      type: "string"
+                    },
+                    jadwal_kenaikan: {
                       type: "string"
                     },
                   },
@@ -3316,24 +3180,58 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const {
-        status,
-        nomor
+        limit,
+        offset,
+        nama,
+        nrk,
+        nip,
+        tempat_tugas_bidang,
+        tempat_tugas_kecamatan,
+        pangkat,
+        jabatan,
+        status_kenaikan,
+        jadwal_kenaikan
       } = request.query;
       let exec = null;
       let qwhere = "";
-      if (status === "PNS") {
-        qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nomor}%'`;
-        exec = await fastify.kepegawaian_pns.autoaAddFillPensiun(qwhere);
+      if (nama || nrk || nip || tempat_tugas_bidang || tempat_tugas_kecamatan || pangkat || jabatan || status_kenaikan || jadwal_kenaikan) {
+        if (nama) {
+          qwhere += ` AND nama = ${nama}`;
+        }
+        if (nrk) {
+          qwhere += ` AND kepegawaian_nrk ILIKE '%${nrk}%'`;
+        }
+        if (nip) {
+          qwhere += ` AND kepegawaian_nip ILIKE '%${nip}%'`;
+        }
+        if (tempat_tugas_bidang) {
+          qwhere += ` AND kepegawaian_tempat_tugas_bidang ILIKE '%${tempat_tugas_bidang}%'`;
+        }
+        if (tempat_tugas_kecamatan) {
+          qwhere += ` AND kepegawaian_subbag_seksi_kecamatan = ${tempat_tugas_kecamatan}`;
+        }
+        if (pangkat) {
+          qwhere += ` AND kepegawaian_pangkat ILIKE '%${pangkat}%'`;
+        }
+        if (jabatan) {
+          qwhere += ` AND kepegawaian_jabatan ILIKE '%${jabatan}%'`;
+        }
+        if (status_kenaikan) {
+          qwhere += ` AND status_kenaikan = ${status_kenaikan}`;
+        }
+        if (jadwal_kenaikan) {
+          qwhere += ` AND jadwal_kenaikan = ${jadwal_kenaikan}`;
+        }
+        exec = await fastify.kepegawaian_pns.filterNaikPangkat(limit, qwhere);
       } else {
-        qwhere += ` AND kpnns.kepegawaian_nptt_npjlp ILIKE '%${nomor}%'`;
-        exec = await fastify.kepegawaian_non_pns.autocompliteFill(qwhere);
+        exec = await fastify.kepegawaian_pns.findNaikPangkat(limit);
       }
       try {
         if (exec) {
           reply.send({
             message: "success",
             code: 200,
-            data: exec,
+            data: exec
           });
         } else {
           reply.send({
@@ -3341,6 +3239,7 @@ module.exports = async function (fastify, opts) {
             code: 204
           });
         }
+
       } catch (error) {
         reply.send({
           message: error.message,
@@ -3349,9 +3248,6 @@ module.exports = async function (fastify, opts) {
       }
     }
   );
-
-
-  // ─── Naik Pangkat ───────────────────────────────────────────────────────────────
 
   // ────────────────────────────────────────────────────────────────────────────────
 
@@ -3498,108 +3394,6 @@ module.exports = async function (fastify, opts) {
           });
         }
 
-      } catch (error) {
-        reply.send({
-          message: error.message,
-          code: 500
-        });
-      }
-    }
-  );
-
-  // ^ Unduh
-  fastify.get(
-    "/PPNS-unduh", {
-      schema: {
-        description: "This is an endpoint for fetching a jumlah pegawai polpp by golongan",
-        tags: ["endpoint rekapitulasi pegawai pejabat"],
-        querystring: {
-          description: "Find one jumlah pegawai polpp",
-          type: "object",
-          properties: {
-            nama: {
-              type: "string",
-            },
-            nrk: {
-              type: "string",
-            },
-            id_jabatan: {
-              type: "number",
-            },
-            tempat_tugas: {
-              type: "string",
-            },
-            seksi_kecamatan: {
-              type: "string",
-            },
-            kelurahan: {
-              type: "string",
-            },
-          },
-        },
-        response: {
-          200: {
-            description: "Success Response",
-            type: "string",
-          },
-        },
-      },
-    },
-    async (request, reply) => {
-      const {
-        nama,
-        nrk,
-        id_jabatan,
-        tempat_tugas,
-        seksi_kecamatan,
-        kelurahan
-      } = request.query;
-      let headerData = [];
-      let data = [];
-      try {
-        const wb = XLSX.utils.book_new();
-        // Definisikan header
-        headerData = ["No", "Nama", "NIP", "NRK", "Jabatan", "Tempat Tugas"];
-
-        const getData = await fastify.kepegawaian_rekapitulasi.unduh_rekapitulasi_jft(nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan);
-
-        const convertData = getData.map(function (item) {
-          return Object.values(item);
-        });
-        data = convertData;
-
-        // Definisikan rows untuk ditulis ke dalam spreadsheet
-        const wsDataKepegawaian = [headerData, ...data];
-        // Buat Workbook
-        const fileName = "REKAPITULASI PEGAWAI PEJABAT JFT";
-        wb.Props = {
-          Title: fileName,
-          Author: "SISAPPRA - REKAPITULASI PEGAWAI PEJABAT JFT",
-          CreatedDate: new Date(),
-        };
-        // Buat Sheet
-        wb.SheetNames.push("DATA REKAPITULASI JFT");
-        // Buat Sheet dengan Data
-        const ws = XLSX.utils.aoa_to_sheet(wsDataKepegawaian);
-        // const ws = XLSX.utils.aoa_to_sheet(wsData);
-        wb.Sheets["DATA REKAPITULASI JFT"] = ws;
-
-        const wopts = {
-          bookType: "xlsx",
-          bookSST: false,
-          type: "buffer"
-        };
-        const wBuffer = XLSX.write(wb, wopts);
-
-        reply.header(
-          "Content-Type",
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        );
-        reply.header(
-          "Content-Disposition",
-          "attachment; filename=" + `${fileName}.xlsx`
-        );
-        reply.send(wBuffer);
       } catch (error) {
         reply.send({
           message: error.message,
@@ -3855,9 +3649,133 @@ module.exports = async function (fastify, opts) {
       }
     }
   );
-
-
   // ────────────────────────────────────────────────────────────────────────────────
+
+  // ─── Rekap PPNS ──────────────────────────────────────────────────────────────
+  // ^ table
+  fastify.get(
+    "/PPNS-rekapitulasi", {
+      schema: {
+        description: "Endpoint ini digunakan untuk mengambil seluruh Rekapitulasi data kepegawaian berstatus PPNS",
+        tags: ["endpoint kepegawaian"],
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    skpd: {
+                      type: "string"
+                    },
+                    jumlah: {
+                      type: "number"
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const exec = await fastify.kepegawaian_ppns.find_rekap();
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec
+          });
+        } else {
+          reply.send({
+            message: "success",
+            code: 204
+          });
+        }
+
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
+  // ^ bawah table
+  fastify.get(
+    "/PPNS-rekapitulasi-jumlah", {
+      schema: {
+        description: "Endpoint ini digunakan untuk mengambil seluruh Rekapitulasi data kepegawaian berstatus PPNS",
+        tags: ["endpoint kepegawaian"],
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+              data: {
+                type: "object",
+                properties: {
+                  ppns: {
+                    type: "number"
+                  },
+                  satpol_pp: {
+                    type: "number"
+                  },
+                  spkd_lain: {
+                    type: "number"
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const exec = await fastify.kepegawaian_ppns.find_rekap_jumlah();
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec
+          });
+        } else {
+          reply.send({
+            message: "success",
+            code: 204
+          });
+        }
+
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
+  // ─────────────────────────────────────────────────────────────────────────────
+
 
 
 
