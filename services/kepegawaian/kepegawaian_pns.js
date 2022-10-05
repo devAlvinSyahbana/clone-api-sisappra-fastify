@@ -469,6 +469,69 @@ const kepegawaian_pns = (db) => {
     return { id };
   };
 
+  //create pendidikan pns
+  const createPendidikanPNS = async (
+    jenis_pendidikan,
+    nama_sekolah,
+    nomor_ijazah,
+    tgl_ijazah,
+    jurusan,
+    fakultas,
+    file_ijazah,
+    id_pegawai) => {
+
+    const { id } = await db.one(
+      "INSERT INTO kepegawaian_pns_pendidikan (jenis_pendidikan, nama_sekolah, nomor_ijazah, tgl_ijazah, jurusan, fakultas, file_ijazah, id_pegawai) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id",
+      [jenis_pendidikan,
+        nama_sekolah,
+        nomor_ijazah,
+        tgl_ijazah,
+        jurusan,
+        fakultas,
+        file_ijazah,
+        id_pegawai]
+    );
+
+    return {
+      jenis_pendidikan,
+      nama_sekolah,
+      nomor_ijazah,
+      tgl_ijazah,
+      jurusan,
+      fakultas,
+      file_ijazah,
+      id_pegawai
+    };
+  };
+
+  //update pendidikan pns
+  const updatePendidikanPNS = (
+    id, 
+    jenis_pendidikan, 
+    nama_sekolah, 
+    nomor_ijazah, 
+    tgl_ijazah, 
+    jurusan, 
+    fakultas, 
+    file_ijazah, 
+    id_pegawai) => {
+    db.one(
+      "UPDATE kepegawaian_pns_pendidikan SET jenis_pendidikan = $1, nama_sekolah = $2, nomor_ijazah = $3, tgl_ijazah = $4, jurusan = $5, fakultas = $6, file_ijazah = $7, id_pegawai = $8, updated_at = CURRENT_TIMESTAMP WHERE id = $9 RETURNING id",
+      [jenis_pendidikan, nama_sekolah, nomor_ijazah, tgl_ijazah, jurusan, fakultas, file_ijazah, id_pegawai, id]
+    );
+  };
+
+  //delete pendidikan pns
+  const delPendidikanPNS = async (id, deleted_by) => {
+    await db.one(
+      "UPDATE kepegawaian_pns_pendidikan SET is_deleted = 1, deleted_by = $2, deleted_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id",
+      [id, deleted_by]
+    );
+
+    return { id };
+  };
+
+
   return {
     cekByNoPegawai,
     updateFile,
@@ -496,6 +559,9 @@ const kepegawaian_pns = (db) => {
     createKeluargaPNS,
     updateKeluargaPNS,
     delKelPNS,
+    createPendidikanPNS,
+    updatePendidikanPNS,
+    delPendidikanPNS,
   };
 };
 

@@ -223,6 +223,46 @@ const kepegawaian_non_pns = (db) => {
     return query;
   };
 
+  // create keluarga non pns
+  const createKeluargaNonPNS = (
+    hubungan,
+    nama,
+    tempat_lahir,
+    tgl_lahir,
+    jenis_kelamin,
+    id_pegawai
+  ) => {
+    const query = db.one(
+      "INSERT INTO kepegawaian_non_pns_keluarga (hubungan, nama, tempat_lahir, tgl_lahir, jenis_kelamin, id_pegawai) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+      [
+        hubungan,
+        nama,
+        tempat_lahir,
+        tgl_lahir,
+        jenis_kelamin,
+        id_pegawai,
+      ]
+    );
+
+    return query;
+  };
+
+  const updateKeluargaNonPNS = (id, hubungan, nama, tempat_lahir, tgl_lahir, jenis_kelamin, id_pegawai) => {
+    db.one(
+      "UPDATE kepegawaian_non_pns_keluarga SET hubungan = $1, nama = $2, tempat_lahir = $3, tgl_lahir = $4, jenis_kelamin = $5, id_pegawai = $6, updated_at = CURRENT_TIMESTAMP WHERE id = $7 RETURNING id",
+      [hubungan, nama, tempat_lahir, tgl_lahir, jenis_kelamin, id_pegawai, id]
+    );
+  };
+
+  const delKelNonPNS = async (id, deleted_by) => {
+    await db.one(
+      "UPDATE kepegawaian_non_pns_keluarga SET is_deleted = 1, deleted_by = $2, deleted_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id",
+      [id, deleted_by]
+    );
+
+    return { id };
+  };
+
   return {
     cekByNoPegawai,
     autocompliteFill,
@@ -243,6 +283,9 @@ const kepegawaian_non_pns = (db) => {
     filterDuk,
     findPensiun,
     filterPensiun,
+    createKeluargaNonPNS,
+    updateKeluargaNonPNS,
+    delKelNonPNS,
   };
 };
 
