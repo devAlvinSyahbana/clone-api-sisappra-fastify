@@ -206,8 +206,8 @@ const kepegawaian_rekapitulasi = (db) => {
     }
 
     const query = db.any(
-      "select z.* from (select kp.nama, kp.kepegawaian_nip as nip, kp.kepegawaian_nrk as nrk_nptt_npjlp, mj.nama as jabatan, kp.kepegawaian_status_pegawai as status_pegawai, kp.kepegawaian_tempat_tugas as tempat_tugas, kp.tgl_lahir as tanggal_lahir, ma.nama as agama, kp.domisili_alamat as alamat from kepegawaian_pns kp inner join master_jabatan mj on kp.kepegawaian_jabatan = mj.id inner join master_agama ma on kp.agama = ma.id where kp.is_deleted = 0"+
-      filter_1 + "union all select knp.nama, knp.kepegawaian_nip, knp.kepegawaian_nptt_npjlp,  mj2.nama as jabatan, knp.kepegawaian_status_pegawai , knp.kepegawaian_tempat_tugas , knp.tgl_lahir as tanggal_lahir, ma2.nama as agama, knp.domisili_alamat  from kepegawaian_non_pns knp inner join master_jabatan mj2 on knp.kepegawaian_jabatan = mj2.id inner join master_agama ma2 on knp.agama = ma2.id where knp.is_deleted = 0" + filter_2 +
+      "select z.* from (select kp.nama, kp.kepegawaian_nip as nip, kp.kepegawaian_nrk as nrk_nptt_npjlp, mj.nama as jabatan, kp.kepegawaian_status_pegawai as status_pegawai, kp.kepegawaian_tempat_tugas as tempat_tugas,  to_char( kp.tgl_lahir, 'DD-MM-YYYY') as tanggal_lahir, ma.nama as agama, kp.domisili_alamat as alamat from kepegawaian_pns kp inner join master_jabatan mj on kp.kepegawaian_jabatan = mj.id inner join master_agama ma on kp.agama = ma.id where kp.is_deleted = 0"+
+      filter_1 + "union all select knp.nama, knp.kepegawaian_nip, knp.kepegawaian_nptt_npjlp,  mj2.nama as jabatan, knp.kepegawaian_status_pegawai , knp.kepegawaian_tempat_tugas , to_char( kNp.tgl_lahir, 'DD-MM-YYYY') as tanggal_lahir, ma2.nama as agama, knp.domisili_alamat  from kepegawaian_non_pns knp inner join master_jabatan mj2 on knp.kepegawaian_jabatan = mj2.id inner join master_agama ma2 on knp.agama = ma2.id where knp.is_deleted = 0" + filter_2 +
       ") as z limit " + limit +  " offset " + (parseInt(offset) - 1),
     );
 
