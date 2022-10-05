@@ -3733,13 +3733,13 @@ module.exports = async function (fastify, opts) {
               data: {
                 type: "object",
                 properties: {
-                  ppns: {
+                  jumlah_ppns: {
                     type: "number"
                   },
                   satpol_pp: {
                     type: "number"
                   },
-                  spkd_lain: {
+                  skpd_lain: {
                     type: "number"
                   },
                 },
@@ -3751,6 +3751,7 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const exec = await fastify.kepegawaian_ppns.find_rekap_jumlah();
+      console.log(exec)
       try {
         if (exec) {
           reply.send({

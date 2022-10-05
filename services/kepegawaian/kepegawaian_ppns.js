@@ -17,9 +17,9 @@ const kepegawaian_ppns = (db) => {
         return query;
     };
 
-    const find_rekap_jumlah = (limit) => {
-        const query = db.any(
-            "SELECT mskpd.nama as skpd, count (kppns.skpd) as jumlah FROM public.kepegawaian_ppns kppns left join master_skpd mskpd on kppns.skpd = mskpd.id group by mskpd.nama UNION ALL SELECT 'Jumlah Keseluruhan' skpd, COUNT(skpd) FROM public.kepegawaian_ppns"
+    const find_rekap_jumlah = () => {
+        const query = db.one(
+            "select count (skpd) as jumlah_ppns, count(case when kp.skpd = 1 then 1 END) as satpol_pp, count(case when kp.skpd != 1 then 1 END) as skpd_lain   from kepegawaian_ppns kp where is_deleted = 0"
         );
         return query;
     };
