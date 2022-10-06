@@ -1,14 +1,14 @@
-const master_kelurahan  = require("../../../services/master/master_kelurahan");
+const master_status_kenaikan_pangkat  = require("../../../services/master/master_status_kenaikan_pangkat");
 
 module.exports = async function (fastify, opts) {
-  fastify.register(master_kelurahan);
+  fastify.register(master_status_kenaikan_pangkat);
 
   fastify.get(
     "/find",
     {
       schema: {
-        description: "This is an endpoint for fetching all master kelurahan",
-        tags: ["master kelurahan"],
+        description: "This is an endpoint for fetching all master status kenaikan pangkat",
+        tags: ["master status kenaikan pangkat"],
         response: {
           200: {
             description: "Success Response",
@@ -22,10 +22,7 @@ module.exports = async function (fastify, opts) {
                   type: "object",
                   properties: {
                     id: { type: "number" },
-                    kode_kelurahan: { type: "string" },
-                    kelurahan: { type: "string" },
-                    kode_kecamatan: { type: "string" },
-                    kecamatan: { type: "string" },
+                    status_kenaikan_pangkat: { type: "string" },
                   },
                 },
               },
@@ -35,7 +32,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const exec = await fastify.master_kelurahan.find();
+      const exec = await fastify.master_status_kenaikan_pangkat.find();
 
       try {
         if (exec) {
@@ -53,10 +50,10 @@ module.exports = async function (fastify, opts) {
     "/findone/:id",
     {
       schema: {
-        description: "This is an endpoint for fetching a master kelurahan",
-        tags: ["master kelurahan"],
+        description: "This is an endpoint for fetching a master status kenaikan pangkat",
+        tags: ["master status_kenaikan_pangkat"],
         params: {
-          description: "Find one master kelurahan id",
+          description: "Find one master status kenaikan pangkat id",
           type: "object",
           properties: {
             id: { type: "number" },
@@ -73,10 +70,7 @@ module.exports = async function (fastify, opts) {
                 type: "object",
                 properties: {
                   id: { type: "number" },
-                  kode_kelurahan: { type: "string" },
-                  kelurahan: { type: "string" },
-                  kode_kecamatan: { type: "string" },
-                  kecamatan: { type: "string" },
+                  status_kenaikan_pangkat: { type: "string" },
                 },
               },
             },
@@ -86,7 +80,7 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const exec = await fastify.master_kelurahan.findone(id);
+      const exec = await fastify.master_status_kenaikan_pangkat.findone(id);
 
       try {
         if (exec) {
@@ -101,17 +95,16 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/findone-by-kelurahan",
+    "/findone-by-status-kenaikan-pangkat/:status_kenaikan_pangkat",
     {
       schema: {
-        description: "This is an endpoint for fetching a master kelurahan",
-        tags: ["master kelurahan"],
-        querystring: {
-          description: "Find one master kelurahan by kelurahan",
+        description: "This is an endpoint for fetching a master status kenaikan pangkat",
+        tags: ["master status kenaikan pangkat"],
+        params: {
+          description: "Find one master status kenaikan pangkat by status kenaikan pangkat",
           type: "object",
           properties: {
-            kecamatan: { type: "string" },
-            kelurahan: { type: "string" },
+            status_kenaikan_pangkat: { type: "string" },
           },
         },
         response: {
@@ -122,16 +115,10 @@ module.exports = async function (fastify, opts) {
               message: { type: "string" },
               code: { type: "string" },
               data: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    id: { type: "number" },
-                    kode_kelurahan: { type: "string" },
-                    kelurahan: { type: "string" },
-                    kode_kecamatan: { type: "string" },
-                    kecamatan: { type: "string" },
-                  },
+                type: "object",
+                properties: {
+                  id: { type: "number" },
+                  status_kenaikan_pangkat: { type: "string" },
                 },
               },
             },
@@ -140,62 +127,8 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { kecamatan, kelurahan } = request.query;
-      const exec = await fastify.master_kelurahan.findone_by_kelurahan(kecamatan, kelurahan);
-
-      try {
-        if (exec) {
-          reply.send({ message: "success", code: 200, data: exec });
-        } else {
-          reply.send({ message: "success", code: 204 });
-        }
-      } catch (error) {
-        reply.send({ message: error, code: 500 });
-      }
-    }
-  );
-
-  fastify.get(
-    "/find-by-kode-kecamatan",
-    {
-      schema: {
-        description: "This is an endpoint for fetching a master kelurahan",
-        tags: ["master kelurahan"],
-        querystring: {
-          description: "Find one master kelurahan by kelurahan",
-          type: "object",
-          properties: {
-            kode_kecamatan: { type: "string" },
-          },
-        },
-        response: {
-          200: {
-            description: "Success Response",
-            type: "object",
-            properties: {
-              message: { type: "string" },
-              code: { type: "string" },
-              data: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    id: { type: "number" },
-                    kode_kelurahan: { type: "string" },
-                    kelurahan: { type: "string" },
-                    kode_kecamatan: { type: "string" },
-                    kecamatan: { type: "string" },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    async (request, reply) => {
-      const { kode_kecamatan } = request.query;
-      const exec = await fastify.master_kelurahan.find_by_kode_kecamatan(kode_kecamatan);
+      const { status_kenaikan_pangkat } = request.params;
+      const exec = await fastify.master_status_kenaikan_pangkat.findone_by_status_kenaikan_pangkat(status_kenaikan_pangkat);
 
       try {
         if (exec) {
@@ -213,14 +146,13 @@ module.exports = async function (fastify, opts) {
     "/create",
     {
       schema: {
-        description: "This is an endpoint for creating a master kelurahan",
-        tags: ["master kelurahan"],
+        description: "This is an endpoint for creating a master status kenaikan pangkat",
+        tags: ["master status kenaikan pangkat"],
         body: {
-          description: "Payload for creating a master kelurahan",
+          description: "Payload for creating a master status kenaikan pangkat",
           type: "object",
           properties: {
-            kode_kecamatan: { type: "string" },
-            kelurahan: { type: "string" },
+            status_kenaikan_pangkat: { type: "string" },
             created_by: { type: "number" },
           },
         },
@@ -237,10 +169,10 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {kode_kecamatan,kelurahan, created_by} = request.body;
+      const {status_kenaikan_pangkat,created_by} = request.body;
 
       try {
-        await fastify.master_kelurahan.create(kelurahan, kode_kecamatan, created_by);
+        await fastify.master_status_kenaikan_pangkat.create(status_kenaikan_pangkat,created_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -252,21 +184,20 @@ module.exports = async function (fastify, opts) {
     "/update/:id",
     {
       schema: {
-        description: "This is an endpoint for updating an existing master kelurahan",
-        tags: ["master kelurahan"],
+        description: "This is an endpoint for updating an existing master status kenaikan pangkat",
+        tags: ["master status kenaikan pangkat"],
         params: {
-          description: "update master kelurahan by Id",
+          description: "update master status kenaikan pangkat by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for updating a master kelurahan",
+          description: "Payload for updating a master status kenaikan pangkat",
           type: "object",
           properties: {
-            kode_kecamatan: { type: "string" },
-            kelurahan: { type: "string" },
+            status_kenaikan_pangkat: { type: "string" },
             updated_by: { type: "number" },
           },
         },
@@ -284,10 +215,10 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const {kode_kecamatan, kelurahan, updated_by } = request.body;
+      const {status_kenaikan_pangkat, updated_by } = request.body;
 
       try {
-        await fastify.master_kelurahan.update(id, kelurahan, kode_kecamatan, updated_by);
+        await fastify.master_status_kenaikan_pangkat.update(id,status_kenaikan_pangkat,updated_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -299,17 +230,17 @@ module.exports = async function (fastify, opts) {
     "/delete/:id",
     {
       schema: {
-        description: "This is an endpoint for DELETING an existing master kelurahan.",
-        tags: ["master kelurahan"],
+        description: "This is an endpoint for DELETING an existing master status kenaikan pangkat.",
+        tags: ["master status kenaikan pangkat"],
         params: {
-          description: "master kelurahan by Id",
+          description: "master status kenaikan pangkat by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for deleted data master kelurahan",
+          description: "Payload for deleted data master status kenaikan pangkat",
           type: "object",
           properties: {
             deleted_by: { type: "number" },
@@ -332,7 +263,7 @@ module.exports = async function (fastify, opts) {
       const { deleted_by } = request.body;
 
       try {
-        await fastify.master_kelurahan.del(id, deleted_by);
+        await fastify.master_status_kenaikan_pangkat.del(id, deleted_by);
         reply.send({ message: "success", code: 204 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -341,13 +272,13 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/filter-kelurahan/:q",
+    "/filter/:q",
     {
       schema: {
-        description: "This is an endpoint for filtering a master kelurahan",
-        tags: ["master kelurahan"],
+        description: "This is an endpoint for filtering a master status kenaikan pangkat",
+        tags: ["master status kenaikan pangkat"],
         params: {
-          description: "Filter master kelurahan by search",
+          description: "Filter master status kenaikan pangkat by search",
           type: "object",
           properties: {
             q: { type: "string" },
@@ -366,8 +297,7 @@ module.exports = async function (fastify, opts) {
                   type: "object",
                   properties: {
                     id: { type: "number" },
-                    kelurahan: { type: "string" },
-                    kode: { type: "string" },
+                    status_kenaikan_pangkat: { type: "string" },
                   },
                 },
               },
@@ -378,7 +308,7 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { q } = request.params;
-      const exec = await fastify.master_kelurahan.filter(q);
+      const exec = await fastify.master_status_kenaikan_pangkat.filter(q);
 
       try {
         if (exec) {

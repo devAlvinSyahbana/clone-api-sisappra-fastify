@@ -1,17 +1,17 @@
 const kepegawaian_pns = require("../../services/kepegawaian/kepegawaian_pns");
+const kepegawaian_ppns = require("../../services/kepegawaian/kepegawaian_ppns");
 const kepegawaian_non_pns = require("../../services/kepegawaian/kepegawaian_non_pns");
 const XLSX = require("xlsx");
 
 module.exports = async function (fastify, opts) {
   fastify.register(kepegawaian_pns);
+  fastify.register(kepegawaian_ppns);
   fastify.register(kepegawaian_non_pns);
 
   fastify.get(
-    "/unduh-pegawai",
-    {
+    "/unduh-pegawai", {
       schema: {
-        description:
-          "Endpoint ini digunakan untuk mengunduh seluruh data kepegawaian berstatus PNS, PTT, PJLP",
+        description: "Endpoint ini digunakan untuk mengunduh seluruh data kepegawaian berstatus PNS, PTT, PJLP",
         tags: ["endpoint kepegawaian"],
         querystring: {
           type: "object",
@@ -31,7 +31,9 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { status } = request.query;
+      const {
+        status
+      } = request.query;
       let headerKepegawaian = [];
       let dataKepegawaian = [];
       let headerKeluarga = [];
@@ -127,7 +129,10 @@ module.exports = async function (fastify, opts) {
           dataKepegawaian = convertData;
 
           const employeDataKeluarga = await getData.filter((item) => {
-            return { id: item.id, nama: item.nama };
+            return {
+              id: item.id,
+              nama: item.nama
+            };
           });
           if (employeDataKeluarga) {
             let r = 2;
@@ -164,7 +169,10 @@ module.exports = async function (fastify, opts) {
           }
 
           const employeDataPendidikan = await getData.filter((item) => {
-            return { id: item.id, nama: item.nama };
+            return {
+              id: item.id,
+              nama: item.nama
+            };
           });
 
           if (employeDataPendidikan) {
@@ -299,7 +307,10 @@ module.exports = async function (fastify, opts) {
           dataKepegawaian = convertData;
 
           const employeDataKeluarga = await getData.filter((item) => {
-            return { id: item.id, nama: item.nama };
+            return {
+              id: item.id,
+              nama: item.nama
+            };
           });
           if (employeDataKeluarga) {
             let r = 2;
@@ -336,7 +347,10 @@ module.exports = async function (fastify, opts) {
           }
 
           const employeDataPendidikan = await getData.filter((item) => {
-            return { id: item.id, nama: item.nama };
+            return {
+              id: item.id,
+              nama: item.nama
+            };
           });
 
           if (employeDataPendidikan) {
@@ -471,7 +485,10 @@ module.exports = async function (fastify, opts) {
           dataKepegawaian = convertData;
 
           const employeDataKeluarga = await getData.filter((item) => {
-            return { id: item.id, nama: item.nama };
+            return {
+              id: item.id,
+              nama: item.nama
+            };
           });
           if (employeDataKeluarga) {
             let r = 2;
@@ -508,7 +525,10 @@ module.exports = async function (fastify, opts) {
           }
 
           const employeDataPendidikan = await getData.filter((item) => {
-            return { id: item.id, nama: item.nama };
+            return {
+              id: item.id,
+              nama: item.nama
+            };
           });
 
           if (employeDataPendidikan) {
@@ -582,7 +602,11 @@ module.exports = async function (fastify, opts) {
         wb.Sheets["DATA KELUARGA"] = ws_keluarga;
         wb.Sheets["DATA PENDIDIKAN"] = ws_pendidikan;
 
-        const wopts = { bookType: "xlsx", bookSST: false, type: "buffer" };
+        const wopts = {
+          bookType: "xlsx",
+          bookSST: false,
+          type: "buffer"
+        };
         const wBuffer = XLSX.write(wb, wopts);
 
         reply.header(
@@ -595,17 +619,18 @@ module.exports = async function (fastify, opts) {
         );
         reply.send(wBuffer);
       } catch (error) {
-        reply.send({ message: error.message, code: 500 });
+        reply.send({
+          message: error.message,
+          code: 500
+        });
       }
     }
   );
 
   fastify.get(
-    "/unduh-data-pegawai-struktural",
-    {
+    "/unduh-data-pegawai-struktural", {
       schema: {
-        description:
-          "Endpoint ini digunakan untuk mengunduh data pegawai pejabat struktural",
+        description: "Endpoint ini digunakan untuk mengunduh data pegawai pejabat struktural",
         tags: ["endpoint rekapitulasi pegawai pejabat"],
         querystring: {
           type: "object",
@@ -639,7 +664,14 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { nama, nrk, kecamatan_seksi, jabatan, kelurahan, nip } = request.query;
+      const {
+        nama,
+        nrk,
+        kecamatan_seksi,
+        jabatan,
+        kelurahan,
+        nip
+      } = request.query;
       let headerKepegawaian = [];
       let dataKepegawaian = [];
       try {
@@ -676,12 +708,12 @@ module.exports = async function (fastify, opts) {
         }
 
         const getData = await fastify.kepegawaian_pns.getDataUnduhPejabatStruktural(qwhere);
-        
+
         const convertData = await getData.map(function (item) {
           return Object.values(item);
         });
         dataKepegawaian = convertData;
-        
+
 
         // Definisikan rows untuk ditulis ke dalam spreadsheet
         const wsDataKepegawaian = [headerKepegawaian, ...dataKepegawaian];
@@ -704,7 +736,11 @@ module.exports = async function (fastify, opts) {
         wb.Sheets["DATA PEJABAT STRUKTURAL"] = ws_kepegawaian;
 
 
-        const wopts = { bookType: "xlsx", bookSST: false, type: "buffer" };
+        const wopts = {
+          bookType: "xlsx",
+          bookSST: false,
+          type: "buffer"
+        };
         const wBuffer = XLSX.write(wb, wopts);
 
         reply.header(
@@ -717,8 +753,175 @@ module.exports = async function (fastify, opts) {
         );
         reply.send(wBuffer);
       } catch (error) {
-        reply.send({ message: error.message, code: 500 });
+        reply.send({
+          message: error.message,
+          code: 500
+        });
       }
     }
   );
+
+  // ^ PPNS
+  fastify.get(
+    "/unduh-data-pegawai-PPNS", {
+      schema: {
+        description: "Endpoint ini digunakan untuk mengunduh data pegawai PPNS",
+        tags: ["endpoint rekapitulasi pegawai PPNS"],
+        querystring: {
+          type: "object",
+          properties: {
+            skpd: {
+              type: "string",
+            },
+            pejabat_ppns_nama: {
+              type: "string",
+            },
+            pejabat_ppns_nip: {
+              type: "string",
+            },
+            pejabat_ppns_nrk: {
+              type: "string",
+            },
+            pejabat_ppns_pangkat: {
+              type: "string",
+            },
+            pejabat_ppns_golongan: {
+              type: "string",
+            },
+            no_sk_ppns: {
+              type: "string",
+            },
+            no_ktp_ppns: {
+              type: "string",
+            },
+            wilayah_kerja: {
+              type: "string",
+            },
+            uu_yg_dikawal: {
+              type: "string",
+            },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "string",
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        skpd,
+        pejabat_ppns_nama,
+        pejabat_ppns_nip,
+        pejabat_ppns_nrk,
+        pejabat_ppns_pangkat,
+        pejabat_ppns_golongan,
+        no_sk_ppns,
+        no_ktp_ppns,
+        wilayah_kerja,
+        uu_yg_dikawal
+      } = request.query;
+      let headerKepegawaian = [];
+      let dataKepegawaian = [];
+      try {
+        const wb = XLSX.utils.book_new();
+        // Definisikan header
+        headerKepegawaian = [
+          "Id",
+          "skpd",
+          "Nama",
+          "NIP",
+          "Pangkat",
+          "Golongan",
+          "No SK PPNS",
+          "No KTP PPNS",
+          "Wilayah Kerja",
+          "UU Yang Dikawal",
+        ];
+
+        let qwhere = "";
+        if (skpd) {
+          qwhere += ` AND skpd ILIKE '%${skpd}%'`;
+        }
+        if (pejabat_ppns_nama) {
+          qwhere += ` AND pejabat_ppns_nama ILIKE '%${pejabat_ppns_nama}%'`;
+        }
+        if (pejabat_ppns_nip) {
+          qwhere += ` AND pejabat_ppns_nip ILIKE '%${pejabat_ppns_nip}%'`;
+        }
+        if (pejabat_ppns_nrk) {
+          qwhere += ` AND pejabat_ppns_nrk ILIKE '%${pejabat_ppns_nrk}%'`;
+        }
+        if (pejabat_ppns_pangkat) {
+          qwhere += ` AND pejabat_ppns_pangkat ILIKE '%${pejabat_ppns_pangkat}%'`;
+        }
+        if (pejabat_ppns_golongan) {
+          qwhere += ` AND pejabat_ppns_golongan ILIKE '%${pejabat_ppns_golongan}%'`;
+        }
+        if (no_sk_ppns) {
+          qwhere += ` AND no_sk_ppns ILIKE '%${no_sk_ppns}%'`;
+        }
+        if (wilayah_kerja) {
+          qwhere += ` AND wilayah_kerja ILIKE '%${wilayah_kerja}%'`;
+        }
+        if (uu_yg_dikawal) {
+          qwhere += ` AND uu_yg_dikawal ILIKE '%${uu_yg_dikawal}%'`;
+        }
+
+
+        const getData = await fastify.kepegawaian_ppns.getDataUnduh(qwhere);
+
+        const convertData = await getData.map(function (item) {
+          return Object.values(item);
+        });
+        dataKepegawaian = convertData;
+
+        // Definisikan rows untuk ditulis ke dalam spreadsheet
+        const wsDataKepegawaian = [headerKepegawaian, ...dataKepegawaian];
+        console.log(wsDataKepegawaian)
+
+        // Buat Workbook
+        const fileName = "DATA PEGAWAIAN PPNS";
+        wb.Props = {
+          Title: fileName,
+          Author: "SISAPPRA - KEPEGAWAIAN",
+          CreatedDate: new Date(),
+        };
+        // Buat Sheet
+        wb.SheetNames.push("DATA PPNS");
+
+        // Buat Sheet dengan Data
+        const ws_kepegawaian = XLSX.utils.aoa_to_sheet(wsDataKepegawaian);
+
+        // const ws = XLSX.utils.aoa_to_sheet(wsData);
+        wb.Sheets["DATA PPNS"] = ws_kepegawaian;
+
+
+        const wopts = {
+          bookType: "xlsx",
+          bookSST: false,
+          type: "buffer"
+        };
+        const wBuffer = XLSX.write(wb, wopts);
+
+        reply.header(
+          "Content-Type",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
+        reply.header(
+          "Content-Disposition",
+          "attachment; filename=" + `${fileName}.xlsx`
+        );
+        reply.send(wBuffer);
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
 };
