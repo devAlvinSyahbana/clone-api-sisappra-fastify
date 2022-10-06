@@ -4309,7 +4309,104 @@ module.exports = async function (fastify, opts) {
       }
     }
   );
-  
+
+  //create pendidikan non pns
+  fastify.post(
+    "/create-pendidikan-non-PNS",
+    {
+      schema: {
+        description: "This is an endpoint for creating data pendidikan non pns",
+        tags: ["endpoint kepegawaian"],
+        body: {
+          description: "Payload for creating data pendidikan non pns",
+          type: "object",
+          properties: {
+            jenis_pendidikan: {
+              type: "number",
+            },
+            nama_sekolah: {
+              type: "string",
+            },
+            nomor_ijazah: {
+              type: "string",
+            },
+            tgl_ijazah: {
+              type: "string",
+            },
+            jurusan: {
+              type: "string",
+            },
+            fakultas: {
+              type: "string",
+            },
+            file_ijazah: {
+              type: "string",
+            },
+            id_pegawai: {
+              type: "number",
+            },
+          },
+        },
+        response: {
+          201: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+              data: {
+                type: "object",
+                properties: {
+                  id: { type: "number" },
+                  jenis_pendidikan: { type: "number" },
+                  nama_sekolah: { type: "string" },
+                  nomor_ijazah: { type: "string" },
+                  tgl_ijazah: { type: "string" },
+                  jurusan: { type: "string" },
+                  fakultas: { type: "string" },
+                  file_ijazah: { type: "string" },
+                  id_pegawai: { type: "number" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        jenis_pendidikan,
+        nama_sekolah,
+        nomor_ijazah,
+        tgl_ijazah,
+        jurusan,
+        fakultas,
+        file_ijazah,
+        id_pegawai,
+      } = request.body;
+      try {
+        const { id } = await fastify.kepegawaian_non_pns.createPendidikanNonPNS(
+          jenis_pendidikan,
+          nama_sekolah,
+          nomor_ijazah,
+          tgl_ijazah,
+          jurusan,
+          fakultas,
+          file_ijazah,
+          id_pegawai,
+        );
+        reply.send({ message: "success", code: 200, data: { return_id: id } });
+      } catch (error) {
+        reply.send({ message: error.message, code: 500 });
+      }
+    }
+  );
+
+  //updated pendidikan non pns
+
+
+  //deleted pendidikan non pns
+
 
 
 };

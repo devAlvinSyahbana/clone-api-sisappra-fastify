@@ -263,6 +263,39 @@ const kepegawaian_non_pns = (db) => {
     return { id };
   };
 
+  //create pendidikan non pns
+  const createPendidikanNonPNS = (
+    jenis_pendidikan,
+    nama_sekolah,
+    nomor_ijazah,
+    tgl_ijazah,
+    jurusan,
+    fakultas,
+    file_ijazah,
+    id_pegawai
+  ) => {
+    const query = db.one(
+      "INSERT INTO kepegawaian_non_pns_pendidikan (jenis_pendidikan, nama_sekolah, nomor_ijazah, tgl_ijazah, jurusan, fakultas, file_ijazah, id_pegawai) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id",
+      [
+        jenis_pendidikan,
+        nama_sekolah,
+        nomor_ijazah,
+        tgl_ijazah,
+        jurusan,
+        fakultas,
+        file_ijazah,
+        id_pegawai,
+      ]
+    );
+
+    return query;
+  };
+
+  //update pendidikan non pns
+
+
+  //delete pendidikan non pns
+
   return {
     cekByNoPegawai,
     autocompliteFill,
@@ -286,6 +319,7 @@ const kepegawaian_non_pns = (db) => {
     createKeluargaNonPNS,
     updateKeluargaNonPNS,
     delKelNonPNS,
+    createPendidikanNonPNS,
   };
 };
 
