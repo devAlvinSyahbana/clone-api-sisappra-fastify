@@ -4398,7 +4398,7 @@ module.exports = async function (fastify, opts) {
           },
         },
         response: {
-          201: {
+          200: {
             description: "Success Response",
             type: "object",
             properties: {
@@ -4407,15 +4407,7 @@ module.exports = async function (fastify, opts) {
               data: {
                 type: "object",
                 properties: {
-                  id: { type: "number" },
-                  jenis_pendidikan: { type: "number" },
-                  nama_sekolah: { type: "string" },
-                  nomor_ijazah: { type: "string" },
-                  tgl_ijazah: { type: "string" },
-                  jurusan: { type: "string" },
-                  fakultas: { type: "string" },
-                  file_ijazah: { type: "string" },
-                  id_pegawai: { type: "number" },
+                  return_id: { type: "number" },
                 },
               },
             },

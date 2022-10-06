@@ -480,7 +480,7 @@ const kepegawaian_pns = (db) => {
     file_ijazah,
     id_pegawai) => {
 
-    const { id } = await db.one(
+    const query = await db.one(
       "INSERT INTO kepegawaian_pns_pendidikan (jenis_pendidikan, nama_sekolah, nomor_ijazah, tgl_ijazah, jurusan, fakultas, file_ijazah, id_pegawai) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id",
       [jenis_pendidikan,
         nama_sekolah,
@@ -492,16 +492,7 @@ const kepegawaian_pns = (db) => {
         id_pegawai]
     );
 
-    return {
-      jenis_pendidikan,
-      nama_sekolah,
-      nomor_ijazah,
-      tgl_ijazah,
-      jurusan,
-      fakultas,
-      file_ijazah,
-      id_pegawai
-    };
+    return query;
   };
 
   //update pendidikan pns
