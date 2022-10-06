@@ -1,14 +1,14 @@
-const master_pangkat = require("../../../services/master/master_pangkat");
+const struktur_data_hirarki  = require("../../../services/master/struktur_data_hirarki");
 
 module.exports = async function (fastify, opts) {
-  fastify.register(master_pangkat);
+  fastify.register(struktur_data_hirarki);
 
   fastify.get(
     "/find",
     {
       schema: {
-        description: "This is an endpoint for fetching all master pangkat",
-        tags: ["master pangkat"],
+        description: "This is an endpoint for fetching all struktur data hirarki",
+        tags: ["struktur data hirarki"],
         response: {
           200: {
             description: "Success Response",
@@ -22,7 +22,10 @@ module.exports = async function (fastify, opts) {
                   type: "object",
                   properties: {
                     id: { type: "number" },
-                    pangkat: { type: "string" },
+                    level: { type: "string" },
+                    sub_level: { type: "string" },
+                    id_relasi_hirarki: { type: "number" },
+                    kategori: { type: "number" },
                   },
                 },
               },
@@ -32,7 +35,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const exec = await fastify.master_pangkat.find();
+      const exec = await fastify.struktur_data_hirarki.find();
 
       try {
         if (exec) {
@@ -50,10 +53,10 @@ module.exports = async function (fastify, opts) {
     "/findone/:id",
     {
       schema: {
-        description: "This is an endpoint for fetching a master pangkat",
-        tags: ["master pangkat"],
+        description: "This is an endpoint for fetching a struktur data hirarki",
+        tags: ["struktur data hirarki"],
         params: {
-          description: "Find one master pangkat id",
+          description: "Find one struktur data hirarki by id",
           type: "object",
           properties: {
             id: { type: "number" },
@@ -70,7 +73,10 @@ module.exports = async function (fastify, opts) {
                 type: "object",
                 properties: {
                   id: { type: "number" },
-                  pangkat: { type: "string" },
+                  level: { type: "string" },
+                  sub_level: { type: "string" },
+                  id_relasi_hirarki: { type: "number" },
+                  kategori: { type: "number" },
                 },
               },
             },
@@ -80,7 +86,7 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const exec = await fastify.master_pangkat.findone(id);
+      const exec = await fastify.struktur_data_hirarki.findone(id);
 
       try {
         if (exec) {
@@ -95,16 +101,16 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/findone-by-pangkat/:pangkat",
+    "/findone-by-sub-level/:sub_level",
     {
       schema: {
-        description: "This is an endpoint for fetching a master pangkat",
-        tags: ["master pangkat"],
+        description: "This is an endpoint for fetching a struktur data hirarki",
+        tags: ["struktur data hirarki"],
         params: {
-          description: "Find one master pangkat by pangkat",
+          description: "Find one struktur data hirarki by sub_level",
           type: "object",
           properties: {
-            pangkat: { type: "string" },
+            sub_level: { type: "string" },
           },
         },
         response: {
@@ -118,7 +124,10 @@ module.exports = async function (fastify, opts) {
                 type: "object",
                 properties: {
                   id: { type: "number" },
-                  pangkat: { type: "string" },
+                  level: { type: "string" },
+                  sub_level: { type: "string" },
+                  id_relasi_hirarki: { type: "number" },
+                  kategori: { type: "number" },
                 },
               },
             },
@@ -127,8 +136,8 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { pangkat } = request.params;
-      const exec = await fastify.master_pangkat.findone_by_pangkat(pangkat);
+      const { sub_level } = request.params;
+      const exec = await fastify.struktur_data_hirarki.findone_by_sub_level(sub_level);
 
       try {
         if (exec) {
@@ -146,13 +155,16 @@ module.exports = async function (fastify, opts) {
     "/create",
     {
       schema: {
-        description: "This is an endpoint for creating a master pangkat",
-        tags: ["master pangkat"],
+        description: "This is an endpoint for creating a struktur data hirarki",
+        tags: ["struktur data hirarki"],
         body: {
-          description: "Payload for creating a master pangkat",
+          description: "Payload for creating a struktur data hirarki",
           type: "object",
           properties: {
-            pangkat: { type: "string" },
+            level: { type: "string" },
+            sub_level: { type: "string" },
+            id_relasi_hirarki: { type: "number" },
+            kategori: { type: "number" },
             created_by: { type: "number" },
           },
         },
@@ -169,10 +181,10 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {pangkat,created_by} = request.body;
+      const {level, sub_level, id_relasi_hirarki, kategori, created_by} = request.body;
 
       try {
-        await fastify.master_pangkat.create(pangkat,created_by);
+        await fastify.struktur_data_hirarki.create(level, sub_level, id_relasi_hirarki, kategori, created_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -184,20 +196,23 @@ module.exports = async function (fastify, opts) {
     "/update/:id",
     {
       schema: {
-        description: "This is an endpoint for updating an existing master pangkat",
-        tags: ["master pangkat"],
+        description: "This is an endpoint for updating an existing struktur data hirarki",
+        tags: ["struktur data hirarki"],
         params: {
-          description: "update master pangkat by Id",
+          description: "update struktur data hirarki by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for updating a master pangkat",
+          description: "Payload for updating a struktur data hirarki",
           type: "object",
           properties: {
-            pangkat: { type: "string" },
+            level: { type: "string" },
+            sub_level: { type: "string" },
+            id_relasi_hirarki: { type: "number" },
+            kategori: { type: "number" },
             updated_by: { type: "number" },
           },
         },
@@ -215,10 +230,10 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const {pangkat, updated_by } = request.body;
+      const {level, sub_level, id_relasi_hirarki, kategori, updated_by } = request.body;
 
       try {
-        await fastify.master_pangkat.update(id,pangkat,updated_by);
+        await fastify.struktur_data_hirarki.update(id,level, sub_level, id_relasi_hirarki, kategori,updated_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -230,17 +245,17 @@ module.exports = async function (fastify, opts) {
     "/delete/:id",
     {
       schema: {
-        description: "This is an endpoint for DELETING an existing master pangkat.",
-        tags: ["master pangkat"],
+        description: "This is an endpoint for DELETING an existing struktur data hirarki.",
+        tags: ["struktur data hirarki"],
         params: {
-          description: "master pangkat by Id",
+          description: "struktur data hirarki by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for deleted data master pangkat",
+          description: "Payload for deleted data struktur data hirarki",
           type: "object",
           properties: {
             deleted_by: { type: "number" },
@@ -263,61 +278,10 @@ module.exports = async function (fastify, opts) {
       const { deleted_by } = request.body;
 
       try {
-        await fastify.master_pangkat.del(id, deleted_by);
+        await fastify.struktur_data_hirarki.del(id, deleted_by);
         reply.send({ message: "success", code: 204 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
-      }
-    }
-  );
-
-  fastify.get(
-    "/filter/:q",
-    {
-      schema: {
-        description: "This is an endpoint for filtering a master pangkat",
-        tags: ["master pangkat"],
-        params: {
-          description: "Filter master pangkat by search",
-          type: "object",
-          properties: {
-            q: { type: "string" },
-          },
-        },
-        response: {
-          200: {
-            description: "Success Response",
-            type: "object",
-            properties: {
-              message: { type: "string" },
-              code: { type: "string" },
-              data: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    id: { type: "number" },
-                    pangkat: { type: "string" },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    async (request, reply) => {
-      const { q } = request.params;
-      const exec = await fastify.master_pangkat.filter(q);
-
-      try {
-        if (exec) {
-          reply.send({ message: "success", code: 200, data: exec });
-        } else {
-          reply.send({ message: "success", code: 204 });
-        }
-      } catch (error) {
-        reply.send({ message: error, code: 500 });
       }
     }
   );
