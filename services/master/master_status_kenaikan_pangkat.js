@@ -12,7 +12,7 @@ const master_status_kenaikan_pangkat = (db) => {
 
   const findone = (id) => {
     const query = db.one(
-      "SELECT id, nama as status_kenaikan_pangkat FROM master_status_kenaikan_pangkat WHERE id = $1 AND is_deleted = 0",
+      "SELECT id, nama as status_kenaikan_pangkat, masa_naik_pangkat FROM master_status_kenaikan_pangkat WHERE id = $1 AND is_deleted = 0",
       [id]
     );
 
@@ -21,27 +21,27 @@ const master_status_kenaikan_pangkat = (db) => {
 
   const findone_by_status_kenaikan_pangkat = (status_kenaikan_pangkat) => {
     const query = db.one(
-      "SELECT id, nama as status_kenaikan_pangkat FROM master_status_kenaikan_pangkat WHERE nama ilike $1 AND is_deleted = 0",
+      "SELECT id, nama as status_kenaikan_pangkat, masa_naik_pangkat FROM master_status_kenaikan_pangkat WHERE nama ilike $1 AND is_deleted = 0",
       [status_kenaikan_pangkat]
     );
 
     return query;
   };
 
-  const create = async(status_kenaikan_pangkat, created_by) => {
+  const create = async(status_kenaikan_pangkat, masa_naik_pangkat, created_by) => {
     const query = db.one(
-      "INSERT INTO master_status_kenaikan_pangkat (nama, is_deleted, created_by) VALUES ($1, 0, $2) RETURNING id",
-      [status_kenaikan_pangkat, created_by]
+      "INSERT INTO master_status_kenaikan_pangkat (nama, masa_naik_pangkat, is_deleted, created_by) VALUES ($1, $2, 0, $3) RETURNING id",
+      [status_kenaikan_pangkat, masa_naik_pangkat, created_by]
     );
 
     return query;
   };
 
 
-  const update = (id, status_kenaikan_pangkat, updated_by) => {
+  const update = (id, status_kenaikan_pangkat, masa_naik_pangkat, updated_by) => {
     db.one(
-      "UPDATE master_status_kenaikan_pangkat SET nama = $1, updated_by = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING id",
-      [status_kenaikan_pangkat, updated_by, id]
+      "UPDATE master_status_kenaikan_pangkat SET nama = $1, masa_naik_pangkat = $2, updated_by = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $4 RETURNING id",
+      [status_kenaikan_pangkat, masa_naik_pangkat, updated_by, id]
     );
   };
 
@@ -58,7 +58,7 @@ const master_status_kenaikan_pangkat = (db) => {
 
   const filter = (q) => {
     const query = db.any(
-      "SELECT id, nama as status_kenaikan_pangkat FROM master_status_kenaikan_pangkat WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
+      "SELECT id, nama as status_kenaikan_pangkat, masa_naik_pangkat FROM master_status_kenaikan_pangkat WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
     );
 
     return query;
