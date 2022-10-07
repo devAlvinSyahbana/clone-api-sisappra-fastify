@@ -223,6 +223,92 @@ const kepegawaian_non_pns = (db) => {
     return query;
   };
 
+  // create keluarga non pns
+  const createKeluargaNonPNS = (
+    hubungan,
+    nama,
+    tempat_lahir,
+    tgl_lahir,
+    jenis_kelamin,
+    id_pegawai
+  ) => {
+    const query = db.one(
+      "INSERT INTO kepegawaian_non_pns_keluarga (hubungan, nama, tempat_lahir, tgl_lahir, jenis_kelamin, id_pegawai) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+      [
+        hubungan,
+        nama,
+        tempat_lahir,
+        tgl_lahir,
+        jenis_kelamin,
+        id_pegawai,
+      ]
+    );
+
+    return query;
+  };
+
+  const updateKeluargaNonPNS = (id, hubungan, nama, tempat_lahir, tgl_lahir, jenis_kelamin, id_pegawai) => {
+    db.one(
+      "UPDATE kepegawaian_non_pns_keluarga SET hubungan = $1, nama = $2, tempat_lahir = $3, tgl_lahir = $4, jenis_kelamin = $5, id_pegawai = $6, updated_at = CURRENT_TIMESTAMP WHERE id = $7 RETURNING id",
+      [hubungan, nama, tempat_lahir, tgl_lahir, jenis_kelamin, id_pegawai, id]
+    );
+  };
+
+  const delKelNonPNS = async (id, deleted_by) => {
+    await db.one(
+      "UPDATE kepegawaian_non_pns_keluarga SET is_deleted = 1, deleted_by = $2, deleted_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id",
+      [id, deleted_by]
+    );
+
+    return { id };
+  };
+
+  //create pendidikan non pns
+  const createPendidikanNonPNS = (
+    jenis_pendidikan,
+    nama_sekolah,
+    nomor_ijazah,
+    tgl_ijazah,
+    jurusan,
+    fakultas,
+    file_ijazah,
+    id_pegawai
+  ) => {
+    const query = db.one(
+      "INSERT INTO kepegawaian_non_pns_pendidikan (jenis_pendidikan, nama_sekolah, nomor_ijazah, tgl_ijazah, jurusan, fakultas, file_ijazah, id_pegawai) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id",
+      [
+        jenis_pendidikan,
+        nama_sekolah,
+        nomor_ijazah,
+        tgl_ijazah,
+        jurusan,
+        fakultas,
+        file_ijazah,
+        id_pegawai,
+      ]
+    );
+
+    return query;
+  };
+
+  //update pendidikan non pns
+  const updatePendidikanNonPNS = (id, jenis_pendidikan, nama_sekolah, nomor_ijazah, tgl_ijazah, jurusan, fakultas, file_ijazah, id_pegawai) => {
+    db.one(
+      "UPDATE kepegawaian_non_pns_pendidikan SET jenis_pendidikan = $1, nama_sekolah = $2, nomor_ijazah = $3, tgl_ijazah = $4, jurusan = $5, fakultas = $6, file_ijazah = $7, id_pegawai = $8, updated_at = CURRENT_TIMESTAMP WHERE id = $9 RETURNING id",
+      [jenis_pendidikan, nama_sekolah, nomor_ijazah, tgl_ijazah, jurusan, fakultas, file_ijazah, id_pegawai, id]
+    );
+  };
+
+  //delete pendidikan non pns
+  const delPendidikanNonPNS = async (id, deleted_by) => {
+    await db.one(
+      "UPDATE kepegawaian_non_pns_pendidikan SET is_deleted = 1, deleted_by = $2, deleted_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id",
+      [id, deleted_by]
+    );
+
+    return { id };
+  };
+
   return {
     cekByNoPegawai,
     autocompliteFill,
@@ -243,6 +329,12 @@ const kepegawaian_non_pns = (db) => {
     filterDuk,
     findPensiun,
     filterPensiun,
+    createKeluargaNonPNS,
+    updateKeluargaNonPNS,
+    delKelNonPNS,
+    createPendidikanNonPNS,
+    updatePendidikanNonPNS,
+    delPendidikanNonPNS,
   };
 };
 
