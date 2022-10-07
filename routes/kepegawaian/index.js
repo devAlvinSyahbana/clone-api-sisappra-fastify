@@ -2919,6 +2919,9 @@ module.exports = async function (fastify, opts) {
             nopegawai: {
               type: "string",
             },
+            nip: {
+              type: "string",
+            },
             tempat_tugas_bidang: {
               type: "string",
             },
@@ -2989,6 +2992,7 @@ module.exports = async function (fastify, opts) {
         offset,
         nama,
         nopegawai,
+        nip,
         tempat_tugas_bidang,
         tempat_tugas_kecamatan,
         status,
@@ -2997,18 +3001,21 @@ module.exports = async function (fastify, opts) {
       let exec = null;
       let qwhere = "";
       if (status === "PNS") {
-        if (nama || nopegawai || tempat_tugas_bidang || tempat_tugas_kecamatan || tahun_pensiun) {
+        if (nama || nopegawai || nip || tempat_tugas_bidang || tempat_tugas_kecamatan || tahun_pensiun) {
           if (nama) {
             qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
           }
           if (nopegawai) {
             qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nopegawai}%'`;
           }
+          if (nip) {
+            qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nip}%'`;
+          }
           if (tempat_tugas_bidang) {
             qwhere += ` AND kpns.tempat_tugas_bidang ILIKE '%${tempat_tugas_bidang}%'`;
           }
           if (tempat_tugas_kecamatan) {
-            qwhere += ` AND kpns.tempat_tugas_kecamatan ILIKE '%${tempat_tugas_kecamatan}%'`;
+            qwhere += ` AND kpns.kepegawaian_subbag_seksi_kecamatan ILIKE '%${tempat_tugas_kecamatan}%'`;
           }
           if (tahun_pensiun) {
             qwhere += ` AND CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END = ${tahun_pensiun}`;
@@ -3018,18 +3025,21 @@ module.exports = async function (fastify, opts) {
           exec = await fastify.kepegawaian_pns.findPensiun(limit, offset);
         }
       } else {
-        if (nama || nopegawai || tempat_tugas_bidang || tempat_tugas_kecamatan || status || tahun_pensiun) {
+        if (nama || nopegawai || nip || tempat_tugas_bidang || tempat_tugas_kecamatan || status || tahun_pensiun) {
           if (nama) {
             qwhere += ` AND nama ILIKE '%${nama}%'`;
           }
           if (nopegawai) {
             qwhere += ` AND kepegawaian_nptt_npjlp ILIKE '%${nopegawai}%'`;
           }
+          if (nip) {
+            qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nip}%'`;
+          }
           if (tempat_tugas_bidang) {
             qwhere += ` AND tempat_tugas_bidang ILIKE '%${tempat_tugas_bidang}%'`;
           }
           if (tempat_tugas_kecamatan) {
-            qwhere += ` AND tempat_tugas_kecamatan ILIKE '%${tempat_tugas_kecamatan}%'`;
+            qwhere += ` AND kepegawaian_subbag_seksi_kecamatan ILIKE '%${tempat_tugas_kecamatan}%'`;
           }
           if (status) {
             qwhere += ` AND kepegawaian_status_pegawai ILIKE '%${status}%'`;
