@@ -466,7 +466,9 @@ const kepegawaian_pns = (db) => {
       [id, deleted_by]
     );
 
-    return { id };
+    return {
+      id
+    };
   };
 
   //create pendidikan pns
