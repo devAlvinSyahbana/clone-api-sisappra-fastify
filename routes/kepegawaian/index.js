@@ -3111,6 +3111,9 @@ module.exports = async function (fastify, opts) {
               items: {
                 type: "object",
                 properties: {
+                  id: {
+                    type: "number"
+                  },
                   nama: {
                     type: "string"
                   },
