@@ -223,6 +223,35 @@ const kepegawaian_non_pns = (db) => {
     return query;
   };
 
+  // ^ find pensiun
+  const findPensiunUnduh = (status) => {
+    const query = db.any(
+      "SELECT nama, kepegawaian_nip, kepegawaian_nptt_npjlp as kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir, CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END AS tahun_pensiun FROM public.kepegawaian_non_pns WHERE is_deleted = 0 AND kepegawaian_status_pegawai = '" +
+      status +
+      "' ORDER BY created_at DESC LIMIT " +
+      limit +
+      " OFFSET " +
+      offset
+    );
+
+    return query;
+  };
+
+  // ^ filter pensiun
+  const filterPensiunUnduh = (status, qwhere) => {
+    const query = db.any(
+      "SELECT nama, kepegawaian_nip, kepegawaian_nptt_npjlp as kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir, CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END AS tahun_pensiun FROM public.kepegawaian_non_pns WHERE is_deleted = 0 and kepegawaian_status_pegawai = '" +
+      status + "'" + qwhere +
+      " LIMIT " +
+      limit +
+      " OFFSET " +
+      (parseInt(offset) - 1)
+    );
+
+    return query;
+  };
+
+
   // create keluarga non pns
   const createKeluargaNonPNS = (
     hubungan,
@@ -260,7 +289,9 @@ const kepegawaian_non_pns = (db) => {
       [id, deleted_by]
     );
 
-    return { id };
+    return {
+      id
+    };
   };
 
   //create pendidikan non pns
@@ -306,7 +337,9 @@ const kepegawaian_non_pns = (db) => {
       [id, deleted_by]
     );
 
-    return { id };
+    return {
+      id
+    };
   };
 
   return {
