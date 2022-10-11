@@ -377,7 +377,6 @@ const kepegawaian_pns = (db) => {
 
   // ─── NAIK PANGKAT ────────────────────────────────────────────────────────────
 
-  // ^ find pensiun
   const findNaikPangkat = (limit, offset) => {
     const query = db.any(
       "SELECT nama, kepegawaian_nip, kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, kepegawaian_pangkat, kepegawaian_golongan, kepegawaian_tmtpangkat, kepegawaian_eselon, status_kenaikan FROM kepegawaian_pns WHERE is_deleted = 0 ORDER BY created_at DESC LIMIT " +
@@ -389,7 +388,6 @@ const kepegawaian_pns = (db) => {
     return query;
   };
 
-  // ^ filter pensiun
   const filterNaikPangkat = (limit, offset, qwhere) => {
     const query = db.any(
       "SELECT nama, kepegawaian_nip, kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, kepegawaian_pangkat, kepegawaian_golongan, kepegawaian_tmtpangkat, kepegawaian_eselon, status_kenaikan FROM kepegawaian_pns WHERE is_deleted = 0" +
@@ -429,6 +427,33 @@ const kepegawaian_pns = (db) => {
 
     return query;
   };
+
+  // ^ find pensiun
+  const findPensiunUnduh = () => {
+    const query = db.any(
+      "SELECT nama, kepegawaian_nip, kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir, CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END AS tahun_pensiun FROM public.kepegawaian_pns kpns WHERE is_deleted = 0 ORDER BY created_at DESC LIMIT " +
+      limit +
+      " OFFSET " +
+      offset
+    );
+
+    return query;
+  };
+
+  // ^ filter pensiun
+  const filterPensiunUnduh = (qwhere) => {
+    const query = db.any(
+      "SELECT  nama, kepegawaian_nip, kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir, kepegawaian_eselon, CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END AS tahun_pensiun FROM public.kepegawaian_pns kpns WHERE is_deleted = 0" +
+      qwhere +
+      " LIMIT " +
+      limit +
+      " OFFSET " +
+      (parseInt(offset) - 1)
+    );
+
+    return query;
+  };
+
 
   const createKeluargaPNS = (
     hubungan,
@@ -491,7 +516,8 @@ const kepegawaian_pns = (db) => {
         jurusan,
         fakultas,
         file_ijazah,
-        id_pegawai]
+        id_pegawai
+      ]
     );
 
     return query;
@@ -499,14 +525,14 @@ const kepegawaian_pns = (db) => {
 
   //update pendidikan pns
   const updatePendidikanPNS = (
-    id, 
-    jenis_pendidikan, 
-    nama_sekolah, 
-    nomor_ijazah, 
-    tgl_ijazah, 
-    jurusan, 
-    fakultas, 
-    file_ijazah, 
+    id,
+    jenis_pendidikan,
+    nama_sekolah,
+    nomor_ijazah,
+    tgl_ijazah,
+    jurusan,
+    fakultas,
+    file_ijazah,
     id_pegawai) => {
     db.one(
       "UPDATE kepegawaian_pns_pendidikan SET jenis_pendidikan = $1, nama_sekolah = $2, nomor_ijazah = $3, tgl_ijazah = $4, jurusan = $5, fakultas = $6, file_ijazah = $7, id_pegawai = $8, updated_at = CURRENT_TIMESTAMP WHERE id = $9 RETURNING id",
@@ -521,7 +547,9 @@ const kepegawaian_pns = (db) => {
       [id, deleted_by]
     );
 
-    return { id };
+    return {
+      id
+    };
   };
 
 
