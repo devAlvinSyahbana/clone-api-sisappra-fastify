@@ -3314,6 +3314,102 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
+    "/rekapitulasi-pegawai-naik-pangkat/findone/:id", {
+      schema: {
+        description: "This is an endpoint for fetching a pegawai",
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
+        params: {
+          description: "Find one pegawai naik pangkat id",
+          type: "object",
+          properties: {
+            id: { type: "number" },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+              data: {
+                type: "object",
+                properties: {
+                  id: {
+                    type: "number"
+                  },
+                  nama: {
+                    type: "string"
+                  },
+                  nrk: {
+                    type: "number"
+                  },
+                  nip: {
+                    type: "string"
+                  },
+
+                  jabatan: {
+                    type: "string"
+                  },
+                  tempat_tugas: {
+                    type: "string"
+                  },
+                  subbag_seksi_kecamatan: {
+                    type: "string"
+                  },
+                  pangkat: {
+                    type: "string"
+                  },
+                  golongan: {
+                    type: "string"
+                  },
+                  tmt_pangkat: {
+                    type: "string"
+                  },
+                  eselon: {
+                    type: "string"
+                  },
+                  status_kenaikan_pangkat: {
+                    type: "string"
+                  },
+                  jadwal_kenaikan_pangkat: {
+                    type: "string"
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {id} = request.params;
+      const exec = await fastify.kepegawaian_rekapitulasi.findone_rekapitulasi_kenaikan_pangkat(id);
+      
+
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec
+          });
+        } else {
+          reply.send({
+            message: "success",
+            code: 204
+          });
+        }
+      } catch (error) {
+        reply.send({
+          message: error,
+          code: 500
+        });
+      }
+    }
+  );
+
+  fastify.get(
     "/rekapitulasi-pegawai-naik-pangkat/unduh", {
       schema: {
         description: "This is an endpoint for fetching a rekapitulasi pegawai naik pangkat",
@@ -3425,6 +3521,94 @@ module.exports = async function (fastify, opts) {
       }
     }
   );
+
+  fastify.post(
+    "/rekapitulasi-duk-pegawai/create",
+    {
+      schema: {
+        description: "This is an endpoint for creating a pegawai",
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
+        body: {
+          description: "Payload for creating a pegawai",
+          type: "object",
+          properties: {
+            nama: { type: "string" },
+            nrk_nptt_npjlp: { type: "number" },
+            nip: { type: "string" },
+            status_pegawai: { type: "string" },
+            created_by: { type: "number" },
+          },
+        },
+        response: {
+          201: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {nama, nrk_nptt_npjlp, nip, status_pegawai, created_by} = request.body;
+
+      try {
+        await fastify.kepegawaian_rekapitulasi.create_rekapitulasi_duk_pegawai(nama, nrk_nptt_npjlp, nip, status_pegawai, created_by);
+        reply.send({ message: "success", code: 200 });
+      } catch (error) {
+        reply.send({ message: error.message, code: 500 });
+      }
+    }
+  );
+
+  fastify.delete(
+    "/rekapitulasi-duk-pegawai/delete/:id",
+    {
+      schema: {
+        description: "This is an endpoint for DELETING an existing pegawai.",
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
+        params: {
+          description: "pegawai by Id",
+          type: "object",
+          properties: {
+            id: { type: "number" },
+          },
+        },
+        body: {
+          description: "Payload for deleted data pegawai",
+          type: "object",
+          properties: {
+            status_pegawai: { type: "string" },
+            deleted_by: { type: "number" },
+          },
+        },
+        response: {
+          204: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id,  } = request.params;
+      const { status_pegawai, deleted_by } = request.body;
+
+      try {
+        await fastify.kepegawaian_rekapitulasi.del_rekapitulasi_duk_pegawai(id, status_pegawai, deleted_by);
+        reply.send({ message: "success", code: 204 });
+      } catch (error) {
+        reply.send({ message: error.message, code: 500 });
+      }
+    }
+  );
+
 
 
   /* ----------------------------------- duk ---------------------------------- */
@@ -3931,6 +4115,112 @@ module.exports = async function (fastify, opts) {
       } catch (error) {
         reply.send({
           message: error,
+          code: 500
+        });
+      }
+    }
+  );
+
+  fastify.get(
+    "/rekapitulasi-duk-pegawai/unduh", {
+      schema: {
+        description: "This is an endpoint for fetching a rekapitulasi pegawai naik pangkat",
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
+        querystring: {
+          description: "Find one jumlah pegawai polpp",
+          type: "object",
+          properties: {
+            nama: {
+              type: "string",
+            },
+            nrk_nptt_pjlp: {
+              type: "string",
+            },
+            nip: {
+              type: "string",
+            },
+            status_pegawai: {
+              type: "string",
+            },
+            tempat_tugas: {
+              type: "string",
+            },
+            seksi_kecamatan: {
+              type: "string",
+            },
+            kelurahan: {
+              type: "string",
+            },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "string",
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        nama,
+        nip,
+        nrk_nptt_pjlp,
+        status_pegawai,
+        tempat_tugas,
+        seksi_kecamatan,
+        kelurahan,
+      } = request.query;
+      let headerData = [];
+      let data = [];
+      try {
+        const wb = XLSX.utils.book_new();
+        // Definisikan header
+        headerData = ["No", "Nama", "NIP", "NRK/NPTT/NPJLP", "Jabatan", "Status Pegawai", "Tempat Tugas", "Tanggal Lahir", "Agama", "Alamat"];
+
+
+        const getData = await fastify.kepegawaian_rekapitulasi.unduh_duk_rekapitulasi_pegawai(nama, nip, nrk_nptt_pjlp, status_pegawai, tempat_tugas, seksi_kecamatan, kelurahan);
+
+        const convertData = getData.map(function (item) {
+          return Object.values(item);
+        });
+        data = convertData;
+
+        // Definisikan rows untuk ditulis ke dalam spreadsheet
+        const wsDataKepegawaian = [headerData, ...data];
+        // Buat Workbook
+        const fileName = "REKAPITULASI DUK KEPEGAWAIAN";
+        wb.Props = {
+          Title: fileName,
+          Author: "SISAPPRA - REKAPITULASI DUK KEPEGAWAIAN",
+          CreatedDate: new Date(),
+        };
+        // Buat Sheet
+        wb.SheetNames.push("DATA REKAPITULASI");
+        // Buat Sheet dengan Data
+        const ws = XLSX.utils.aoa_to_sheet(wsDataKepegawaian);
+        // const ws = XLSX.utils.aoa_to_sheet(wsData);
+        wb.Sheets["DATA REKAPITULASI"] = ws;
+
+        const wopts = {
+          bookType: "xlsx",
+          bookSST: false,
+          type: "buffer"
+        };
+        const wBuffer = XLSX.write(wb, wopts);
+
+        reply.header(
+          "Content-Type",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
+        reply.header(
+          "Content-Disposition",
+          "attachment; filename=" + `${fileName}.xlsx`
+        );
+        reply.send(wBuffer);
+      } catch (error) {
+        reply.send({
+          message: error.message,
           code: 500
         });
       }
