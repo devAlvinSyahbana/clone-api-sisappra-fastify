@@ -1,10 +1,9 @@
 const fp = require("fastify-plugin");
 
 const master_pendidikan = (db) => {
-
   const find = () => {
     const query = db.any(
-      "SELECT id, urutan_tingkat_pendidikan, nama as pendidikan FROM master_pendidikan WHERE is_deleted = 0 ORDER BY created_at DESC",
+      "SELECT id, urutan_tingkat_pendidikan, nama as pendidikan FROM master_pendidikan WHERE is_deleted = 0 ORDER BY created_at DESC"
     );
 
     return query;
@@ -28,7 +27,7 @@ const master_pendidikan = (db) => {
     return query;
   };
 
-  const create = async(pendidikan, urutan_tingkat_pendidikan, created_by) => {
+  const create = async (pendidikan, urutan_tingkat_pendidikan, created_by) => {
     const query = db.one(
       "INSERT INTO master_pendidikan (nama, urutan_tingkat_pendidikan, is_deleted, created_by) VALUES ($1, $2, 0, $3) RETURNING id",
       [pendidikan, urutan_tingkat_pendidikan, created_by]
@@ -36,7 +35,6 @@ const master_pendidikan = (db) => {
 
     return query;
   };
-
 
   const update = (id, pendidikan, urutan_tingkat_pendidikan, updated_by) => {
     db.one(
@@ -52,11 +50,23 @@ const master_pendidikan = (db) => {
     );
 
     return {
-      id
+      id,
     };
   };
 
+  const filter_pendidikan = (qwhere) => {
+    const query = db.any(
+      "SELECT id, urutan_tingkat_pendidikan, nama as pendidikan FROM master_pendidikan WHERE is_deleted = 0" +
+        qwhere
+    );
+    if (query) {
+      return query;
+    }
+    return false;
+  };
+
   return {
+    filter_pendidikan,
     find,
     findone,
     findone_by_pendidikan,
@@ -67,9 +77,6 @@ const master_pendidikan = (db) => {
 };
 
 module.exports = fp((fastify, options, next) => {
-  fastify.decorate(
-    "master_pendidikan",
-    master_pendidikan(fastify.db)
-  );
+  fastify.decorate("master_pendidikan", master_pendidikan(fastify.db));
   next();
 });
