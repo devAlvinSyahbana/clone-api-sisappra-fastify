@@ -603,6 +603,95 @@ module.exports = async function (fastify, opts) {
     }
   );
 
+  fastify.get(
+    "/findone-data-keluarga/:id/:status",
+    {
+      schema: {
+        description:
+          "Endpoint ini digunakan untuk mengambil detail data keluarga dari salah satu pegawai berstatus PNS, PTT, PJLP berdasarkan id & status",
+        tags: ["informasi-data-pegawai"],
+        params: {
+          description: "Parameter yang digunakan",
+          type: "object",
+          properties: {
+            id: {
+              type: "number",
+            },
+            status: {
+              type: "string",
+            },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+              },
+              code: {
+                type: "string",
+              },
+              data: {
+                type: "object",
+                properties: {
+                  id: {
+                    type: "number",
+                  },
+                  hubungan: {
+                    type: "string",
+                  },
+                  nama: {
+                    type: "string",
+                  },
+                  tempat_lahir: {
+                    type: "string",
+                  },
+                  tgl_lahir: {
+                    type: "string",
+                  },
+                  jenis_kelamin: {
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id, status } = request.params;
+      let exec = null;
+      if (!status || status == "PNS") {
+        exec = await fastify.kepegawaian_pns.findoneKeluarga(id);
+      } else {
+        exec = await fastify.kepegawaian_non_pns.findoneKeluarga(id);
+      }
+
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec,
+          });
+        } else {
+          reply.send({
+            message: "success",
+            code: 204,
+          });
+        }
+      } catch (error) {
+        reply.send({
+          message: error,
+          code: 500,
+        });
+      }
+    }
+  );
+
   // ^ find pendidikan by id status
   fastify.get(
     "/find-data-pendidikan/:id/:status",
@@ -678,6 +767,101 @@ module.exports = async function (fastify, opts) {
         exec = await fastify.kepegawaian_pns.findPendidikan(id);
       } else {
         exec = await fastify.kepegawaian_non_pns.findPendidikan(id);
+      }
+
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec,
+          });
+        } else {
+          reply.send({
+            message: "success",
+            code: 204,
+          });
+        }
+      } catch (error) {
+        reply.send({
+          message: error,
+          code: 500,
+        });
+      }
+    }
+  );
+
+  fastify.get(
+    "/findone-data-pendidikan/:id/:status",
+    {
+      schema: {
+        description:
+          "Endpoint ini digunakan untuk mengambil detail data pendidikan dari salah satu pegawai berstatus PNS, PTT, PJLP berdasarkan id & status",
+        tags: ["informasi-data-pegawai"],
+        params: {
+          description: "Parameter yang digunakan",
+          type: "object",
+          properties: {
+            id: {
+              type: "number",
+            },
+            status: {
+              type: "string",
+            },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string",
+              },
+              code: {
+                type: "string",
+              },
+              data: {
+                type: "object",
+                properties: {
+                  id: {
+                    type: "number",
+                  },
+                  jenis_pendidikan: {
+                    type: "number",
+                  },
+                  nama_sekolah: {
+                    type: "string",
+                  },
+                  nomor_ijazah: {
+                    type: "string",
+                  },
+                  tgl_ijazah: {
+                    type: "string",
+                  },
+                  jurusan: {
+                    type: "string",
+                  },
+                  fakultas: {
+                    type: "string",
+                  },
+                  file_ijazah: {
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id, status } = request.params;
+      let exec = null;
+      if (!status || status == "PNS") {
+        exec = await fastify.kepegawaian_pns.findonePendidikan(id);
+      } else {
+        exec = await fastify.kepegawaian_non_pns.findonePendidikan(id);
       }
 
       try {
@@ -1356,7 +1540,7 @@ module.exports = async function (fastify, opts) {
   );
 
   // ^ update file by id status
-  fastify.put(
+  fastify.post(
     "/update-file/:id/:status",
     {
       schema: {
@@ -1474,6 +1658,46 @@ module.exports = async function (fastify, opts) {
           message: error.message,
           code: 500,
         });
+      }
+    }
+  );
+
+  fastify.post(
+    "/update-file-pendidikan/:id/:status",
+    {
+      schema: {
+        tags: ["informasi-data-pegawai"],
+      },
+      preHandler: upload.fields([
+        {
+          name: "file_ijazah",
+          maxCount: 1,
+        },
+      ]),
+    },
+    async (request, reply) => {
+      const { id, status } = request.params;
+      const file_ijazah = request.files["file_ijazah"]
+        ? await truePath(request.files["file_ijazah"][0].path)
+        : "";
+      try {
+        console.log(`file_ijazah = '${file_ijazah}'`)
+        if (status === "PNS") {
+          await fastify.kepegawaian_pns.updateFilePendidikan(
+            id,
+            "",
+            `file_ijazah = '${file_ijazah}',`
+          );
+        } else {  
+          await fastify.kepegawaian_non_pns.updateFilePendidikan(
+            id,
+            "",
+            `file_ijazah = '${file_ijazah}',`
+          );
+        }
+        reply.send({ message: "success", code: 200 });
+      } catch (error) {
+        reply.send({ message: error.message, code: 500 });
       }
     }
   );

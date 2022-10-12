@@ -22,7 +22,7 @@ const kepegawaian_non_pns = (db) => {
 
   const countKeluarga = (id) => {
     const query = db.one(
-      "SELECT COUNT(id) as total FROM kepegawaian_non_pns_keluarga WHERE id_pegawai = " +
+      "SELECT COUNT(id) as total FROM kepegawaian_non_pns_keluarga WHERE is_deleted = 0 AND id_pegawai = " +
         id
     );
 
@@ -31,7 +31,7 @@ const kepegawaian_non_pns = (db) => {
 
   const findPendidikanTerakhir = (id) => {
     const query = db.any(
-      "SELECT jenis_pendidikan FROM kepegawaian_non_pns_pendidikan WHERE id_pegawai = " +
+      "SELECT jenis_pendidikan FROM kepegawaian_non_pns_pendidikan WHERE is_deleted = 0 AND id_pegawai = " +
         id +
         " ORDER BY tgl_ijazah DESC"
     );
@@ -44,7 +44,7 @@ const kepegawaian_non_pns = (db) => {
 
   const findPendidikan = (id) => {
     const query = db.any(
-      "SELECT kpen.* FROM kepegawaian_non_pns_pendidikan kpen WHERE kpen.id_pegawai = " +
+      "SELECT kpen.* FROM kepegawaian_non_pns_pendidikan kpen WHERE kpen.is_deleted = 0 AND kpen.id_pegawai = " +
         id +
         " ORDER BY kpen.tgl_ijazah DESC"
     );
@@ -52,13 +52,35 @@ const kepegawaian_non_pns = (db) => {
     return query;
   };
 
+  const findonePendidikan = (id) => {
+    const query = db.one(
+      "SELECT pend.* FROM kepegawaian_non_pns_pendidikan pend WHERE pend.is_deleted = 0 AND pend.id = " +
+        id
+    );
+    if (query) {
+      return query;
+    }
+    return false;
+  };
+
   const findKeluarga = (id) => {
     const query = db.any(
-      "SELECT klgr.hubungan, klgr.nama, klgr.tempat_lahir, klgr.tgl_lahir, CASE WHEN klgr.jenis_kelamin = 'L' THEN 'Laki-laki' ELSE 'Perempuan' END AS jenis_kelamin FROM kepegawaian_non_pns_keluarga klgr WHERE klgr.id_pegawai = " +
+      "SELECT klgr.id, klgr.hubungan, klgr.nama, klgr.tempat_lahir, klgr.tgl_lahir, CASE WHEN klgr.jenis_kelamin = 'L' THEN 'Laki-laki' ELSE 'Perempuan' END AS jenis_kelamin FROM kepegawaian_non_pns_keluarga klgr WHERE klgr.is_deleted = 0 AND klgr.id_pegawai = " +
         id
     );
 
     return query;
+  };
+
+  const findoneKeluarga = (id) => {
+    const query = db.one(
+      "SELECT klgr.* FROM kepegawaian_non_pns_keluarga klgr WHERE klgr.is_deleted = 0 AND klgr.id = " +
+        id
+    );
+    if (query) {
+      return query;
+    }
+    return false;
   };
 
   // ^ find
@@ -334,7 +356,14 @@ const kepegawaian_non_pns = (db) => {
     return { id };
   };
 
+  const updateFilePendidikan = (id, updated_by, values) => {
+    db.one(
+      `UPDATE kepegawaian_non_pns_pendidikan SET ${values} updated_at = CURRENT_TIMESTAMP WHERE id = ${id} RETURNING id`
+    );
+  };
+
   return {
+    updateFilePendidikan,
     cekByNoPegawai,
     autocompliteFill,
     getDataUnduh,
@@ -342,6 +371,8 @@ const kepegawaian_non_pns = (db) => {
     findPendidikanTerakhir,
     findPendidikan,
     findKeluarga,
+    findoneKeluarga,
+    findonePendidikan,
     filter,
     countAllFilter,
     countAll,
