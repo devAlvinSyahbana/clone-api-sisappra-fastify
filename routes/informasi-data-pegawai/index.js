@@ -1463,7 +1463,6 @@ module.exports = async function (fastify, opts) {
         kepegawaian_diklat_fungsional_pol_pp_no_sertifikat,
         kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat,
       } = request.body;
-      console.log(status);
       try {
         await fastify.kepegawaian_pns.update(
           id,
@@ -1582,7 +1581,6 @@ module.exports = async function (fastify, opts) {
       ]),
     },
     async (request, reply) => {
-      console.log("request.files", request.files);
       const { id } = request.params;
 
       try {
@@ -1681,14 +1679,13 @@ module.exports = async function (fastify, opts) {
         ? await truePath(request.files["file_ijazah"][0].path)
         : "";
       try {
-        console.log(`file_ijazah = '${file_ijazah}'`)
         if (status === "PNS") {
           await fastify.kepegawaian_pns.updateFilePendidikan(
             id,
             "",
             `file_ijazah = '${file_ijazah}',`
           );
-        } else {  
+        } else {
           await fastify.kepegawaian_non_pns.updateFilePendidikan(
             id,
             "",
