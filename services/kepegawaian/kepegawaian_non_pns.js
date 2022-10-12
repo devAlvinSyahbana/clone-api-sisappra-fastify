@@ -200,7 +200,7 @@ const kepegawaian_non_pns = (db) => {
     const query = db.any(
       "SELECT nama, kepegawaian_nip, kepegawaian_nptt_npjlp as kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir, CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END AS tahun_pensiun FROM public.kepegawaian_non_pns WHERE is_deleted = 0 AND kepegawaian_status_pegawai = '" +
       status +
-      "' ORDER BY created_at DESC LIMIT " +
+      "' ORDER BY tahun_pensiun DESC LIMIT " +
       limit +
       " OFFSET " +
       offset
@@ -213,8 +213,7 @@ const kepegawaian_non_pns = (db) => {
   const filterPensiun = (limit, offset, status, qwhere) => {
     const query = db.any(
       "SELECT nama, kepegawaian_nip, kepegawaian_nptt_npjlp as kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir, CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END AS tahun_pensiun FROM public.kepegawaian_non_pns WHERE is_deleted = 0 and kepegawaian_status_pegawai = '" +
-      status + "'" + qwhere +
-      " LIMIT " +
+      status + "'" + qwhere + " ORDER BY tahun_pensiun DESC LIMIT " +
       limit +
       " OFFSET " +
       (parseInt(offset) - 1)
@@ -227,13 +226,8 @@ const kepegawaian_non_pns = (db) => {
   const findPensiunUnduh = (status) => {
     const query = db.any(
       "SELECT nama, kepegawaian_nip, kepegawaian_nptt_npjlp as kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir, CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END AS tahun_pensiun FROM public.kepegawaian_non_pns WHERE is_deleted = 0 AND kepegawaian_status_pegawai = '" +
-      status +
-      "' ORDER BY created_at DESC LIMIT " +
-      limit +
-      " OFFSET " +
-      offset
+      status + "' ORDER BY tahun_pensiun DESC "
     );
-
     return query;
   };
 
