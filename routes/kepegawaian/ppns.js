@@ -97,7 +97,7 @@ module.exports = async function (fastify, opts) {
                       type: "number"
                     },
                     skpd: {
-                      type: "number"
+                      type: "string"
                     },
                     pejabat_ppns_nama: {
                       type: "string"
@@ -108,11 +108,11 @@ module.exports = async function (fastify, opts) {
                     pejabat_ppns_nrk: {
                       type: "string"
                     },
-                    pejabat_ppns_pangkat: {
-                      type: "number"
+                    pangkat: {
+                      type: "string"
                     },
-                    pejabat_ppns_golongan: {
-                      type: "number"
+                    golongan: {
+                      type: "string"
                     },
                     no_sk_ppns: {
                       type: "string"
@@ -137,7 +137,6 @@ module.exports = async function (fastify, opts) {
     async (request, reply) => {
       const {
         limit,
-        offset,
         skpd,
         pejabat_ppns_nama,
         pejabat_ppns_nip,
