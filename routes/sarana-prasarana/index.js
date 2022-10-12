@@ -38,7 +38,7 @@ module.exports = async function (fastify, opts) {
       schema: {
         description:
           "This is an endpoint for fetching a sarana_prasarana by id",
-        tags: ["sarana_prasarana"],
+        tags: ["sarana-prasarana"],
         params: {
           description: "Find one sarana_prasarana by id",
           type: "object",
@@ -94,7 +94,7 @@ module.exports = async function (fastify, opts) {
       schema: {
         description:
           "This is an endpoint for fetching a sarana_prasarana by id",
-        tags: ["sarana_prasarana"],
+        tags: ["sarana-prasarana"],
         params: {
           description: "Find one sarana_prasarana by id",
           type: "object",
@@ -148,7 +148,7 @@ module.exports = async function (fastify, opts) {
       schema: {
         description:
           "This is an endpoint for fetching a sarana_prasarana by id",
-        tags: ["sarana_prasarana"],
+        tags: ["sarana-prasarana"],
         params: {
           description: "Find one sarana_prasarana by id",
           type: "object",
@@ -202,7 +202,7 @@ module.exports = async function (fastify, opts) {
       schema: {
         description:
           "This is an endpoint for fetching a sarana_prasarana by id",
-        tags: ["sarana_prasarana"],
+        tags: ["sarana-prasarana"],
         params: {
           description: "Find one sarana_prasarana by id",
           type: "object",
@@ -256,7 +256,7 @@ module.exports = async function (fastify, opts) {
       schema: {
         description:
           "This is an endpoint for fetching a sarana_prasarana by id",
-        tags: ["sarana_prasarana"],
+        tags: ["sarana-prasarana"],
         querystring: {
           type: "object",
           properties: {
@@ -353,7 +353,7 @@ module.exports = async function (fastify, opts) {
     {
       schema: {
         description: "This is an endpoint for creating a sample crud",
-        tags: ["sarana_prasarana"],
+        tags: ["sarana-prasarana"],
         body: {
           description: "Payload for creating a sample crud",
           type: "object",
@@ -424,6 +424,9 @@ module.exports = async function (fastify, opts) {
   fastify.post(
     "/upload-file/:id",
     {
+      schema: {
+        tags: ["sarana-prasarana"],
+      },
       preHandler: upload.fields([{ name: "file_dokumentasi", maxCount: 1 }]),
     },
     async (request, reply) => {
@@ -446,7 +449,7 @@ module.exports = async function (fastify, opts) {
       schema: {
         description:
           "This is an endpoint for updating an existing sarana_prasarana",
-        tags: ["sarana_prasarana"],
+        tags: ["sarana-prasarana"],
         params: {
           description: "update sarana_prasarana by Id",
           type: "object",
@@ -515,7 +518,7 @@ module.exports = async function (fastify, opts) {
       schema: {
         description:
           "This is an endpoint for DELETING an existing sarana_prasarana",
-        tags: ["sarana_prasarana"],
+        tags: ["sarana-prasarana"],
         params: {
           description: "sarana_prasarana by Id",
           type: "object",
@@ -553,7 +556,7 @@ module.exports = async function (fastify, opts) {
       schema: {
         description:
           "Endpoint ini digunakan untuk mengunduh seluruh data sarana dan prasarana",
-        tags: ["sarana_prasarana"],
+        tags: ["sarana-prasarana"],
         querystring: {
           type: "object",
           properties: {

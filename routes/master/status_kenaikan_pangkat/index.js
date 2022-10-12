@@ -23,6 +23,7 @@ module.exports = async function (fastify, opts) {
                   properties: {
                     id: { type: "number" },
                     status_kenaikan_pangkat: { type: "string" },
+                    masa_naik_pangkat: { type: "number" },
                   },
                 },
               },
@@ -71,6 +72,7 @@ module.exports = async function (fastify, opts) {
                 properties: {
                   id: { type: "number" },
                   status_kenaikan_pangkat: { type: "string" },
+                  masa_naik_pangkat: { type: "number" },
                 },
               },
             },
@@ -119,6 +121,7 @@ module.exports = async function (fastify, opts) {
                 properties: {
                   id: { type: "number" },
                   status_kenaikan_pangkat: { type: "string" },
+                  masa_naik_pangkat: { type: "number" },
                 },
               },
             },
@@ -153,6 +156,7 @@ module.exports = async function (fastify, opts) {
           type: "object",
           properties: {
             status_kenaikan_pangkat: { type: "string" },
+            masa_naik_pangkat: { type: "number" },
             created_by: { type: "number" },
           },
         },
@@ -169,10 +173,10 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {status_kenaikan_pangkat,created_by} = request.body;
+      const {status_kenaikan_pangkat, masa_naik_pangkat, created_by} = request.body;
 
       try {
-        await fastify.master_status_kenaikan_pangkat.create(status_kenaikan_pangkat,created_by);
+        await fastify.master_status_kenaikan_pangkat.create(status_kenaikan_pangkat, masa_naik_pangkat ,created_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -198,6 +202,7 @@ module.exports = async function (fastify, opts) {
           type: "object",
           properties: {
             status_kenaikan_pangkat: { type: "string" },
+            masa_naik_pangkat: { type: "number" },
             updated_by: { type: "number" },
           },
         },
@@ -215,10 +220,10 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const {status_kenaikan_pangkat, updated_by } = request.body;
+      const {status_kenaikan_pangkat, masa_naik_pangkat, updated_by } = request.body;
 
       try {
-        await fastify.master_status_kenaikan_pangkat.update(id,status_kenaikan_pangkat,updated_by);
+        await fastify.master_status_kenaikan_pangkat.update(id,status_kenaikan_pangkat, masa_naik_pangkat,updated_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -298,6 +303,7 @@ module.exports = async function (fastify, opts) {
                   properties: {
                     id: { type: "number" },
                     status_kenaikan_pangkat: { type: "string" },
+                    masa_naik_pangkat: { type: "number" },
                   },
                 },
               },
