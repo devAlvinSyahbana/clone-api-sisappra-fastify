@@ -4,7 +4,7 @@ const fp = require("fastify-plugin");
 const kepegawaian_ppns = (db) => {
     const find = (limit) => {
         const query = db.any(
-            "SELECT kppns.id, mskpd.nama, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, mpangkat.nama, mgol.nama, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns kppns left join master_skpd mskpd on kppns.skpd =  mskpd.id left join master_pangkat mpangkat on kppns.pejabat_ppns_pangkat = mpangkat.id left join master_golongan mgol on kppns.pejabat_ppns_golongan = mgol.id WHERE kppns.is_deleted = 0 LIMIT " +
+            "SELECT kppns.id, mskpd.nama as skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, mpangkat.nama as pangkat, mgol.nama as golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns kppns left join master_skpd mskpd on kppns.skpd =  mskpd.id left join master_pangkat mpangkat on kppns.pejabat_ppns_pangkat = mpangkat.id left join master_golongan mgol on kppns.pejabat_ppns_golongan = mgol.id WHERE kppns.is_deleted = 0 LIMIT " +
             limit
         );
         return query;
@@ -19,7 +19,7 @@ const kepegawaian_ppns = (db) => {
 
     const find_rekap_jumlah = () => {
         const query = db.one(
-            "select count (skpd) as jumlah_ppns, count(case when kp.skpd = 1 then 1 END) as satpol_pp, count(case when kp.skpd != 1 then 1 END) as skpd_lain   from kepegawaian_ppns kp where is_deleted = 0"
+            "select count (skpd) as jumlah_ppns, count(case when kp.skpd = 1 then 1 END) as satpol_pp, count(case when kp.skpd != 1 then 1 END) as skpd_lain from kepegawaian_ppns kp where is_deleted = 0"
         );
         return query;
     };
@@ -36,7 +36,7 @@ const kepegawaian_ppns = (db) => {
 
     const filter = (limit, qwhere) => {
         const query = db.any(
-            "SELECT kppns.id, mskpd.nama, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, mpangkat.nama, mgol.nama, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns kppns left join master_skpd mskpd on kppns.skpd =  mskpd.id left join master_pangkat mpangkat on kppns.pejabat_ppns_pangkat = mpangkat.id left join master_golongan mgol on kppns.pejabat_ppns_golongan = mgol.id WHERE kppns.is_deleted = 0" +
+            "SELECT kppns.id, mskpd.nama as skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, mpangkat.nama as pangkat, mgol.nama as golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns kppns left join master_skpd mskpd on kppns.skpd =  mskpd.id left join master_pangkat mpangkat on kppns.pejabat_ppns_pangkat = mpangkat.id left join master_golongan mgol on kppns.pejabat_ppns_golongan = mgol.id  WHERE kppns.is_deleted = 0" +
             qwhere +
             " LIMIT " +
             limit

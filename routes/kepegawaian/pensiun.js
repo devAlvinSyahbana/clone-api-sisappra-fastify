@@ -233,9 +233,9 @@ module.exports = async function (fastify, opts) {
 
   // ^ Unduh
   fastify.get(
-    "/unduh-data-pegawai-pensiun", {
+    "/pensiun/unduh", {
       schema: {
-        description: "Endpoint ini digunakan untuk mengunduh data pegawai pensiun",
+        description: "This is an endpoint for fetching a unduh pensiun",
         tags: ["pensiun"],
         querystring: {
           type: "object",
@@ -282,20 +282,21 @@ module.exports = async function (fastify, opts) {
         status,
         tahun_pensiun
       } = request.query;
-      let headerpensiun = [];
-      let datapensiun = [];
+      let headerData = [];
+      let data = [];
       try {
         const wb = XLSX.utils.book_new();
         // Definisikan header
-        headerpensiun = [
+        headerData = [
           "Nama",
           "No pegawai",
           "NIP",
           "Jabatan",
           "Tempat Tugas / Bidang",
           "Tempat Tugas Kecamatan / Seksi",
-          "Status",
-          "Tahun Pensiun",
+          "Tempat Lahir",
+          "Tanggal Lahir",
+          "Tahun Pensiun"
         ];
 
         let qwhere = "";
@@ -319,9 +320,9 @@ module.exports = async function (fastify, opts) {
             if (tahun_pensiun) {
               qwhere += ` AND CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END = ${tahun_pensiun}`;
             }
-            exec = await fastify.kepegawaian_pns.filterPensiun(limit, offset, qwhere);
+            exec = await fastify.kepegawaian_pns.filterPensiunUnduh(qwhere);
           } else {
-            exec = await fastify.kepegawaian_pns.findPensiun(limit, offset);
+            exec = await fastify.kepegawaian_pns.findPensiunUnduh();
           }
         } else {
           if (nama || nopegawai || nip || tempat_tugas_bidang || tempat_tugas_kecamatan || status || tahun_pensiun) {
@@ -347,44 +348,36 @@ module.exports = async function (fastify, opts) {
               qwhere += ` AND CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END = ${tahun_pensiun}`;
             }
             getData = await fastify.kepegawaian_non_pns.filterPensiun(
-              limit,
-              offset,
               status,
               qwhere
             );
           } else {
             getData = await fastify.kepegawaian_non_pns.findPensiun(
-              limit,
-              offset,
               status
             );
           }
         }
-        const convertData = await getData.map(function (item) {
+
+        const convertData = getData.map(function (item) {
           return Object.values(item);
         });
-        datapensiun = convertData;
+        data = convertData;
 
         // Definisikan rows untuk ditulis ke dalam spreadsheet
-        const wsDatapensiun = [headerpensiun, ...datapensiun];
-        console.log(wsDatapensiun)
-
+        const wsDataKepegawaian = [headerData, ...data];
         // Buat Workbook
-        const fileName = "DATA PEGAWAIAN PPNS";
+        const fileName = "DAFTAR NAMA PEGAWAI YANG MEMASUKI MASA PENSIUN";
         wb.Props = {
           Title: fileName,
-          Author: "SISAPPRA - pensiun",
+          Author: "SISAPPRA - DAFTAR NAMA PEGAWAI YANG MEMASUKI MASA PENSIUN",
           CreatedDate: new Date(),
         };
         // Buat Sheet
-        wb.SheetNames.push("DATA PPNS");
-
+        wb.SheetNames.push("DAFTAR NAMA PEGAWAI YANG MEMASUKI MASA PENSIUN");
         // Buat Sheet dengan Data
-        const ws_pensiun = XLSX.utils.aoa_to_sheet(wsDatapensiun);
-
+        const ws = XLSX.utils.aoa_to_sheet(wsDataKepegawaian);
         // const ws = XLSX.utils.aoa_to_sheet(wsData);
-        wb.Sheets["DATA PPNS"] = ws_pensiun;
-
+        wb.Sheets["DAFTAR NAMA PEGAWAI YANG MEMASUKI MASA PENSIUN"] = ws;
 
         const wopts = {
           bookType: "xlsx",
