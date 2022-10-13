@@ -2,11 +2,28 @@ const fp = require("fastify-plugin");
 
 
 const kepegawaian_ppns = (db) => {
-    const find = (limit) => {
+    // ─── FIND ALL ────────────────────────────────────────────────────────────────
+    const find = (limit, offset) => {
         const query = db.any(
             "SELECT kppns.id, mskpd.nama as skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, mpangkat.nama as pejabat_ppns_pangkat , mgol.nama as pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns kppns left join master_skpd mskpd on kppns.skpd =  mskpd.id left join master_pangkat mpangkat on kppns.pejabat_ppns_pangkat = mpangkat.id left join master_golongan mgol on kppns.pejabat_ppns_golongan = mgol.id WHERE kppns.is_deleted = 0 LIMIT " +
-            limit
+            limit + " OFFSET " + (parseInt(offset) - 1)
         );
+        return query;
+    };
+
+    const findOne = (id) => {
+        const query = db.one(
+            "SELECT kppns.id, mskpd.nama as skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, mpangkat.nama as pejabat_ppns_pangkat , mgol.nama as pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns kppns left join master_skpd mskpd on kppns.skpd =  mskpd.id left join master_pangkat mpangkat on kppns.pejabat_ppns_pangkat = mpangkat.id left join master_golongan mgol on kppns.pejabat_ppns_golongan = mgol.id WHERE kppns.id = $1 AND kppns.is_deleted = 0 ",
+            [id]
+        );
+        return query;
+    };
+
+    const countAll = () => {
+        const query = db.one(
+            "SELECT COUNT(id) as total FROM kepegawaian_ppns WHERE is_deleted = 0"
+        );
+
         return query;
     };
 
@@ -33,14 +50,23 @@ const kepegawaian_ppns = (db) => {
         return query;
     };
 
-
-    const filter = (limit, qwhere) => {
+    // ─── FILTER ──────────────────────────────────────────────────────────────────
+    const filter = (limit, offset, qwhere) => {
         const query = db.any(
             "SELECT kppns.id, mskpd.nama as skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, mpangkat.nama as pejabat_ppns_pangkat , mgol.nama as pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns kppns left join master_skpd mskpd on kppns.skpd =  mskpd.id left join master_pangkat mpangkat on kppns.pejabat_ppns_pangkat = mpangkat.id left join master_golongan mgol on kppns.pejabat_ppns_golongan = mgol.id WHERE kppns.is_deleted = 0" +
             qwhere +
             " LIMIT " +
-            limit
+            limit + " OFFSET " + (parseInt(offset) - 1)
         );
+        return query;
+    };
+
+    const countAllFilter = (qwhere) => {
+        const query = db.one(
+            "SELECT COUNT(kppns.id) as total FROM kepegawaian_ppns kppns WHERE kppns.is_deleted = 0" +
+            qwhere
+        );
+
         return query;
     };
 
@@ -82,9 +108,12 @@ const kepegawaian_ppns = (db) => {
 
     return {
         find,
+        findOne,
+        countAll,
         find_rekap,
         find_rekap_jumlah,
         filter,
+        countAllFilter,
         create,
         update,
         unduh
