@@ -405,7 +405,7 @@ const kepegawaian_pns = (db) => {
   // ^ find pensiun
   const findPensiun = (limit, offset) => {
     const query = db.any(
-      "SELECT nama, kepegawaian_nip, kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir, CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END AS tahun_pensiun FROM public.kepegawaian_pns kpns WHERE is_deleted = 0 ORDER BY created_at DESC LIMIT " +
+      "SELECT nama, kepegawaian_nip, kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir, CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END AS tahun_pensiun FROM public.kepegawaian_pns kpns WHERE is_deleted = 0 ORDER BY tahun_pensiun ASC LIMIT " +
       limit +
       " OFFSET " +
       offset
@@ -422,7 +422,7 @@ const kepegawaian_pns = (db) => {
       " LIMIT " +
       limit +
       " OFFSET " +
-      (parseInt(offset) - 1)
+      (parseInt(offset) - 1) + " ORDER BY tahun_pensiun"
     );
 
     return query;
@@ -431,7 +431,7 @@ const kepegawaian_pns = (db) => {
   // ^ find pensiun
   const findPensiunUnduh = () => {
     const query = db.any(
-      "SELECT nama, kepegawaian_nip, kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir, CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END AS tahun_pensiun FROM public.kepegawaian_pns kpns WHERE is_deleted = 0 ORDER BY created_at DESC LIMIT " +
+      "SELECT nama, kepegawaian_nip, kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir, CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END AS tahun_pensiun FROM public.kepegawaian_pns kpns WHERE is_deleted = 0 ORDER BY tahun_pensiun ASC LIMIT " +
       limit +
       " OFFSET " +
       offset
@@ -448,7 +448,7 @@ const kepegawaian_pns = (db) => {
       " LIMIT " +
       limit +
       " OFFSET " +
-      (parseInt(offset) - 1)
+      (parseInt(offset) - 1) + " ORDER BY tahun_pensiun"
     );
 
     return query;

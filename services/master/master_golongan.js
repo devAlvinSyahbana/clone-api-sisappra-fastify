@@ -56,6 +56,14 @@ const master_golongan = (db) => {
     };
   };
 
+  const filter = (q) => {
+    const query = db.any(
+      "SELECT id, nama as golongan, urutan_tingkat_golongan FROM master_golongan WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
+    );
+
+    return query;
+  };
+
   return {
     find,
     findone,
@@ -63,6 +71,7 @@ const master_golongan = (db) => {
     create,
     update,
     del,
+    filter
   };
 };
 

@@ -97,7 +97,7 @@ module.exports = async function (fastify, opts) {
                       type: "number"
                     },
                     skpd: {
-                      type: "number"
+                      type: "string"
                     },
                     pejabat_ppns_nama: {
                       type: "string"
@@ -108,11 +108,11 @@ module.exports = async function (fastify, opts) {
                     pejabat_ppns_nrk: {
                       type: "string"
                     },
-                    pejabat_ppns_pangkat: {
-                      type: "number"
+                    pangkat: {
+                      type: "string"
                     },
-                    pejabat_ppns_golongan: {
-                      type: "number"
+                    golongan: {
+                      type: "string"
                     },
                     no_sk_ppns: {
                       type: "string"
@@ -137,7 +137,6 @@ module.exports = async function (fastify, opts) {
     async (request, reply) => {
       const {
         limit,
-        offset,
         skpd,
         pejabat_ppns_nama,
         pejabat_ppns_nip,
@@ -233,6 +232,9 @@ module.exports = async function (fastify, opts) {
             uu_yg_dikawal: {
               type: "string"
             },
+            created_by: {
+              type: "string"
+            },
           },
         },
         response: {
@@ -252,36 +254,6 @@ module.exports = async function (fastify, opts) {
                   id: {
                     type: "number"
                   },
-                  skpd: {
-                    type: "number"
-                  },
-                  pejabat_ppns_nama: {
-                    type: "string"
-                  },
-                  pejabat_ppns_nip: {
-                    type: "string"
-                  },
-                  pejabat_ppns_nrk: {
-                    type: "string"
-                  },
-                  pejabat_ppns_pangkat: {
-                    type: "number"
-                  },
-                  pejabat_ppns_golongan: {
-                    type: "number"
-                  },
-                  no_sk_ppns: {
-                    type: "string"
-                  },
-                  no_ktp_ppns: {
-                    type: "string"
-                  },
-                  wilayah_kerja: {
-                    type: "string"
-                  },
-                  uu_yg_dikawal: {
-                    type: "string"
-                  },
                 },
               },
             },
@@ -300,7 +272,8 @@ module.exports = async function (fastify, opts) {
         no_sk_ppns,
         no_ktp_ppns,
         wilayah_kerja,
-        uu_yg_dikawal
+        uu_yg_dikawal,
+        created_by
       } = request.body;
       try {
         const {
@@ -315,7 +288,8 @@ module.exports = async function (fastify, opts) {
           no_sk_ppns,
           no_ktp_ppns,
           wilayah_kerja,
-          uu_yg_dikawal
+          uu_yg_dikawal,
+          created_by
         );
         reply.send({
           message: "success",
