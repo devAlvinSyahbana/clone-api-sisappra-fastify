@@ -108,10 +108,10 @@ module.exports = async function (fastify, opts) {
                     pejabat_ppns_nrk: {
                       type: "string"
                     },
-                    pangkat: {
+                    pejabat_ppns_pangkat: {
                       type: "string"
                     },
-                    golongan: {
+                    pejabat_ppns_golongan: {
                       type: "string"
                     },
                     no_sk_ppns: {
