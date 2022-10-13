@@ -1,4 +1,4 @@
-const master_pendidikan  = require("../../../services/master/master_pendidikan");
+const master_pendidikan = require("../../../services/master/master_pendidikan");
 
 module.exports = async function (fastify, opts) {
   fastify.register(master_pendidikan);
@@ -117,11 +117,14 @@ module.exports = async function (fastify, opts) {
               message: { type: "string" },
               code: { type: "string" },
               data: {
-                type: "object",
-                properties: {
-                  id: { type: "number" },
-                  pendidikan: { type: "string" },
-                  urutan_tingkat_pendidikan: { type: "number" },
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: { type: "number" },
+                    pendidikan: { type: "string" },
+                    urutan_tingkat_pendidikan: { type: "number" },
+                  },
                 },
               },
             },
@@ -131,9 +134,12 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { pendidikan } = request.params;
-      const exec = await fastify.master_pendidikan.findone_by_pendidikan(pendidikan);
-
+      let qwhere = "";
       try {
+        if (pendidikan) {
+          qwhere = ` AND nama ILIKE '%${pendidikan}%'`;
+        }
+        const exec = await fastify.master_pendidikan.filter_pendidikan(qwhere);
         if (exec) {
           reply.send({ message: "success", code: 200, data: exec });
         } else {
@@ -173,10 +179,15 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {pendidikan, urutan_tingkat_pendidikan, created_by} = request.body;
+      const { pendidikan, urutan_tingkat_pendidikan, created_by } =
+        request.body;
 
       try {
-        await fastify.master_pendidikan.create(pendidikan, urutan_tingkat_pendidikan, created_by);
+        await fastify.master_pendidikan.create(
+          pendidikan,
+          urutan_tingkat_pendidikan,
+          created_by
+        );
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -188,7 +199,8 @@ module.exports = async function (fastify, opts) {
     "/update/:id",
     {
       schema: {
-        description: "This is an endpoint for updating an existing master pendidikan",
+        description:
+          "This is an endpoint for updating an existing master pendidikan",
         tags: ["master pendidikan"],
         params: {
           description: "update master pendidikan by Id",
@@ -220,10 +232,16 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const {pendidikan, urutan_tingkat_pendidikan,  updated_by } = request.body;
+      const { pendidikan, urutan_tingkat_pendidikan, updated_by } =
+        request.body;
 
       try {
-        await fastify.master_pendidikan.update(id,pendidikan, urutan_tingkat_pendidikan, updated_by);
+        await fastify.master_pendidikan.update(
+          id,
+          pendidikan,
+          urutan_tingkat_pendidikan,
+          updated_by
+        );
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -235,7 +253,8 @@ module.exports = async function (fastify, opts) {
     "/delete/:id",
     {
       schema: {
-        description: "This is an endpoint for DELETING an existing master pendidikan.",
+        description:
+          "This is an endpoint for DELETING an existing master pendidikan.",
         tags: ["master pendidikan"],
         params: {
           description: "master pendidikan by Id",
