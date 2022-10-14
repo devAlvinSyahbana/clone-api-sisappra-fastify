@@ -113,10 +113,10 @@ module.exports = async function (fastify, opts) {
                       type: "string"
                     },
                     pejabat_ppns_pangkat: {
-                      type: "string"
+                      type: "number"
                     },
                     pejabat_ppns_golongan: {
-                      type: "string"
+                      type: "number"
                     },
                     no_sk_ppns: {
                       type: "string"
@@ -257,10 +257,10 @@ module.exports = async function (fastify, opts) {
                     type: "string"
                   },
                   pejabat_ppns_pangkat: {
-                    type: "string"
+                    type: "number"
                   },
                   pejabat_ppns_golongan: {
-                    type: "string"
+                    type: "number"
                   },
                   no_sk_ppns: {
                     type: "string"
