@@ -245,6 +245,28 @@ const kepegawaian_non_pns = (db) => {
     return query;
   };
 
+  const countAllPensiun = (status) => {
+    const query = db.one(
+      "SELECT COUNT(id) as total FROM kepegawaian_non_pns WHERE is_deleted = 0 AND kepegawaian_status_pegawai = '" +
+      status +
+      "'"
+    );
+
+    return query;
+  };
+
+  const countAllFilterPensiun = (status, qwhere) => {
+    const query = db.one(
+      "SELECT COUNT(id) as total FROM kepegawaian_non_pns WHERE is_deleted = 0 AND kepegawaian_status_pegawai = '" +
+      status +
+      "'" +
+      qwhere
+    );
+
+    return query;
+  };
+
+  // ─────────────────────────────────────────────────────────────────────────────
 
   // create keluarga non pns
   const createKeluargaNonPNS = (
@@ -347,6 +369,8 @@ const kepegawaian_non_pns = (db) => {
     filter,
     countAllFilter,
     countAll,
+    countAllPensiun,
+    countAllFilterPensiun,
     create,
     find,
     findone,

@@ -2,6 +2,7 @@ const kepegawaian_pns = require("../../services/kepegawaian/kepegawaian_pns");
 const kepegawaian_non_pns = require("../../services/kepegawaian/kepegawaian_non_pns");
 const multer = require("fastify-multer");
 const XLSX = require("xlsx");
+// const moment = require("moment");
 
 module.exports = async function (fastify, opts) {
   fastify.register(kepegawaian_pns);
@@ -128,7 +129,10 @@ module.exports = async function (fastify, opts) {
                     },
                   },
                 }
-              }
+              },
+              total_data: {
+                type: "number"
+              },
             },
           },
         },
@@ -147,6 +151,7 @@ module.exports = async function (fastify, opts) {
         tahun_pensiun
       } = request.query;
       let exec = null;
+      let totalDt = 0;
       let qwhere = "";
       if (status === "PNS") {
         if (nama || nopegawai || nip || tempat_tugas_bidang || tempat_tugas_kecamatan || tahun_pensiun) {
@@ -168,9 +173,22 @@ module.exports = async function (fastify, opts) {
           if (tahun_pensiun) {
             qwhere += ` AND CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END = ${tahun_pensiun}`;
           }
+          // else {
+          //   qwhere += ` AND tahun_pensiun between ${moment().format('YYYY')} AND `
+          // }
           exec = await fastify.kepegawaian_pns.filterPensiun(limit, offset, qwhere);
+          const {
+            total
+          } = await fastify.kepegawaian_pns.countAllFilterPensiun(
+            qwhere
+          );
+          totalDt = total;
         } else {
           exec = await fastify.kepegawaian_pns.findPensiun(limit, offset);
+          const {
+            total
+          } = await fastify.kepegawaian_pns.countAllPensiun();
+          totalDt = total;
         }
       } else {
         if (nama || nopegawai || nip || tempat_tugas_bidang || tempat_tugas_kecamatan || status || tahun_pensiun) {
@@ -201,12 +219,22 @@ module.exports = async function (fastify, opts) {
             status,
             qwhere
           );
+          const {
+            total
+          } = await fastify.kepegawaian_non_pns.countAllFilterPensiun(
+            status, qwhere
+          );
+          totalDt = total;
         } else {
           exec = await fastify.kepegawaian_non_pns.findPensiun(
             limit,
             offset,
             status
           );
+          const {
+            total
+          } = await fastify.kepegawaian_non_pns.countAllPensiun(status);
+          totalDt = total;
         }
       }
       try {
@@ -215,6 +243,7 @@ module.exports = async function (fastify, opts) {
             message: "success",
             code: 200,
             data: exec,
+            total_data: totalDt,
           });
         } else {
           reply.send({
