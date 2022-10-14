@@ -199,11 +199,9 @@ module.exports = async function (fastify, opts) {
           description: "Payload for creating a login",
           type: "object",
           properties: {
-            id_pegawai: { type: "string" },
             no_pegawai: { type: "string" },
             kata_sandi: { type: "string" },
             email: { type: "string" },
-            hak_akses: { type: "number" },
             created_by: { type: "number" },
           },
         },
@@ -221,25 +219,23 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const {
-        id_pegawai,
         no_pegawai,
         kata_sandi,
         email,
-        hak_akses,
         created_by,
       } = request.body;
       const bycript_pass = await fastify.bcrypt.hash(kata_sandi);
-
       const { jmlh } = await fastify.login.findone_no_pegawai(no_pegawai);
-
+    
       try {
         if (parseInt(jmlh) == 0) {
+          const value  = await fastify.login.findone_pegawai(no_pegawai);
+
           await fastify.login.create(
-            id_pegawai,
-            no_pegawai,
+            value.id,
+            value.nrk_nptt_npjlp,
             bycript_pass,
             email,
-            hak_akses,
             created_by
           );
 
