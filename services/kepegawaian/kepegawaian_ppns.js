@@ -5,7 +5,7 @@ const kepegawaian_ppns = (db) => {
     // ─── FIND ALL ────────────────────────────────────────────────────────────────
     const find = (limit, offset) => {
         const query = db.any(
-            "SELECT kppns.id, mskpd.nama as skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, mpangkat.nama as pejabat_ppns_pangkat , mgol.nama as pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns kppns left join master_skpd mskpd on kppns.skpd =  mskpd.id left join master_pangkat mpangkat on kppns.pejabat_ppns_pangkat = mpangkat.id left join master_golongan mgol on kppns.pejabat_ppns_golongan = mgol.id WHERE kppns.is_deleted = 0 LIMIT " +
+            "SELECT id, skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat , pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns WHERE is_deleted = 0 LIMIT " +
             limit + " OFFSET " + (parseInt(offset) - 1)
         );
         return query;
@@ -13,7 +13,7 @@ const kepegawaian_ppns = (db) => {
 
     const findOne = (id) => {
         const query = db.one(
-            "SELECT kppns.id, mskpd.nama as skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, mpangkat.nama as pejabat_ppns_pangkat , mgol.nama as pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns kppns left join master_skpd mskpd on kppns.skpd =  mskpd.id left join master_pangkat mpangkat on kppns.pejabat_ppns_pangkat = mpangkat.id left join master_golongan mgol on kppns.pejabat_ppns_golongan = mgol.id WHERE kppns.id = $1 AND kppns.is_deleted = 0 ",
+            "SELECT id, skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat , pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns WHERE id = $1 AND is_deleted = 0 ",
             [id]
         );
         return query;
@@ -53,7 +53,7 @@ const kepegawaian_ppns = (db) => {
     // ─── FILTER ──────────────────────────────────────────────────────────────────
     const filter = (limit, offset, qwhere) => {
         const query = db.any(
-            "SELECT kppns.id, mskpd.nama as skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, mpangkat.nama as pejabat_ppns_pangkat , mgol.nama as pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns kppns left join master_skpd mskpd on kppns.skpd =  mskpd.id left join master_pangkat mpangkat on kppns.pejabat_ppns_pangkat = mpangkat.id left join master_golongan mgol on kppns.pejabat_ppns_golongan = mgol.id WHERE kppns.is_deleted = 0" +
+            "SELECT id, skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat , pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns WHERE is_deleted = 0" +
             qwhere +
             " LIMIT " +
             limit + " OFFSET " + (parseInt(offset) - 1)
@@ -101,7 +101,7 @@ const kepegawaian_ppns = (db) => {
 
     const unduh = () => {
         const query = db.any(
-            "SELECT kppns.id, mskpd.nama, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, mpangkat.nama, mgol.nama, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns kppns left join master_skpd mskpd on kppns.skpd =  mskpd.id left join master_pangkat mpangkat on kppns.pejabat_ppns_pangkat = mpangkat.id left join master_golongan mgol on kppns.pejabat_ppns_golongan = mgol.id WHERE kppns.is_deleted = 0"
+            "SELECT id, skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat , pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns WHERE is_deleted = 0"
         );
         return query;
     };
