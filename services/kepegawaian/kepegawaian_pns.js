@@ -417,12 +417,12 @@ const kepegawaian_pns = (db) => {
   // ^ filter pensiun
   const filterPensiun = (limit, offset, qwhere) => {
     const query = db.any(
-      "SELECT  nama, kepegawaian_nip, kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir, kepegawaian_eselon, CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END AS tahun_pensiun FROM public.kepegawaian_pns kpns WHERE is_deleted = 0" +
+      "SELECT nama, kepegawaian_nip, kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, tempat_lahir, tgl_lahir, kepegawaian_eselon, CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END AS tahun_pensiun FROM public.kepegawaian_pns kpns WHERE is_deleted = 0" +
       qwhere +
-      " LIMIT " +
+      " ORDER BY tahun_pensiun LIMIT " +
       limit +
       " OFFSET " +
-      (parseInt(offset) - 1) + " ORDER BY tahun_pensiun"
+      (parseInt(offset) - 1)
     );
 
     return query;
@@ -453,6 +453,25 @@ const kepegawaian_pns = (db) => {
 
     return query;
   };
+
+  const countAllPensiun = () => {
+    const query = db.one(
+      "SELECT COUNT(id) as total FROM kepegawaian_pns WHERE is_deleted = 0"
+    );
+
+    return query;
+  };
+
+  const countAllFilterPensiun = (qwhere) => {
+    const query = db.one(
+      "SELECT COUNT(kpns.id) as total FROM kepegawaian_pns kpns WHERE kpns.is_deleted = 0" +
+      qwhere
+    );
+
+    return query;
+  };
+
+  // ─────────────────────────────────────────────────────────────────────────────
 
 
   const createKeluargaPNS = (
@@ -565,6 +584,8 @@ const kepegawaian_pns = (db) => {
     filter,
     countAllFilter,
     countAll,
+    countAllPensiun,
+    countAllFilterPensiun,
     find,
     findone,
     update,
