@@ -30,7 +30,7 @@ const login = (db) => {
 
   const findone_pegawai = (no_pegawai) => {
     const query = db.one(
-      "select z.* from( select kp.id, kp.kepegawaian_nrk as nrk_nptt_npjlp from kepegawaian_pns kp where kp.is_deleted = 0 and kp.kepegawaian_nrk = $1 union all select knp.id, knp.kepegawaian_nptt_npjlp as nrk from kepegawaian_non_pns knp where knp.is_deleted = 0 and knp.kepegawaian_nptt_npjlp = $1) as z",
+      "select z.* from( select kp.id, kp.nama, kp.kepegawaian_nrk as nrk_nptt_npjlp from kepegawaian_pns kp where kp.is_deleted = 0 and kp.kepegawaian_nrk = $1 union all select knp.id, knp.nama, knp.kepegawaian_nptt_npjlp as nrk from kepegawaian_non_pns knp where knp.is_deleted = 0 and knp.kepegawaian_nptt_npjlp = $1) as z",
       [no_pegawai]
     );
 
@@ -55,10 +55,10 @@ const login = (db) => {
     return query;
   };
 
-  const create = (id_pegawai, no_pegawai, kata_sandi, email, created_by) => {
+  const create = (id_pegawai, no_pegawai, kata_sandi, email, nama_pegawai, created_by) => {
     const query = db.one(
-      "INSERT INTO pengguna (id_pegawai, no_pegawai, kata_sandi, email, hak_akses, status_pengguna, is_deleted, created_by) VALUES ($1, $2, $3, $4, 1, 0, 0, $5) RETURNING id",
-      [id_pegawai, no_pegawai, kata_sandi, email, created_by]
+      "INSERT INTO pengguna (id_pegawai, no_pegawai, kata_sandi, email, hak_akses, nama_lengkap, status_pengguna, is_deleted, created_by) VALUES ($1, $2, $3, $4, 1,  $5, 0, 0, $6) RETURNING id",
+      [id_pegawai, no_pegawai, kata_sandi, email, nama_pegawai, created_by]
     );
 
     return query;
