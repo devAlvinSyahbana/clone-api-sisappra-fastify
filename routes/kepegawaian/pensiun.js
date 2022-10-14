@@ -160,7 +160,7 @@ module.exports = async function (fastify, opts) {
             qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nip}%'`;
           }
           if (tempat_tugas_bidang) {
-            qwhere += ` AND kpns.tempat_tugas_bidang ILIKE '%${tempat_tugas_bidang}%'`;
+            qwhere += ` AND kpns.kepegawaian_tempat_tugas ILIKE '%${tempat_tugas_bidang}%'`;
           }
           if (tempat_tugas_kecamatan) {
             qwhere += ` AND kpns.kepegawaian_subbag_seksi_kecamatan ILIKE '%${tempat_tugas_kecamatan}%'`;
@@ -184,7 +184,7 @@ module.exports = async function (fastify, opts) {
             qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nip}%'`;
           }
           if (tempat_tugas_bidang) {
-            qwhere += ` AND tempat_tugas_bidang ILIKE '%${tempat_tugas_bidang}%'`;
+            qwhere += ` AND kepegawaian_tempat_tugas ILIKE '%${tempat_tugas_bidang}%'`;
           }
           if (tempat_tugas_kecamatan) {
             qwhere += ` AND kepegawaian_subbag_seksi_kecamatan ILIKE '%${tempat_tugas_kecamatan}%'`;
@@ -366,18 +366,18 @@ module.exports = async function (fastify, opts) {
         // Definisikan rows untuk ditulis ke dalam spreadsheet
         const wsDataKepegawaian = [headerData, ...data];
         // Buat Workbook
-        const fileName = "DAFTAR NAMA PEGAWAI YANG MEMASUKI MASA PENSIUN";
+        const fileName = "DAFTAR NAMA";
         wb.Props = {
           Title: fileName,
-          Author: "SISAPPRA - DAFTAR NAMA PEGAWAI YANG MEMASUKI MASA PENSIUN",
+          Author: "SISAPPRA - DAFTAR NAMA",
           CreatedDate: new Date(),
         };
         // Buat Sheet
-        wb.SheetNames.push("DAFTAR NAMA PEGAWAI YANG MEMASUKI MASA PENSIUN");
+        wb.SheetNames.push("DAFTAR NAMA");
         // Buat Sheet dengan Data
         const ws = XLSX.utils.aoa_to_sheet(wsDataKepegawaian);
         // const ws = XLSX.utils.aoa_to_sheet(wsData);
-        wb.Sheets["DAFTAR NAMA PEGAWAI YANG MEMASUKI MASA PENSIUN"] = ws;
+        wb.Sheets["DAFTAR NAMA"] = ws;
 
         const wopts = {
           bookType: "xlsx",
