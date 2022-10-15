@@ -56,6 +56,10 @@ module.exports = async function (fastify, opts) {
               type: "number",
               default: 10,
             },
+            offset: {
+              type: "integer",
+              default: 1,
+            },
             skpd: {
               type: "number"
             },
@@ -75,7 +79,7 @@ module.exports = async function (fastify, opts) {
               type: "number"
             },
           },
-          required: ["limit"],
+          required: ["limit", "offset"],
         },
         response: {
           200: {
@@ -108,11 +112,11 @@ module.exports = async function (fastify, opts) {
                     pejabat_ppns_nrk: {
                       type: "string"
                     },
-                    pangkat: {
-                      type: "string"
+                    pejabat_ppns_pangkat: {
+                      type: "number"
                     },
-                    golongan: {
-                      type: "string"
+                    pejabat_ppns_golongan: {
+                      type: "number"
                     },
                     no_sk_ppns: {
                       type: "string"
@@ -129,6 +133,9 @@ module.exports = async function (fastify, opts) {
                   },
                 },
               },
+              total_data: {
+                type: "number"
+              },
             },
           },
         },
@@ -137,6 +144,7 @@ module.exports = async function (fastify, opts) {
     async (request, reply) => {
       const {
         limit,
+        offset,
         skpd,
         pejabat_ppns_nama,
         pejabat_ppns_nip,
@@ -145,6 +153,7 @@ module.exports = async function (fastify, opts) {
         pejabat_ppns_golongan
       } = request.query;
       let exec = null;
+      let totalDt = 0;
       let qwhere = "";
       if (skpd || pejabat_ppns_nama || pejabat_ppns_nip || pejabat_ppns_nrk || pejabat_ppns_pangkat || pejabat_ppns_golongan) {
         if (skpd) {
@@ -165,10 +174,118 @@ module.exports = async function (fastify, opts) {
         if (pejabat_ppns_golongan) {
           qwhere += ` AND pejabat_ppns_golongan = ${pejabat_ppns_golongan}`;
         }
-        exec = await fastify.kepegawaian_ppns.filter(limit, qwhere);
+        exec = await fastify.kepegawaian_ppns.filter(limit, offset, qwhere);
+        const {
+          total
+        } = await fastify.kepegawaian_ppns.countAllFilter(
+          qwhere
+        );
+        totalDt = total;
       } else {
-        exec = await fastify.kepegawaian_ppns.find(limit);
+        exec = await fastify.kepegawaian_ppns.find(limit, offset);
+        const {
+          total
+        } = await fastify.kepegawaian_ppns.countAll();
+        totalDt = total;
       }
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec,
+            total_data: totalDt,
+          });
+        } else {
+          reply.send({
+            message: "success",
+            code: 204
+          });
+        }
+
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
+  // ^ find one by id
+  fastify.get(
+    "/PPNS/:id", {
+      schema: {
+        description: "Endpoint ini digunakan untuk mengambil seluruh data kepegawaian berstatus PPNS",
+        tags: ["PPNS"],
+        params: {
+          description: "Parameter yang digunakan",
+          type: "object",
+          properties: {
+            id: {
+              type: "number"
+            },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+              data: {
+                type: "object",
+                properties: {
+                  id: {
+                    type: "number"
+                  },
+                  skpd: {
+                    type: "string"
+                  },
+                  pejabat_ppns_nama: {
+                    type: "string"
+                  },
+                  pejabat_ppns_nip: {
+                    type: "string"
+                  },
+                  pejabat_ppns_nrk: {
+                    type: "string"
+                  },
+                  pejabat_ppns_pangkat: {
+                    type: "number"
+                  },
+                  pejabat_ppns_golongan: {
+                    type: "number"
+                  },
+                  no_sk_ppns: {
+                    type: "string"
+                  },
+                  no_ktp_ppns: {
+                    type: "string"
+                  },
+                  wilayah_kerja: {
+                    type: "string"
+                  },
+                  uu_yg_dikawal: {
+                    type: "string"
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        id
+      } = request.params;
+      const exec = await fastify.kepegawaian_ppns.findOne(id);
       try {
         if (exec) {
           reply.send({
@@ -232,6 +349,9 @@ module.exports = async function (fastify, opts) {
             uu_yg_dikawal: {
               type: "string"
             },
+            created_by: {
+              type: "string"
+            },
           },
         },
         response: {
@@ -251,36 +371,6 @@ module.exports = async function (fastify, opts) {
                   id: {
                     type: "number"
                   },
-                  skpd: {
-                    type: "number"
-                  },
-                  pejabat_ppns_nama: {
-                    type: "string"
-                  },
-                  pejabat_ppns_nip: {
-                    type: "string"
-                  },
-                  pejabat_ppns_nrk: {
-                    type: "string"
-                  },
-                  pejabat_ppns_pangkat: {
-                    type: "number"
-                  },
-                  pejabat_ppns_golongan: {
-                    type: "number"
-                  },
-                  no_sk_ppns: {
-                    type: "string"
-                  },
-                  no_ktp_ppns: {
-                    type: "string"
-                  },
-                  wilayah_kerja: {
-                    type: "string"
-                  },
-                  uu_yg_dikawal: {
-                    type: "string"
-                  },
                 },
               },
             },
@@ -299,7 +389,8 @@ module.exports = async function (fastify, opts) {
         no_sk_ppns,
         no_ktp_ppns,
         wilayah_kerja,
-        uu_yg_dikawal
+        uu_yg_dikawal,
+        created_by
       } = request.body;
       try {
         const {
@@ -314,7 +405,8 @@ module.exports = async function (fastify, opts) {
           no_sk_ppns,
           no_ktp_ppns,
           wilayah_kerja,
-          uu_yg_dikawal
+          uu_yg_dikawal,
+          created_by
         );
         reply.send({
           message: "success",

@@ -191,6 +191,27 @@ const kepegawaian_rekapitulasi = (db) => {
     return query;
   };
 
+  const count_rekapitulasi_kenaikan_pangkat = (nama, nrk, nip, jabatan, pangkat, status_kenaikan_pangkat, tempat_tugas, seksi_kecamatan, kelurahan) => {
+    let filter = "";
+
+    if (tempat_tugas != undefined){filter = filter + " and kp.kepegawaian_tempat_tugas ilike '" + "%"  +tempat_tugas + "%" + "'"}
+    if (seksi_kecamatan != undefined){filter = filter + " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" + "%" + seksi_kecamatan + "%" + "'"}
+    if (kelurahan != undefined){filter = filter + " and kp.kepegawaian_kelurahan ilike '"+ "%"  + kelurahan+ "%" + "'"}
+    if (nama != undefined){filter = filter + " and kp.nama ilike '" + "%" + nama + "%" + "'"}
+    if (nrk != undefined){filter = filter + " and kp.kepegawaian_nrk ilike '" + "%"  + nrk + "%" + "'"}
+    if (nip != undefined){filter = filter + " and kp.kepegawaian_nip ilike '" + "%"  + nip + "%" + "'"}
+    if (jabatan != undefined){filter = filter + " and kp.kepegawaian_jabatan = " + jabatan}
+    if (status_kenaikan_pangkat != undefined){filter = filter + " and kp.status_kenaikan_pangkat = "  + status_kenaikan_pangkat}
+    if (pangkat != undefined){filter = filter + " and kp.kepegawaian_pangkat = "  + pangkat}
+
+    const query = db.one(
+      "select count(kp.id) from kepegawaian_pns kp left join master_jabatan mj on kp.kepegawaian_jabatan = mj.id left join master_pangkat mp on kp.kepegawaian_pangkat = mp.id left join master_golongan mg on kp.kepegawaian_golongan = mg.id left join master_eselon me on kp.kepegawaian_eselon = me.id left join master_status_kenaikan_pangkat mskp on kp.status_kenaikan_pangkat = mskp.id where kp.is_deleted = 0 "+filter,
+      [filter]
+    );
+
+    return query;
+  };
+
   const findone_rekapitulasi_kenaikan_pangkat = (id) => {
 
     const query = db.one(
@@ -221,7 +242,7 @@ const kepegawaian_rekapitulasi = (db) => {
     return query;
   };
 
-  const duk_rekapitulasi_pegawai = (nama, nip, nrk_nptt_pjlp, status_pegawai, tempat_tugas, seksi_kecamatan, kelurahan, limit, offset) => {
+  const find_duk_rekapitulasi_pegawai = (nama, nip, nrk_nptt_pjlp, status_pegawai, tempat_tugas, seksi_kecamatan, kelurahan, limit, offset) => {
     let filter_1 = ""
     let filter_2 = ""
 
@@ -261,9 +282,57 @@ const kepegawaian_rekapitulasi = (db) => {
     }
 
     const query = db.any(
-      "select z.* from (select kp.id, kp.nama, kp.kepegawaian_nip as nip, kp.kepegawaian_nrk as nrk_nptt_npjlp, mj.nama as jabatan, kp.kepegawaian_status_pegawai as status_pegawai, kp.kepegawaian_tempat_tugas as tempat_tugas,  to_char( kp.tgl_lahir, 'DD-MM-YYYY') as tanggal_lahir, ma.nama as agama, kp.domisili_alamat as alamat from kepegawaian_pns kp inner join master_jabatan mj on kp.kepegawaian_jabatan = mj.id inner join master_agama ma on kp.agama = ma.id where kp.is_deleted = 0"+
-      filter_1 + "union all select knp.id, knp.nama, knp.kepegawaian_nip, knp.kepegawaian_nptt_npjlp,  mj2.nama as jabatan, knp.kepegawaian_status_pegawai , knp.kepegawaian_tempat_tugas , to_char( kNp.tgl_lahir, 'DD-MM-YYYY') as tanggal_lahir, ma2.nama as agama, knp.domisili_alamat  from kepegawaian_non_pns knp inner join master_jabatan mj2 on knp.kepegawaian_jabatan = mj2.id inner join master_agama ma2 on knp.agama = ma2.id where knp.is_deleted = 0" + filter_2 +
+      "select z.* from (select kp.id, kp.nama, kp.kepegawaian_nip as nip, kp.kepegawaian_nrk as nrk_nptt_npjlp, mj.nama as jabatan, kp.kepegawaian_status_pegawai as status_pegawai, kp.kepegawaian_tempat_tugas as tempat_tugas,  to_char( kp.tgl_lahir, 'DD-MM-YYYY') as tanggal_lahir, ma.nama as agama, kp.domisili_alamat as alamat from kepegawaian_pns kp left join master_jabatan mj on kp.kepegawaian_jabatan = mj.id left join master_agama ma on kp.agama = ma.id where kp.is_deleted = 0"+
+      filter_1 + "union all select knp.id, knp.nama, knp.kepegawaian_nip, knp.kepegawaian_nptt_npjlp,  mj2.nama as jabatan, knp.kepegawaian_status_pegawai , knp.kepegawaian_tempat_tugas , to_char( kNp.tgl_lahir, 'DD-MM-YYYY') as tanggal_lahir, ma2.nama as agama, knp.domisili_alamat  from kepegawaian_non_pns knp left join master_jabatan mj2 on knp.kepegawaian_jabatan = mj2.id left join master_agama ma2 on knp.agama = ma2.id where knp.is_deleted = 0" + filter_2 +
       ") as z limit " + limit +  " offset " + (parseInt(offset) - 1),
+    );
+
+    return query;
+  };
+
+  const count_duk_rekapitulasi_pegawai = (nama, nip, nrk_nptt_pjlp, status_pegawai, tempat_tugas, seksi_kecamatan, kelurahan) => {
+    let filter_1 = ""
+    let filter_2 = ""
+
+    if(nama != undefined){
+      filter_1 = filter_1 + " and kp.nama ilike '" + "%" + nama + "%" + "'";
+      filter_2 = filter_2 + " and knp.nama ilike '"+ "%"  + nama + "%" + "'";
+    }
+
+    if( nrk_nptt_pjlp != undefined){
+      filter_1 = filter_1 + " and kp.kepegawaian_nrk ilike '" + "%" +  nrk_nptt_pjlp + "%" + "'";
+      filter_2 = filter_2 + " and knp.kepegawaian_nptt_npjlp ilike '" + "%" +  nrk_nptt_pjlp + "%" + "'";
+    }
+
+    if( nip != undefined){
+      filter_1 = filter_1 + " and kp.kepegawaian_nip ilike '"+ "%"  +  nip + "%" + "'";
+      filter_2 = filter_2 + " and knp.kepegawaian_nip ilike '"+ "%"  +  nip + "%" + "'";
+    }
+
+    if( status_pegawai != undefined){
+      filter_1 = filter_1 + " and kp.kepegawaian_status_pegawai ilike '"+ "%"  +  status_pegawai + "%" + "'";
+      filter_2 = filter_2 + " and knp.kepegawaian_status_pegawai ilike '" + "%" +  status_pegawai + "%" + "'";
+    }
+    
+    if(tempat_tugas != undefined){
+    filter_1 = filter_1 + " and kp.kepegawaian_tempat_tugas ilike '" + "%" + tempat_tugas + "%" + "'";
+    filter_2 = filter_2 + " and knp.kepegawaian_tempat_tugas ilike '" + "%"  + tempat_tugas + "%" + "'";
+    }
+    
+    if(seksi_kecamatan != undefined){
+    filter_1 = filter_1 + " and kp.kepegawaian_subbag_seksi_kecamatan ilike '"+ "%"  + seksi_kecamatan + "%" + "'";
+    filter_2 = filter_2 + " and knp.kepegawaian_subbag_seksi_kecamatan ilike '"+ "%"  + seksi_kecamatan + "%" + "'";
+    }
+    
+    if(kelurahan != undefined){
+    filter_1 = filter_1 + " and kp.kepegawaian_kelurahan ilike '"+ "%"  + kelurahan + "%" + "'";
+    filter_2 = filter_2 + " and knp.kepegawaian_kelurahan ilike '"+ "%"  + kelurahan + "%" + "'";
+    }
+
+    const query = db.one(
+      "select count(z.*) from (select kp.id, kp.nama, kp.kepegawaian_nip as nip, kp.kepegawaian_nrk as nrk_nptt_npjlp, mj.nama as jabatan, kp.kepegawaian_status_pegawai as status_pegawai, kp.kepegawaian_tempat_tugas as tempat_tugas,  to_char( kp.tgl_lahir, 'DD-MM-YYYY') as tanggal_lahir, ma.nama as agama, kp.domisili_alamat as alamat from kepegawaian_pns kp left join master_jabatan mj on kp.kepegawaian_jabatan = mj.id left join master_agama ma on kp.agama = ma.id where kp.is_deleted = 0"+
+      filter_1 + "union all select knp.id, knp.nama, knp.kepegawaian_nip, knp.kepegawaian_nptt_npjlp,  mj2.nama as jabatan, knp.kepegawaian_status_pegawai , knp.kepegawaian_tempat_tugas , to_char( kNp.tgl_lahir, 'DD-MM-YYYY') as tanggal_lahir, ma2.nama as agama, knp.domisili_alamat  from kepegawaian_non_pns knp left join master_jabatan mj2 on knp.kepegawaian_jabatan = mj2.id left join master_agama ma2 on knp.agama = ma2.id where knp.is_deleted = 0" + filter_2 +
+      ") as z ",
     );
 
     return query;
@@ -309,8 +378,8 @@ const kepegawaian_rekapitulasi = (db) => {
     }
 
     const query = db.any(
-      "select ROW_NUMBER() OVER (ORDER BY z.* desc), z.* from (select kp.nama, kp.kepegawaian_nip as nip, kp.kepegawaian_nrk as nrk_nptt_npjlp, mj.nama as jabatan, kp.kepegawaian_status_pegawai as status_pegawai, kp.kepegawaian_tempat_tugas as tempat_tugas,  to_char( kp.tgl_lahir, 'DD-MM-YYYY') as tanggal_lahir, ma.nama as agama, kp.domisili_alamat as alamat from kepegawaian_pns kp inner join master_jabatan mj on kp.kepegawaian_jabatan = mj.id inner join master_agama ma on kp.agama = ma.id where kp.is_deleted = 0"+
-      filter_1 + "union all select knp.nama, knp.kepegawaian_nip, knp.kepegawaian_nptt_npjlp,  mj2.nama as jabatan, knp.kepegawaian_status_pegawai , knp.kepegawaian_tempat_tugas , to_char( kNp.tgl_lahir, 'DD-MM-YYYY') as tanggal_lahir, ma2.nama as agama, knp.domisili_alamat  from kepegawaian_non_pns knp inner join master_jabatan mj2 on knp.kepegawaian_jabatan = mj2.id inner join master_agama ma2 on knp.agama = ma2.id where knp.is_deleted = 0" + filter_2 +
+      "select ROW_NUMBER() OVER (ORDER BY z.* desc), z.* from (select kp.nama, kp.kepegawaian_nip as nip, kp.kepegawaian_nrk as nrk_nptt_npjlp, mj.nama as jabatan, kp.kepegawaian_status_pegawai as status_pegawai, kp.kepegawaian_tempat_tugas as tempat_tugas,  to_char( kp.tgl_lahir, 'DD-MM-YYYY') as tanggal_lahir, ma.nama as agama, kp.domisili_alamat as alamat from kepegawaian_pns kp left join master_jabatan mj on kp.kepegawaian_jabatan = mj.id left join master_agama ma on kp.agama = ma.id where kp.is_deleted = 0"+
+      filter_1 + "union all select knp.nama, knp.kepegawaian_nip, knp.kepegawaian_nptt_npjlp,  mj2.nama as jabatan, knp.kepegawaian_status_pegawai , knp.kepegawaian_tempat_tugas , to_char( kNp.tgl_lahir, 'DD-MM-YYYY') as tanggal_lahir, ma2.nama as agama, knp.domisili_alamat  from kepegawaian_non_pns knp left join master_jabatan mj2 on knp.kepegawaian_jabatan = mj2.id left join master_agama ma2 on knp.agama = ma2.id where knp.is_deleted = 0" + filter_2 +
       ") as z ",
     );
 
@@ -357,15 +426,17 @@ const kepegawaian_rekapitulasi = (db) => {
     jumlah_pegawai_polpp_by_golongan,
     jumlah_pegawai_polpp_by_diklat,
     find_rekapitulasi_jft,
-    unduh_rekapitulasi_jft,
-    count_rekapitulasi_jft,
-    duk_rekapitulasi_pegawai,
-    update_rekapitulasi_kenaikan_pangkat,
+    find_duk_rekapitulasi_pegawai,
     find_rekapitulasi_kenaikan_pangkat,
     findone_rekapitulasi_kenaikan_pangkat,
+    count_rekapitulasi_jft,
+    count_rekapitulasi_kenaikan_pangkat,
+    count_duk_rekapitulasi_pegawai,
+    unduh_rekapitulasi_jft,
     unduh_rekapitulasi_kenaikan_pangkat,
     unduh_duk_rekapitulasi_pegawai,
     create_rekapitulasi_duk_pegawai,
+    update_rekapitulasi_kenaikan_pangkat,
     del_rekapitulasi_duk_pegawai,
     
   };

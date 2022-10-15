@@ -222,7 +222,7 @@ const kepegawaian_pns = (db) => {
       [
         nama,
         tempat_lahir,
-        tgl_lahir,
+        tgl_lahir ? tgl_lahir : null,
         jenis_kelamin,
         agama,
         nik,
@@ -245,7 +245,7 @@ const kepegawaian_pns = (db) => {
         kepegawaian_nip,
         kepegawaian_pangkat,
         kepegawaian_golongan,
-        kepegawaian_tmtpangkat,
+        kepegawaian_tmtpangkat ? kepegawaian_tmtpangkat : null,
         kepegawaian_pendidikan_pada_sk,
         kepegawaian_jabatan,
         kepegawaian_eselon,
@@ -259,23 +259,33 @@ const kepegawaian_pns = (db) => {
         kepegawaian_no_taspen,
         kepegawaian_npwp,
         kepegawaian_no_bpjs_askes,
-        kepegawaian_tmt_cpns,
-        kepegawaian_tmt_pns,
-        kepegawaian_tgl_sk_pns,
+        kepegawaian_tmt_cpns ? kepegawaian_tmt_cpns : null,
+        kepegawaian_tmt_pns ? kepegawaian_tmt_pns : null,
+        kepegawaian_tgl_sk_pns ? kepegawaian_tgl_sk_pns : null,
         kepegawaian_no_sk_pangkat_terakhir,
-        kepegawaian_tgl_sk_pangkat_terakhir,
+        kepegawaian_tgl_sk_pangkat_terakhir
+          ? kepegawaian_tgl_sk_pangkat_terakhir
+          : null,
         kepegawaian_diklat_pol_pp_dasar,
         kepegawaian_diklat_pol_pp_dasar_no_sertifikat,
-        kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat,
+        kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat
+          ? kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat
+          : null,
         kepegawaian_diklat_pol_pp_strutural,
         kepegawaian_diklat_pol_pp_strutural_no_sertifikat,
-        kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat,
+        kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat
+          ? kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat
+          : null,
         kepegawaian_diklat_pol_pp_ppns,
         kepegawaian_diklat_pol_pp_ppns_no_sertifikat,
-        kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat,
+        kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat
+          ? kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat
+          : null,
         kepegawaian_diklat_fungsional_pol_pp,
         kepegawaian_diklat_fungsional_pol_pp_no_sertifikat,
-        kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat,
+        kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat
+          ? kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat
+          : null,
         updated_by,
         id,
       ]

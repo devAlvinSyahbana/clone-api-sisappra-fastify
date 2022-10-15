@@ -199,12 +199,9 @@ module.exports = async function (fastify, opts) {
           description: "Payload for creating a login",
           type: "object",
           properties: {
-            id_pegawai: { type: "string" },
             no_pegawai: { type: "string" },
             kata_sandi: { type: "string" },
             email: { type: "string" },
-            hak_akses: { type: "number" },
-            created_by: { type: "number" },
           },
         },
         response: {
@@ -214,6 +211,18 @@ module.exports = async function (fastify, opts) {
             properties: {
               message: { type: "string" },
               code: { type: "string" },
+              data: {
+                type: "object",
+                properties: {
+                  id: { type: "number" },
+                  id_pegawai: { type: "string" },
+                  no_pegawai: { type: "string" },
+                  email: { type: "string" },
+                  hak_akses: { type: "number" },
+                  status_pengguna: { type: "number" },
+                },
+              },
+              api_token: { type: "string" },
             },
           },
         },
@@ -221,27 +230,51 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const {
-        id_pegawai,
         no_pegawai,
         kata_sandi,
         email,
-        hak_akses,
-        created_by,
       } = request.body;
       const bycript_pass = await fastify.bcrypt.hash(kata_sandi);
-
       const { jmlh } = await fastify.login.findone_no_pegawai(no_pegawai);
-
+    
       try {
         if (parseInt(jmlh) == 0) {
+          const value  = await fastify.login.findone_pegawai(no_pegawai);
+
           await fastify.login.create(
-            id_pegawai,
-            no_pegawai,
+            value.id,
+            value.nrk_nptt_npjlp,
             bycript_pass,
             email,
-            hak_akses,
-            created_by
+            value.nama,
+            value.id
           );
+
+          const exec = await fastify.login.findone_sign_in(no_pegawai);
+
+          const objres = {
+            id: exec.id,
+            id_pegawai: exec.id_pegawai,
+            no_pegawai: exec.no_pegawai,
+            email: exec.email,
+            hak_akses: exec.hak_akses,
+            status_pengguna: exec.status_pengguna,
+          };
+
+          if (await fastify.bcrypt.compare(kata_sandi, exec.kata_sandi)) {
+         
+              let token = fastify.jwt.sign({ foo: "bar" });
+              await fastify.login.create_token(exec.id, token);
+  
+              reply.send({
+                message: "success",
+                code: 200,
+                data: objres,
+                api_token: token,
+              });
+          } else {
+            reply.send({ message: "not allowed", code: 204 });
+          }
 
           reply.send({ message: "success", code: 200 });
         } else {
