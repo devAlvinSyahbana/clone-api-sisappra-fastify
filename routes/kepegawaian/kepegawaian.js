@@ -2257,9 +2257,7 @@ module.exports = async function (fastify, opts) {
         kelurahan
       } = request.query;
       const exec = await fastify.kepegawaian_rekapitulasi.find_rekapitulasi_jft(limit, offset, nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan);
-      const {
-        count
-      } = await fastify.kepegawaian_rekapitulasi.count_rekapitulasi_jft(nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan);
+      const { count } = await fastify.kepegawaian_rekapitulasi.count_rekapitulasi_jft(nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan);
       let total = count;
 
       try {
@@ -2385,6 +2383,523 @@ module.exports = async function (fastify, opts) {
       }
     }
   );
+
+  fastify.put(
+    "/update-status-kenaikan-pangkat/:id", {
+      schema: {
+        description: "This is an endpoint for updating an existing status kenaikan pangkat",
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
+        params: {
+          description: "update status kenaikan pangkat by Id",
+          type: "object",
+          properties: {
+            id: {
+              type: "number"
+            },
+          },
+        },
+        body: {
+          description: "Payload for updating a status kenaikan pangkat",
+          type: "object",
+          properties: {
+            status_kenaikan_pangkat: {
+              type: "number"
+            },
+            updated_by: {
+              type: "number"
+            },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        id
+      } = request.params;
+      const {
+        status_kenaikan_pangkat,
+        updated_by
+      } = request.body;
+
+      try {
+        await fastify.kepegawaian_rekapitulasi.update_rekapitulasi_kenaikan_pangkat(id, status_kenaikan_pangkat, updated_by);
+        reply.send({
+          message: "success",
+          code: 200
+        });
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
+  fastify.get(
+    "/rekapitulasi-pegawai-naik-pangkat/find", {
+      schema: {
+        description: "This is an endpoint for fetching a rekapitulasi pegawai naik pangkat",
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
+        querystring: {
+          description: "Find one jumlah pegawai polpp",
+          type: "object",
+          properties: {
+            limit: {
+              type: "integer",
+              default: 10,
+            },
+            offset: {
+              type: "integer",
+              default: 1,
+            },
+            nama: {
+              type: "string",
+            },
+            nrk: {
+              type: "string",
+            },
+            nip: {
+              type: "string",
+            },
+            id_jabatan: {
+              type: "number",
+            },
+            id_pangkat: {
+              type: "number",
+            },
+            id_status_kenaikan_pangkat: {
+              type: "number",
+            },
+            tempat_tugas: {
+              type: "string",
+            },
+            seksi_kecamatan: {
+              type: "string",
+            },
+            kelurahan: {
+              type: "string",
+            },
+          },
+          required: ["limit", "offset"],
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: {
+                      type: "number"
+                    },
+                    nama: {
+                      type: "string"
+                    },
+                    nrk: {
+                      type: "number"
+                    },
+                    nip: {
+                      type: "string"
+                    },
+
+                    jabatan: {
+                      type: "string"
+                    },
+                    tempat_tugas: {
+                      type: "string"
+                    },
+                    subbag_seksi_kecamatan: {
+                      type: "string"
+                    },
+                    pangkat: {
+                      type: "string"
+                    },
+                    golongan: {
+                      type: "string"
+                    },
+                    tmt_pangkat: {
+                      type: "string"
+                    },
+                    eselon: {
+                      type: "string"
+                    },
+                    status_kenaikan_pangkat: {
+                      type: "string"
+                    },
+                    jadwal_kenaikan_pangkat: {
+                      type: "string"
+                    },
+                  },
+                },
+              },
+              total_data: {
+                type: "number"
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        limit,
+        offset,
+        nama,
+        nrk,
+        nip,
+        id_jabatan,
+        id_pangkat,
+        id_status_kenaikan_pangkat,
+        tempat_tugas,
+        seksi_kecamatan,
+        kelurahan
+      } = request.query;
+      const exec = await fastify.kepegawaian_rekapitulasi.find_rekapitulasi_kenaikan_pangkat(limit, offset, nama, nrk, nip, id_jabatan, id_pangkat, id_status_kenaikan_pangkat, tempat_tugas, seksi_kecamatan, kelurahan);
+      const {count} = await fastify.kepegawaian_rekapitulasi.count_rekapitulasi_kenaikan_pangkat(nama, nrk, nip, id_jabatan, id_pangkat, id_status_kenaikan_pangkat, tempat_tugas, seksi_kecamatan, kelurahan);
+
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec,
+            total_data: count
+          });
+        } else {
+          reply.send({
+            message: "success",
+            code: 204
+          });
+        }
+      } catch (error) {
+        reply.send({
+          message: error,
+          code: 500
+        });
+      }
+    }
+  );
+
+  fastify.get(
+    "/rekapitulasi-pegawai-naik-pangkat/findone/:id", {
+      schema: {
+        description: "This is an endpoint for fetching a pegawai",
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
+        params: {
+          description: "Find one pegawai naik pangkat id",
+          type: "object",
+          properties: {
+            id: { type: "number" },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+              data: {
+                type: "object",
+                properties: {
+                  id: {
+                    type: "number"
+                  },
+                  nama: {
+                    type: "string"
+                  },
+                  nrk: {
+                    type: "number"
+                  },
+                  nip: {
+                    type: "string"
+                  },
+
+                  jabatan: {
+                    type: "string"
+                  },
+                  tempat_tugas: {
+                    type: "string"
+                  },
+                  subbag_seksi_kecamatan: {
+                    type: "string"
+                  },
+                  pangkat: {
+                    type: "string"
+                  },
+                  golongan: {
+                    type: "string"
+                  },
+                  tmt_pangkat: {
+                    type: "string"
+                  },
+                  eselon: {
+                    type: "string"
+                  },
+                  status_kenaikan_pangkat: {
+                    type: "string"
+                  },
+                  jadwal_kenaikan_pangkat: {
+                    type: "string"
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {id} = request.params;
+      const exec = await fastify.kepegawaian_rekapitulasi.findone_rekapitulasi_kenaikan_pangkat(id);
+      
+
+      try {
+        if (exec) {
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec
+          });
+        } else {
+          reply.send({
+            message: "success",
+            code: 204
+          });
+        }
+      } catch (error) {
+        reply.send({
+          message: error,
+          code: 500
+        });
+      }
+    }
+  );
+
+  fastify.get(
+    "/rekapitulasi-pegawai-naik-pangkat/unduh", {
+      schema: {
+        description: "This is an endpoint for fetching a rekapitulasi pegawai naik pangkat",
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
+        querystring: {
+          description: "Find one jumlah pegawai polpp",
+          type: "object",
+          properties: {
+            nama: {
+              type: "string",
+            },
+            nrk: {
+              type: "string",
+            },
+            nip: {
+              type: "string",
+            },
+            id_jabatan: {
+              type: "number",
+            },
+            id_pangkat: {
+              type: "number",
+            },
+            id_status_kenaikan_pangkat: {
+              type: "number",
+            },
+            tempat_tugas: {
+              type: "string",
+            },
+            seksi_kecamatan: {
+              type: "string",
+            },
+            kelurahan: {
+              type: "string",
+            },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "string",
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        nama,
+        nrk,
+        nip,
+        id_jabatan,
+        id_pangkat,
+        id_status_kenaikan_pangkat,
+        tempat_tugas,
+        seksi_kecamatan,
+        kelurahan
+      } = request.query;
+      let headerData = [];
+      let data = [];
+      try {
+        const wb = XLSX.utils.book_new();
+        // Definisikan header
+        headerData = ["No", "Nama", "NIP", "NRK", "Jabatan", "Tempat Tugas", "Seksi Kecamatan", "Pangkat", "Golongan", "TMT Pangkat", "Eselon", "Status Kenaikan Pangkat", "Jadwal Kenaikan Pangkat", ];
+
+        const getData = await fastify.kepegawaian_rekapitulasi.unduh_rekapitulasi_kenaikan_pangkat(nama, nrk, nip, id_jabatan, id_pangkat, id_status_kenaikan_pangkat, tempat_tugas, seksi_kecamatan, kelurahan);
+
+        const convertData = getData.map(function (item) {
+          return Object.values(item);
+        });
+        data = convertData;
+
+        // Definisikan rows untuk ditulis ke dalam spreadsheet
+        const wsDataKepegawaian = [headerData, ...data];
+        // Buat Workbook
+        const fileName = "REKAPITULASI KEPEGAWAIAN NAIK PANGKAT";
+        wb.Props = {
+          Title: fileName,
+          Author: "SISAPPRA - REKAPITULASI KEPEGAWAIAN NAIK PANGKAT",
+          CreatedDate: new Date(),
+        };
+        // Buat Sheet
+        wb.SheetNames.push("DATA REKAPITULASI");
+        // Buat Sheet dengan Data
+        const ws = XLSX.utils.aoa_to_sheet(wsDataKepegawaian);
+        // const ws = XLSX.utils.aoa_to_sheet(wsData);
+        wb.Sheets["DATA REKAPITULASI"] = ws;
+
+        const wopts = {
+          bookType: "xlsx",
+          bookSST: false,
+          type: "buffer"
+        };
+        const wBuffer = XLSX.write(wb, wopts);
+
+        reply.header(
+          "Content-Type",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
+        reply.header(
+          "Content-Disposition",
+          "attachment; filename=" + `${fileName}.xlsx`
+        );
+        reply.send(wBuffer);
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
+  fastify.post(
+    "/rekapitulasi-duk-pegawai/create",
+    {
+      schema: {
+        description: "This is an endpoint for creating a pegawai",
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
+        body: {
+          description: "Payload for creating a pegawai",
+          type: "object",
+          properties: {
+            nama: { type: "string" },
+            nrk_nptt_npjlp: { type: "number" },
+            nip: { type: "string" },
+            status_pegawai: { type: "string" },
+            created_by: { type: "number" },
+          },
+        },
+        response: {
+          201: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {nama, nrk_nptt_npjlp, nip, status_pegawai, created_by} = request.body;
+
+      try {
+        await fastify.kepegawaian_rekapitulasi.create_rekapitulasi_duk_pegawai(nama, nrk_nptt_npjlp, nip, status_pegawai, created_by);
+        reply.send({ message: "success", code: 200 });
+      } catch (error) {
+        reply.send({ message: error.message, code: 500 });
+      }
+    }
+  );
+
+  fastify.delete(
+    "/rekapitulasi-duk-pegawai/delete/:id",
+    {
+      schema: {
+        description: "This is an endpoint for DELETING an existing pegawai.",
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
+        params: {
+          description: "pegawai by Id",
+          type: "object",
+          properties: {
+            id: { type: "number" },
+          },
+        },
+        body: {
+          description: "Payload for deleted data pegawai",
+          type: "object",
+          properties: {
+            status_pegawai: { type: "string" },
+            deleted_by: { type: "number" },
+          },
+        },
+        response: {
+          204: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id,  } = request.params;
+      const { status_pegawai, deleted_by } = request.body;
+
+      try {
+        await fastify.kepegawaian_rekapitulasi.del_rekapitulasi_duk_pegawai(id, status_pegawai, deleted_by);
+        reply.send({ message: "success", code: 204 });
+      } catch (error) {
+        reply.send({ message: error.message, code: 500 });
+      }
+    }
+  );
+
 
 
   /* ----------------------------------- duk ---------------------------------- */
@@ -2770,7 +3285,7 @@ module.exports = async function (fastify, opts) {
     "/duk-pegawai/filter", {
       schema: {
         description: "This is an endpoint for fetching a duk rekapitulasi",
-        tags: ["endpoint kepegawaian"],
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
         querystring: {
           description: "Find one duk rekapitulasi pegawai polpp",
           type: "object",
@@ -2823,6 +3338,9 @@ module.exports = async function (fastify, opts) {
                 items: {
                   type: "object",
                   properties: {
+                    id: {
+                      type: "number"
+                    },
                     nama: {
                       type: "string"
                     },
@@ -2852,7 +3370,10 @@ module.exports = async function (fastify, opts) {
                     },
                   },
                 },
-              }
+              },
+              total_data: {
+                type: "number"
+              },
             },
           },
         },
@@ -2870,14 +3391,16 @@ module.exports = async function (fastify, opts) {
         limit,
         offset
       } = request.query;
-      const exec = await fastify.kepegawaian_rekapitulasi.duk_rekapitulasi_pegawai(nama, nip, nrk_nptt_pjlp, status_pegawai, tempat_tugas, seksi_kecamatan, kelurahan, limit, offset);
-      console.log(exec)
+      const exec = await fastify.kepegawaian_rekapitulasi.find_duk_rekapitulasi_pegawai(nama, nip, nrk_nptt_pjlp, status_pegawai, tempat_tugas, seksi_kecamatan, kelurahan, limit, offset);
+      const {count} = await fastify.kepegawaian_rekapitulasi.count_duk_rekapitulasi_pegawai(nama, nip, nrk_nptt_pjlp, status_pegawai, tempat_tugas, seksi_kecamatan, kelurahan);
+
       try {
         if (exec) {
           reply.send({
             message: "success",
             code: 200,
-            data: exec
+            data: exec,
+            total_data: count
           });
         } else {
           reply.send({
@@ -2894,352 +3417,103 @@ module.exports = async function (fastify, opts) {
     }
   );
 
-
-
-  /* --------------------------------- pensiun -------------------------------- */
-  // ^ Find and Filter Pensiun 
   fastify.get(
-    "/pegawai-pensiun", {
+    "/rekapitulasi-duk-pegawai/unduh", {
       schema: {
-        description: "This is an endpoint for updating all pensiun",
-        tags: ["endpoint kepegawaian"],
+        description: "This is an endpoint for fetching a rekapitulasi pegawai naik pangkat",
+        tags: ["endpoint rekapitulasi pegawai pejabat"],
         querystring: {
+          description: "Find one jumlah pegawai polpp",
           type: "object",
           properties: {
-            limit: {
-              type: "integer",
-              default: 10,
-            },
-            offset: {
-              type: "integer",
-              default: 1,
-            },
             nama: {
               type: "string",
             },
-            nopegawai: {
+            nrk_nptt_pjlp: {
               type: "string",
-            },
-            tempat_tugas_bidang: {
-              type: "string",
-            },
-            tempat_tugas_kecamatan: {
-              type: "string",
-            },
-            status: {
-              type: "string",
-            },
-            tahun_pensiun: {
-              type: "string",
-            },
-          },
-          required: ["limit", "offset", "status"],
-        },
-        response: {
-          200: {
-            properties: {
-              message: {
-                type: "string"
-              },
-              code: {
-                type: "string"
-              },
-              data: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    nama: {
-                      type: "string"
-                    },
-                    kepegawaian_nip: {
-                      type: "string"
-                    },
-                    kepegawaian_nrk: {
-                      type: "string"
-                    },
-                    kepegawaian_jabatan: {
-                      type: "string"
-                    },
-                    kepegawaian_tempat_tugas: {
-                      type: "string"
-                    },
-                    kepegawaian_subbag_seksi_kecamatan: {
-                      type: "string"
-                    },
-                    tempat_lahir: {
-                      type: "string"
-                    },
-                    tgl_lahir: {
-                      type: "string"
-                    },
-                    tahun_pensiun: {
-                      type: "string"
-                    },
-                  },
-                }
-              }
-            },
-          },
-        },
-      },
-    },
-    async (request, reply) => {
-      const {
-        limit,
-        offset,
-        nama,
-        nopegawai,
-        tempat_tugas_bidang,
-        tempat_tugas_kecamatan,
-        status,
-        tahun_pensiun
-      } = request.query;
-      let exec = null;
-      let qwhere = "";
-      if (status === "PNS") {
-        if (nama || nopegawai || tempat_tugas_bidang || tempat_tugas_kecamatan || tahun_pensiun) {
-          if (nama) {
-            qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
-          }
-          if (nopegawai) {
-            qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nopegawai}%'`;
-          }
-          if (tempat_tugas_bidang) {
-            qwhere += ` AND kpns.tempat_tugas_bidang ILIKE '%${tempat_tugas_bidang}%'`;
-          }
-          if (tempat_tugas_kecamatan) {
-            qwhere += ` AND kpns.tempat_tugas_kecamatan ILIKE '%${tempat_tugas_kecamatan}%'`;
-          }
-          if (tahun_pensiun) {
-            qwhere += ` AND CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END = ${tahun_pensiun}`;
-          }
-          exec = await fastify.kepegawaian_pns.filterPensiun(limit, offset, qwhere);
-        } else {
-          exec = await fastify.kepegawaian_pns.findPensiun(limit, offset);
-        }
-      } else {
-        if (nama || nopegawai || tempat_tugas_bidang || tempat_tugas_kecamatan || status || tahun_pensiun) {
-          if (nama) {
-            qwhere += ` AND nama ILIKE '%${nama}%'`;
-          }
-          if (nopegawai) {
-            qwhere += ` AND kepegawaian_nptt_npjlp ILIKE '%${nopegawai}%'`;
-          }
-          if (tempat_tugas_bidang) {
-            qwhere += ` AND tempat_tugas_bidang ILIKE '%${tempat_tugas_bidang}%'`;
-          }
-          if (tempat_tugas_kecamatan) {
-            qwhere += ` AND tempat_tugas_kecamatan ILIKE '%${tempat_tugas_kecamatan}%'`;
-          }
-          if (status) {
-            qwhere += ` AND kepegawaian_status_pegawai ILIKE '%${status}%'`;
-          }
-          if (tahun_pensiun) {
-            qwhere += ` AND CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END = ${tahun_pensiun}`;
-          }
-          exec = await fastify.kepegawaian_non_pns.filterPensiun(
-            limit,
-            offset,
-            status,
-            qwhere
-          );
-        } else {
-          exec = await fastify.kepegawaian_non_pns.findPensiun(
-            limit,
-            offset,
-            status
-          );
-        }
-      }
-      try {
-        if (exec) {
-          reply.send({
-            message: "success",
-            code: 200,
-            data: exec,
-          });
-        } else {
-          reply.send({
-            message: "success",
-            code: 204
-          });
-        }
-      } catch (error) {
-        reply.send({
-          message: error.message,
-          code: 500
-        });
-      }
-    }
-  );
-
-  // ─── Naik Pangkat ───────────────────────────────────────────────────────────────
-  // ^ find
-  fastify.get(
-    "/pegawai-naik-jabatan", {
-      schema: {
-        description: "Endpoint ini digunakan untuk mengambil seluruh data kepegawaian naik jabatan",
-        tags: ["endpoint kepegawaian"],
-        querystring: {
-          type: "object",
-          properties: {
-            limit: {
-              type: "number",
-              default: 10,
-            },
-            nama: {
-              type: "number"
-            },
-            nrk: {
-              type: "string"
             },
             nip: {
-              type: "string"
+              type: "string",
             },
-            tempat_tugas_bidang: {
-              type: "string"
+            status_pegawai: {
+              type: "string",
             },
-            tempat_tugas_kecamatan: {
-              type: "number"
+            tempat_tugas: {
+              type: "string",
             },
-            pangkat: {
-              type: "string"
+            seksi_kecamatan: {
+              type: "string",
             },
-            jabatan: {
-              type: "string"
-            },
-            status_kenaikan: {
-              type: "number"
-            },
-            jadwal_kenaikan: {
-              type: "number"
+            kelurahan: {
+              type: "string",
             },
           },
-          required: ["limit"],
         },
         response: {
           200: {
             description: "Success Response",
-            type: "object",
-            properties: {
-              message: {
-                type: "string"
-              },
-              code: {
-                type: "string"
-              },
-              data: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    nama: {
-                      type: "number"
-                    },
-                    kepegawaian_nip: {
-                      type: "string"
-                    },
-                    kepegawaian_nrk: {
-                      type: "string"
-                    },
-                    kepegawaian_jabatan: {
-                      type: "number"
-                    },
-                    tempat_tugas_bidang: {
-                      type: "number"
-                    },
-                    tempat_tugas_kecamatan: {
-                      type: "string"
-                    },
-                    kepegawaian_pangkat: {
-                      type: "string"
-                    },
-                    kepegawaian_golongan: {
-                      type: "string"
-                    },
-                    kepegawaian_tmtpangkat: {
-                      type: "string"
-                    },
-                    kepegawaian_eselon: {
-                      type: "string"
-                    },
-                    status_kenaikan: {
-                      type: "string"
-                    },
-                    jadwal_kenaikan: {
-                      type: "string"
-                    },
-                  },
-                },
-              },
-            },
+            type: "string",
           },
         },
       },
     },
     async (request, reply) => {
       const {
-        limit,
-        offset,
         nama,
-        nrk,
         nip,
-        tempat_tugas_bidang,
-        tempat_tugas_kecamatan,
-        pangkat,
-        jabatan,
-        status_kenaikan,
-        jadwal_kenaikan
+        nrk_nptt_pjlp,
+        status_pegawai,
+        tempat_tugas,
+        seksi_kecamatan,
+        kelurahan,
       } = request.query;
-      let exec = null;
-      let qwhere = "";
-      if (nama || nrk || nip || tempat_tugas_bidang || tempat_tugas_kecamatan || pangkat || jabatan || status_kenaikan || jadwal_kenaikan) {
-        if (nama) {
-          qwhere += ` AND nama = ${nama}`;
-        }
-        if (nrk) {
-          qwhere += ` AND kepegawaian_nrk ILIKE '%${nrk}%'`;
-        }
-        if (nip) {
-          qwhere += ` AND kepegawaian_nip ILIKE '%${nip}%'`;
-        }
-        if (tempat_tugas_bidang) {
-          qwhere += ` AND kepegawaian_tempat_tugas_bidang ILIKE '%${tempat_tugas_bidang}%'`;
-        }
-        if (tempat_tugas_kecamatan) {
-          qwhere += ` AND kepegawaian_subbag_seksi_kecamatan = ${tempat_tugas_kecamatan}`;
-        }
-        if (pangkat) {
-          qwhere += ` AND kepegawaian_pangkat ILIKE '%${pangkat}%'`;
-        }
-        if (jabatan) {
-          qwhere += ` AND kepegawaian_jabatan ILIKE '%${jabatan}%'`;
-        }
-        if (status_kenaikan) {
-          qwhere += ` AND status_kenaikan = ${status_kenaikan}`;
-        }
-        if (jadwal_kenaikan) {
-          qwhere += ` AND jadwal_kenaikan = ${jadwal_kenaikan}`;
-        }
-        exec = await fastify.kepegawaian_pns.filterNaikPangkat(limit, qwhere);
-      } else {
-        exec = await fastify.kepegawaian_pns.findNaikPangkat(limit);
-      }
+      let headerData = [];
+      let data = [];
       try {
-        if (exec) {
-          reply.send({
-            message: "success",
-            code: 200,
-            data: exec
-          });
-        } else {
-          reply.send({
-            message: "success",
-            code: 204
-          });
-        }
+        const wb = XLSX.utils.book_new();
+        // Definisikan header
+        headerData = ["No", "Nama", "NIP", "NRK/NPTT/NPJLP", "Jabatan", "Status Pegawai", "Tempat Tugas", "Tanggal Lahir", "Agama", "Alamat"];
 
+
+        const getData = await fastify.kepegawaian_rekapitulasi.unduh_duk_rekapitulasi_pegawai(nama, nip, nrk_nptt_pjlp, status_pegawai, tempat_tugas, seksi_kecamatan, kelurahan);
+
+        const convertData = getData.map(function (item) {
+          return Object.values(item);
+        });
+        data = convertData;
+
+        // Definisikan rows untuk ditulis ke dalam spreadsheet
+        const wsDataKepegawaian = [headerData, ...data];
+        // Buat Workbook
+        const fileName = "REKAPITULASI DUK KEPEGAWAIAN";
+        wb.Props = {
+          Title: fileName,
+          Author: "SISAPPRA - REKAPITULASI DUK KEPEGAWAIAN",
+          CreatedDate: new Date(),
+        };
+        // Buat Sheet
+        wb.SheetNames.push("DATA REKAPITULASI");
+        // Buat Sheet dengan Data
+        const ws = XLSX.utils.aoa_to_sheet(wsDataKepegawaian);
+        // const ws = XLSX.utils.aoa_to_sheet(wsData);
+        wb.Sheets["DATA REKAPITULASI"] = ws;
+
+        const wopts = {
+          bookType: "xlsx",
+          bookSST: false,
+          type: "buffer"
+        };
+        const wBuffer = XLSX.write(wb, wopts);
+
+        reply.header(
+          "Content-Type",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
+        reply.header(
+          "Content-Disposition",
+          "attachment; filename=" + `${fileName}.xlsx`
+        );
+        reply.send(wBuffer);
       } catch (error) {
         reply.send({
           message: error.message,
@@ -3249,199 +3523,33 @@ module.exports = async function (fastify, opts) {
     }
   );
 
-  // ────────────────────────────────────────────────────────────────────────────────
-
-
-  // ─── Ppns ───────────────────────────────────────────────────────────────────────
-  // ^ find
-  fastify.get(
-    "/PPNS", {
-      schema: {
-        description: "Endpoint ini digunakan untuk mengambil seluruh data kepegawaian berstatus PPNS",
-        tags: ["endpoint kepegawaian"],
-        querystring: {
-          type: "object",
-          properties: {
-            limit: {
-              type: "number",
-              default: 10,
-            },
-            skpd: {
-              type: "number"
-            },
-            pejabat_ppns_nama: {
-              type: "string"
-            },
-            pejabat_ppns_nip: {
-              type: "string"
-            },
-            pejabat_ppns_nrk: {
-              type: "string"
-            },
-            pejabat_ppns_pangkat: {
-              type: "number"
-            },
-            pejabat_ppns_golongan: {
-              type: "number"
-            },
-          },
-          required: ["limit"],
-        },
-        response: {
-          200: {
-            description: "Success Response",
-            type: "object",
-            properties: {
-              message: {
-                type: "string"
-              },
-              code: {
-                type: "string"
-              },
-              data: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    id: {
-                      type: "number"
-                    },
-                    skpd: {
-                      type: "number"
-                    },
-                    pejabat_ppns_nama: {
-                      type: "string"
-                    },
-                    pejabat_ppns_nip: {
-                      type: "string"
-                    },
-                    pejabat_ppns_nrk: {
-                      type: "string"
-                    },
-                    pejabat_ppns_pangkat: {
-                      type: "number"
-                    },
-                    pejabat_ppns_golongan: {
-                      type: "number"
-                    },
-                    no_sk_ppns: {
-                      type: "string"
-                    },
-                    no_ktp_ppns: {
-                      type: "string"
-                    },
-                    wilayah_kerja: {
-                      type: "string"
-                    },
-                    uu_yg_dikawal: {
-                      type: "string"
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    async (request, reply) => {
-      const {
-        limit,
-        offset,
-        skpd,
-        pejabat_ppns_nama,
-        pejabat_ppns_nip,
-        pejabat_ppns_nrk,
-        pejabat_ppns_pangkat,
-        pejabat_ppns_golongan
-      } = request.query;
-      let exec = null;
-      let qwhere = "";
-      if (skpd || pejabat_ppns_nama || pejabat_ppns_nip || pejabat_ppns_nrk || pejabat_ppns_pangkat || pejabat_ppns_golongan) {
-        if (skpd) {
-          qwhere += ` AND skpd = ${skpd}`;
-        }
-        if (pejabat_ppns_nama) {
-          qwhere += ` AND pejabat_ppns_nama ILIKE '%${pejabat_ppns_nama}%'`;
-        }
-        if (pejabat_ppns_nip) {
-          qwhere += ` AND pejabat_ppns_nip ILIKE '%${pejabat_ppns_nip}%'`;
-        }
-        if (pejabat_ppns_nrk) {
-          qwhere += ` AND pejabat_ppns_nrk ILIKE '%${pejabat_ppns_nrk}%'`;
-        }
-        if (pejabat_ppns_pangkat) {
-          qwhere += ` AND pejabat_ppns_pangkat = ${pejabat_ppns_pangkat}`;
-        }
-        if (pejabat_ppns_golongan) {
-          qwhere += ` AND pejabat_ppns_golongan = ${pejabat_ppns_golongan}`;
-        }
-        exec = await fastify.kepegawaian_ppns.filter(limit, qwhere);
-      } else {
-        exec = await fastify.kepegawaian_ppns.find(limit);
-      }
-      try {
-        if (exec) {
-          reply.send({
-            message: "success",
-            code: 200,
-            data: exec
-          });
-        } else {
-          reply.send({
-            message: "success",
-            code: 204
-          });
-        }
-
-      } catch (error) {
-        reply.send({
-          message: error.message,
-          code: 500
-        });
-      }
-    }
-  );
-
-  // ^ Post
+  // create keluarga PNS
   fastify.post(
-    "/create-PPNS", {
+    "/create-keluarga-PNS", {
       schema: {
-        description: "This is an endpoint for creating data PPNS",
+        description: "This is an endpoint for creating data keluarga pns",
         tags: ["endpoint kepegawaian"],
         body: {
-          description: "Payload for creating data PPNS",
+          description: "Payload for creating data keluarga pns",
           type: "object",
           properties: {
-            skpd: {
-              type: "number"
+            hubungan: {
+              type: "string",
             },
-            pejabat_ppns_nama: {
-              type: "string"
+            nama: {
+              type: "string",
             },
-            pejabat_ppns_nip: {
-              type: "string"
+            tempat_lahir: {
+              type: "string",
             },
-            pejabat_ppns_nrk: {
-              type: "string"
+            tgl_lahir: {
+              type: "string",
             },
-            pejabat_ppns_pangkat: {
-              type: "number"
+            jenis_kelamin: {
+              type: "string",
             },
-            pejabat_ppns_golongan: {
-              type: "number"
-            },
-            no_sk_ppns: {
-              type: "string"
-            },
-            no_ktp_ppns: {
-              type: "string"
-            },
-            wilayah_kerja: {
-              type: "string"
-            },
-            uu_yg_dikawal: {
-              type: "string"
+            id_pegawai: {
+              type: "number",
             },
           },
         },
@@ -3462,35 +3570,23 @@ module.exports = async function (fastify, opts) {
                   id: {
                     type: "number"
                   },
-                  skpd: {
+                  hubungan: {
+                    type: "string"
+                  },
+                  nama: {
+                    type: "string"
+                  },
+                  tempat_lahir: {
+                    type: "string"
+                  },
+                  tgl_lahir: {
+                    type: "string"
+                  },
+                  jenis_kelamin: {
+                    type: "string"
+                  },
+                  id_pegawai: {
                     type: "number"
-                  },
-                  pejabat_ppns_nama: {
-                    type: "string"
-                  },
-                  pejabat_ppns_nip: {
-                    type: "string"
-                  },
-                  pejabat_ppns_nrk: {
-                    type: "string"
-                  },
-                  pejabat_ppns_pangkat: {
-                    type: "number"
-                  },
-                  pejabat_ppns_golongan: {
-                    type: "number"
-                  },
-                  no_sk_ppns: {
-                    type: "string"
-                  },
-                  no_ktp_ppns: {
-                    type: "string"
-                  },
-                  wilayah_kerja: {
-                    type: "string"
-                  },
-                  uu_yg_dikawal: {
-                    type: "string"
                   },
                 },
               },
@@ -3501,31 +3597,23 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const {
-        skpd,
-        pejabat_ppns_nama,
-        pejabat_ppns_nip,
-        pejabat_ppns_nrk,
-        pejabat_ppns_pangkat,
-        pejabat_ppns_golongan,
-        no_sk_ppns,
-        no_ktp_ppns,
-        wilayah_kerja,
-        uu_yg_dikawal
+        hubungan,
+        nama,
+        tempat_lahir,
+        tgl_lahir,
+        jenis_kelamin,
+        id_pegawai,
       } = request.body;
       try {
         const {
           id
-        } = await fastify.kepegawaian_ppns.create(
-          skpd,
-          pejabat_ppns_nama,
-          pejabat_ppns_nip,
-          pejabat_ppns_nrk,
-          pejabat_ppns_pangkat,
-          pejabat_ppns_golongan,
-          no_sk_ppns,
-          no_ktp_ppns,
-          wilayah_kerja,
-          uu_yg_dikawal
+        } = await fastify.kepegawaian_pns.createKeluargaPNS(
+          hubungan,
+          nama,
+          tempat_lahir,
+          tgl_lahir,
+          jenis_kelamin,
+          id_pegawai,
         );
         reply.send({
           message: "success",
@@ -3543,14 +3631,14 @@ module.exports = async function (fastify, opts) {
     }
   );
 
-  // ^ Edit
+  // update keluarga PNS
   fastify.put(
-    "/update-ppns/:id", {
+    "/update-keluarga-PNS/:id", {
       schema: {
-        description: "Endpoint ini digunakan untuk mengubah data kepegawaian dari salah satu pegawai berstatus PPNS berdasarkan id",
+        description: "This is an endpoint for updating data keluarga pns",
         tags: ["endpoint kepegawaian"],
         params: {
-          description: "update endpoint kepegawaian by Id",
+          description: "Payload for updating data keluarga pns",
           type: "object",
           properties: {
             id: {
@@ -3559,41 +3647,26 @@ module.exports = async function (fastify, opts) {
           },
         },
         body: {
-          description: "Parameter yang digunakan",
+          description: "Payload for updating keluarga pns",
           type: "object",
           properties: {
-            skpd: {
+            hubungan: {
+              type: "string"
+            },
+            nama: {
+              type: "string"
+            },
+            tempat_lahir: {
+              type: "string"
+            },
+            tgl_lahir: {
+              type: "string"
+            },
+            jenis_kelamin: {
+              type: "string"
+            },
+            id_pegawai: {
               type: "number"
-            },
-            pejabat_ppns_nama: {
-              type: "string"
-            },
-            pejabat_ppns_nip: {
-              type: "string"
-            },
-            pejabat_ppns_nrk: {
-              type: "string"
-            },
-            pejabat_ppns_pangkat: {
-              type: "number"
-            },
-            pejabat_ppns_golongan: {
-              type: "number"
-            },
-            no_sk_ppns: {
-              type: "string"
-            },
-            no_ktp_ppns: {
-              type: "string"
-            },
-            wilayah_kerja: {
-              type: "string"
-            },
-            uu_yg_dikawal: {
-              type: "string"
-            },
-            updated_by: {
-              type: "string"
             },
           },
         },
@@ -3615,31 +3688,29 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const {
-        id,
+        id
       } = request.params;
       const {
-        skpd,
-        pejabat_ppns_nama,
-        pejabat_ppns_nip,
-        pejabat_ppns_nrk,
-        pejabat_ppns_pangkat,
-        pejabat_ppns_golongan,
-        no_sk_ppns,
-        no_ktp_ppns,
-        wilayah_kerja,
-        uu_yg_dikawal,
-        updated_by
+        hubungan,
+        nama,
+        tempat_lahir,
+        tgl_lahir,
+        jenis_kelamin,
+        id_pegawai,
       } = request.body;
       try {
-        await fastify.kepegawaian_ppns.update(
-          skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat, pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal, updated_by, id
+        const exec = await fastify.kepegawaian_pns.updateKeluargaPNS(
+          id,
+          hubungan,
+          nama,
+          tempat_lahir,
+          tgl_lahir,
+          jenis_kelamin,
+          id_pegawai
         );
         reply.send({
           message: "success",
-          code: 200,
-          data: {
-            return_id: id
-          }
+          code: 200
         });
       } catch (error) {
         reply.send({
@@ -3649,17 +3720,89 @@ module.exports = async function (fastify, opts) {
       }
     }
   );
-  // ────────────────────────────────────────────────────────────────────────────────
 
-  // ─── Rekap PPNS ──────────────────────────────────────────────────────────────
-  // ^ table
-  fastify.get(
-    "/PPNS-rekapitulasi", {
+  // delete keluarga PNS
+  fastify.delete(
+    "/delete-keluarga-PNS/:id", {
       schema: {
-        description: "Endpoint ini digunakan untuk mengambil seluruh Rekapitulasi data kepegawaian berstatus PPNS",
+        description: "This is an endpoint for deleting keluarga pns",
         tags: ["endpoint kepegawaian"],
+        params: {
+          description: "Payload for deleting data keluarga pns",
+          type: "object",
+          properties: {
+            id: {
+              type: "number"
+            },
+          },
+        },
         response: {
-          200: {
+          204: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        id
+      } = request.params;
+      try {
+        await fastify.kepegawaian_pns.delKelPNS(id, "");
+        reply.send({
+          message: "success",
+          code: 204
+        });
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
+  // create keluarga non pns
+  fastify.post(
+    "/create-keluarga-non-PNS", {
+      schema: {
+        description: "This is an endpoint for creating data keluarga non pns",
+        tags: ["endpoint kepegawaian"],
+        body: {
+          description: "Payload for creating data keluarga non pns",
+          type: "object",
+          properties: {
+            hubungan: {
+              type: "string",
+            },
+            nama: {
+              type: "string",
+            },
+            tempat_lahir: {
+              type: "string",
+            },
+            tgl_lahir: {
+              type: "string",
+            },
+            jenis_kelamin: {
+              type: "string",
+            },
+            id_pegawai: {
+              type: "number",
+            },
+          },
+        },
+        response: {
+          201: {
             description: "Success Response",
             type: "object",
             properties: {
@@ -3670,16 +3813,28 @@ module.exports = async function (fastify, opts) {
                 type: "string"
               },
               data: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    skpd: {
-                      type: "string"
-                    },
-                    jumlah: {
-                      type: "number"
-                    },
+                type: "object",
+                properties: {
+                  id: {
+                    type: "number"
+                  },
+                  hubungan: {
+                    type: "string"
+                  },
+                  nama: {
+                    type: "string"
+                  },
+                  tempat_lahir: {
+                    type: "string"
+                  },
+                  tgl_lahir: {
+                    type: "string"
+                  },
+                  jenis_kelamin: {
+                    type: "string"
+                  },
+                  id_pegawai: {
+                    type: "number"
                   },
                 },
               },
@@ -3689,21 +3844,32 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const exec = await fastify.kepegawaian_ppns.find_rekap();
+      const {
+        hubungan,
+        nama,
+        tempat_lahir,
+        tgl_lahir,
+        jenis_kelamin,
+        id_pegawai,
+      } = request.body;
       try {
-        if (exec) {
-          reply.send({
-            message: "success",
-            code: 200,
-            data: exec
-          });
-        } else {
-          reply.send({
-            message: "success",
-            code: 204
-          });
-        }
-
+        const {
+          id
+        } = await fastify.kepegawaian_non_pns.createKeluargaNonPNS(
+          hubungan,
+          nama,
+          tempat_lahir,
+          tgl_lahir,
+          jenis_kelamin,
+          id_pegawai,
+        );
+        reply.send({
+          message: "success",
+          code: 200,
+          data: {
+            return_id: id
+          }
+        });
       } catch (error) {
         reply.send({
           message: error.message,
@@ -3713,12 +3879,182 @@ module.exports = async function (fastify, opts) {
     }
   );
 
-  // ^ bawah table
-  fastify.get(
-    "/PPNS-rekapitulasi-jumlah", {
+  //update keluarga non pns
+  fastify.put(
+    "/update-keluarga-non-PNS/:id", {
       schema: {
-        description: "Endpoint ini digunakan untuk mengambil seluruh Rekapitulasi data kepegawaian berstatus PPNS",
+        description: "This is an endpoint for updating data keluarga non pns",
         tags: ["endpoint kepegawaian"],
+        params: {
+          description: "Payload for updating data keluarga non pns",
+          type: "object",
+          properties: {
+            id: {
+              type: "number"
+            },
+          },
+        },
+        body: {
+          description: "Payload for updating keluarga non pns",
+          type: "object",
+          properties: {
+            hubungan: {
+              type: "string"
+            },
+            nama: {
+              type: "string"
+            },
+            tempat_lahir: {
+              type: "string"
+            },
+            tgl_lahir: {
+              type: "string"
+            },
+            jenis_kelamin: {
+              type: "string"
+            },
+            id_pegawai: {
+              type: "number"
+            },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        id
+      } = request.params;
+      const {
+        hubungan,
+        nama,
+        tempat_lahir,
+        tgl_lahir,
+        jenis_kelamin,
+        id_pegawai,
+      } = request.body;
+      try {
+        const exec = await fastify.kepegawaian_non_pns.updateKeluargaNonPNS(
+          id,
+          hubungan,
+          nama,
+          tempat_lahir,
+          tgl_lahir,
+          jenis_kelamin,
+          id_pegawai
+        );
+        reply.send({
+          message: "success",
+          code: 200
+        });
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
+  //delete keluarga non pns
+  fastify.delete(
+    "/delete-keluarga-non-PNS/:id", {
+      schema: {
+        description: "This is an endpoint for deleting keluarga non pns",
+        tags: ["endpoint kepegawaian"],
+        params: {
+          description: "Payload for deleting data keluarga non pns",
+          type: "object",
+          properties: {
+            id: {
+              type: "number"
+            },
+          },
+        },
+        response: {
+          204: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        id
+      } = request.params;
+      try {
+        await fastify.kepegawaian_non_pns.delKelNonPNS(id, "");
+        reply.send({
+          message: "success",
+          code: 204
+        });
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
+  //create pendidikan pns
+  fastify.post(
+    "/create-pendidikan-PNS", {
+      schema: {
+        description: "This is an endpoint for creating data pendidikan pns",
+        tags: ["endpoint kepegawaian"],
+        body: {
+          description: "Payload for creating data pendidikan pns",
+          type: "object",
+          properties: {
+            jenis_pendidikan: {
+              type: "number",
+            },
+            nama_sekolah: {
+              type: "string",
+            },
+            nomor_ijazah: {
+              type: "string",
+            },
+            tgl_ijazah: {
+              type: "string",
+            },
+            jurusan: {
+              type: "string",
+            },
+            fakultas: {
+              type: "string",
+            },
+            file_ijazah: {
+              type: "string",
+            },
+            id_pegawai: {
+              type: "number",
+            },
+          },
+        },
         response: {
           200: {
             description: "Success Response",
@@ -3733,13 +4069,7 @@ module.exports = async function (fastify, opts) {
               data: {
                 type: "object",
                 properties: {
-                  ppns: {
-                    type: "number"
-                  },
-                  satpol_pp: {
-                    type: "number"
-                  },
-                  spkd_lain: {
+                  return_id: {
                     type: "number"
                   },
                 },
@@ -3750,21 +4080,461 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const exec = await fastify.kepegawaian_ppns.find_rekap_jumlah();
+      const {
+        jenis_pendidikan,
+        nama_sekolah,
+        nomor_ijazah,
+        tgl_ijazah,
+        jurusan,
+        fakultas,
+        file_ijazah,
+        id_pegawai,
+      } = request.body;
       try {
-        if (exec) {
-          reply.send({
-            message: "success",
-            code: 200,
-            data: exec
-          });
-        } else {
-          reply.send({
-            message: "success",
-            code: 204
-          });
-        }
+        const {
+          id
+        } = await fastify.kepegawaian_pns.createPendidikanPNS(
+          jenis_pendidikan,
+          nama_sekolah,
+          nomor_ijazah,
+          tgl_ijazah,
+          jurusan,
+          fakultas,
+          file_ijazah,
+          id_pegawai,
+        );
+        reply.send({
+          message: "success",
+          code: 200,
+          data: {
+            return_id: id
+          }
+        });
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
 
+  //update pendidikan pns
+  fastify.put(
+    "/update-pendidikan-PNS/:id", {
+      schema: {
+        description: "This is an endpoint for updating data pendidikan pns",
+        tags: ["endpoint kepegawaian"],
+        params: {
+          description: "Payload for updating data pendidikan pns",
+          type: "object",
+          properties: {
+            id: {
+              type: "number"
+            },
+          },
+        },
+        body: {
+          description: "Payload for updating pendidikan pns",
+          type: "object",
+          properties: {
+            jenis_pendidikan: {
+              type: "number"
+            },
+            nama_sekolah: {
+              type: "string"
+            },
+            nomor_ijazah: {
+              type: "string"
+            },
+            tgl_ijazah: {
+              type: "string"
+            },
+            jurusan: {
+              type: "string"
+            },
+            fakultas: {
+              type: "string"
+            },
+            file_ijazah: {
+              type: "string"
+            },
+            id_pegawai: {
+              type: "number"
+            },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        id
+      } = request.params;
+      const {
+        jenis_pendidikan,
+        nama_sekolah,
+        nomor_ijazah,
+        tgl_ijazah,
+        jurusan,
+        fakultas,
+        file_ijazah,
+        id_pegawai,
+      } = request.body;
+      try {
+        const exec = await fastify.kepegawaian_pns.updatePendidikanPNS(
+          id,
+          jenis_pendidikan,
+          nama_sekolah,
+          nomor_ijazah,
+          tgl_ijazah,
+          jurusan,
+          fakultas,
+          file_ijazah,
+          id_pegawai
+        );
+        reply.send({
+          message: "success",
+          code: 200
+        });
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
+  //deleted pendidikan pns
+  fastify.delete(
+    "/delete-pendidikan-PNS/:id", {
+      schema: {
+        description: "This is an endpoint for deleting pendidikan pns",
+        tags: ["endpoint kepegawaian"],
+        params: {
+          description: "Payload for deleting data pendidikan pns",
+          type: "object",
+          properties: {
+            id: {
+              type: "number"
+            },
+          },
+        },
+        response: {
+          204: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        id
+      } = request.params;
+      try {
+        await fastify.kepegawaian_pns.delPendidikanPNS(id, "");
+        reply.send({
+          message: "success",
+          code: 204
+        });
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
+  //create pendidikan non pns
+  fastify.post(
+    "/create-pendidikan-non-PNS", {
+      schema: {
+        description: "This is an endpoint for creating data pendidikan non pns",
+        tags: ["endpoint kepegawaian"],
+        body: {
+          description: "Payload for creating data pendidikan non pns",
+          type: "object",
+          properties: {
+            jenis_pendidikan: {
+              type: "number",
+            },
+            nama_sekolah: {
+              type: "string",
+            },
+            nomor_ijazah: {
+              type: "string",
+            },
+            tgl_ijazah: {
+              type: "string",
+            },
+            jurusan: {
+              type: "string",
+            },
+            fakultas: {
+              type: "string",
+            },
+            file_ijazah: {
+              type: "string",
+            },
+            id_pegawai: {
+              type: "number",
+            },
+          },
+        },
+        response: {
+          201: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+              data: {
+                type: "object",
+                properties: {
+                  id: {
+                    type: "number"
+                  },
+                  jenis_pendidikan: {
+                    type: "number"
+                  },
+                  nama_sekolah: {
+                    type: "string"
+                  },
+                  nomor_ijazah: {
+                    type: "string"
+                  },
+                  tgl_ijazah: {
+                    type: "string"
+                  },
+                  jurusan: {
+                    type: "string"
+                  },
+                  fakultas: {
+                    type: "string"
+                  },
+                  file_ijazah: {
+                    type: "string"
+                  },
+                  id_pegawai: {
+                    type: "number"
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        jenis_pendidikan,
+        nama_sekolah,
+        nomor_ijazah,
+        tgl_ijazah,
+        jurusan,
+        fakultas,
+        file_ijazah,
+        id_pegawai,
+      } = request.body;
+      try {
+        const {
+          id
+        } = await fastify.kepegawaian_non_pns.createPendidikanNonPNS(
+          jenis_pendidikan,
+          nama_sekolah,
+          nomor_ijazah,
+          tgl_ijazah,
+          jurusan,
+          fakultas,
+          file_ijazah,
+          id_pegawai,
+        );
+        reply.send({
+          message: "success",
+          code: 200,
+          data: {
+            return_id: id
+          }
+        });
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
+
+  //updated pendidikan non pns
+  fastify.put(
+    "/update-pendidikan-non-PNS/:id", {
+      schema: {
+        description: "This is an endpoint for updating data pendidikan non pns",
+        tags: ["endpoint kepegawaian"],
+        params: {
+          description: "Payload for updating data pendidikan non pns",
+          type: "object",
+          properties: {
+            id: {
+              type: "number"
+            },
+          },
+        },
+        body: {
+          description: "Payload for updating pendidikan non pns",
+          type: "object",
+          properties: {
+            jenis_pendidikan: {
+              type: "number"
+            },
+            nama_sekolah: {
+              type: "string"
+            },
+            nomor_ijazah: {
+              type: "string"
+            },
+            tgl_ijazah: {
+              type: "string"
+            },
+            jurusan: {
+              type: "string"
+            },
+            fakultas: {
+              type: "string"
+            },
+            file_ijazah: {
+              type: "string"
+            },
+            id_pegawai: {
+              type: "number"
+            },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        id
+      } = request.params;
+      const {
+        jenis_pendidikan,
+        nama_sekolah,
+        nomor_ijazah,
+        tgl_ijazah,
+        jurusan,
+        fakultas,
+        file_ijazah,
+        id_pegawai,
+      } = request.body;
+      try {
+        const exec = await fastify.kepegawaian_non_pns.updatePendidikanNonPNS(
+          id,
+          jenis_pendidikan,
+          nama_sekolah,
+          nomor_ijazah,
+          tgl_ijazah,
+          jurusan,
+          fakultas,
+          file_ijazah,
+          id_pegawai
+        );
+        reply.send({
+          message: "success",
+          code: 200
+        });
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
+  //deleted pendidikan non pns
+  fastify.delete(
+    "/delete-pendidikan-non-PNS/:id", {
+      schema: {
+        description: "This is an endpoint for deleting pendidikan non pns",
+        tags: ["endpoint kepegawaian"],
+        params: {
+          description: "Payload for deleting data pendidikan non pns",
+          type: "object",
+          properties: {
+            id: {
+              type: "number"
+            },
+          },
+        },
+        response: {
+          204: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        id
+      } = request.params;
+      try {
+        await fastify.kepegawaian_non_pns.delPendidikanNonPNS(id, "");
+        reply.send({
+          message: "success",
+          code: 204
+        });
       } catch (error) {
         reply.send({
           message: error.message,
@@ -3775,6 +4545,7 @@ module.exports = async function (fastify, opts) {
   );
 
   // ─────────────────────────────────────────────────────────────────────────────
+
 
 
 

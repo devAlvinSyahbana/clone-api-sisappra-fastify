@@ -1,14 +1,14 @@
-const master_golongan  = require("../../../services/master/master_golongan");
+const struktur_data_hirarki  = require("../../../services/master/struktur_data_hirarki");
 
 module.exports = async function (fastify, opts) {
-  fastify.register(master_golongan);
+  fastify.register(struktur_data_hirarki);
 
   fastify.get(
     "/find",
     {
       schema: {
-        description: "This is an endpoint for fetching all master golongan",
-        tags: ["master golongan"],
+        description: "This is an endpoint for fetching all struktur data hirarki",
+        tags: ["struktur data hirarki"],
         response: {
           200: {
             description: "Success Response",
@@ -22,8 +22,10 @@ module.exports = async function (fastify, opts) {
                   type: "object",
                   properties: {
                     id: { type: "number" },
-                    golongan: { type: "string" },
-                    urutan_tingkat_golongan: { type: "number" },
+                    level: { type: "string" },
+                    sub_level: { type: "string" },
+                    id_relasi_hirarki: { type: "number" },
+                    kategori: { type: "number" },
                   },
                 },
               },
@@ -33,7 +35,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const exec = await fastify.master_golongan.find();
+      const exec = await fastify.struktur_data_hirarki.find();
 
       try {
         if (exec) {
@@ -51,10 +53,10 @@ module.exports = async function (fastify, opts) {
     "/findone/:id",
     {
       schema: {
-        description: "This is an endpoint for fetching a master golongan",
-        tags: ["master golongan"],
+        description: "This is an endpoint for fetching a struktur data hirarki",
+        tags: ["struktur data hirarki"],
         params: {
-          description: "Find one master golongan id",
+          description: "Find one struktur data hirarki by id",
           type: "object",
           properties: {
             id: { type: "number" },
@@ -71,8 +73,10 @@ module.exports = async function (fastify, opts) {
                 type: "object",
                 properties: {
                   id: { type: "number" },
-                  golongan: { type: "string" },
-                  urutan_tingkat_golongan: { type: "number" },
+                  level: { type: "string" },
+                  sub_level: { type: "string" },
+                  id_relasi_hirarki: { type: "number" },
+                  kategori: { type: "number" },
                 },
               },
             },
@@ -82,7 +86,7 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const exec = await fastify.master_golongan.findone(id);
+      const exec = await fastify.struktur_data_hirarki.findone(id);
 
       try {
         if (exec) {
@@ -97,16 +101,16 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/findone-by-golongan/:golongan",
+    "/findone-by-sub-level/:sub_level",
     {
       schema: {
-        description: "This is an endpoint for fetching a master golongan",
-        tags: ["master golongan"],
+        description: "This is an endpoint for fetching a struktur data hirarki",
+        tags: ["struktur data hirarki"],
         params: {
-          description: "Find one master golongan by golongan",
+          description: "Find one struktur data hirarki by sub_level",
           type: "object",
           properties: {
-            golongan: { type: "string" },
+            sub_level: { type: "string" },
           },
         },
         response: {
@@ -120,8 +124,10 @@ module.exports = async function (fastify, opts) {
                 type: "object",
                 properties: {
                   id: { type: "number" },
-                  golongan: { type: "string" },
-                  urutan_tingkat_golongan: { type: "number" },
+                  level: { type: "string" },
+                  sub_level: { type: "string" },
+                  id_relasi_hirarki: { type: "number" },
+                  kategori: { type: "number" },
                 },
               },
             },
@@ -130,8 +136,8 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { golongan } = request.params;
-      const exec = await fastify.master_golongan.findone_by_golongan(golongan);
+      const { sub_level } = request.params;
+      const exec = await fastify.struktur_data_hirarki.findone_by_sub_level(sub_level);
 
       try {
         if (exec) {
@@ -149,14 +155,16 @@ module.exports = async function (fastify, opts) {
     "/create",
     {
       schema: {
-        description: "This is an endpoint for creating a master golongan",
-        tags: ["master golongan"],
+        description: "This is an endpoint for creating a struktur data hirarki",
+        tags: ["struktur data hirarki"],
         body: {
-          description: "Payload for creating a master golongan",
+          description: "Payload for creating a struktur data hirarki",
           type: "object",
           properties: {
-            golongan: { type: "string" },
-            urutan_tingkat_golongan: { type: "number" },
+            level: { type: "string" },
+            sub_level: { type: "string" },
+            id_relasi_hirarki: { type: "number" },
+            kategori: { type: "number" },
             created_by: { type: "number" },
           },
         },
@@ -173,10 +181,10 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {golongan, urutan_tingkat_golongan, created_by} = request.body;
+      const {level, sub_level, id_relasi_hirarki, kategori, created_by} = request.body;
 
       try {
-        await fastify.master_golongan.create(golongan, urutan_tingkat_golongan,created_by);
+        await fastify.struktur_data_hirarki.create(level, sub_level, id_relasi_hirarki, kategori, created_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -188,21 +196,23 @@ module.exports = async function (fastify, opts) {
     "/update/:id",
     {
       schema: {
-        description: "This is an endpoint for updating an existing master golongan",
-        tags: ["master golongan"],
+        description: "This is an endpoint for updating an existing struktur data hirarki",
+        tags: ["struktur data hirarki"],
         params: {
-          description: "update master golongan by Id",
+          description: "update struktur data hirarki by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for updating a master golongan",
+          description: "Payload for updating a struktur data hirarki",
           type: "object",
           properties: {
-            golongan: { type: "string" },
-            urutan_tingkat_golongan: { type: "number" },
+            level: { type: "string" },
+            sub_level: { type: "string" },
+            id_relasi_hirarki: { type: "number" },
+            kategori: { type: "number" },
             updated_by: { type: "number" },
           },
         },
@@ -220,10 +230,10 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const {golongan, urutan_tingkat_golongan, updated_by } = request.body;
+      const {level, sub_level, id_relasi_hirarki, kategori, updated_by } = request.body;
 
       try {
-        await fastify.master_golongan.update(id,golongan, urutan_tingkat_golongan,updated_by);
+        await fastify.struktur_data_hirarki.update(id,level, sub_level, id_relasi_hirarki, kategori,updated_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -235,17 +245,17 @@ module.exports = async function (fastify, opts) {
     "/delete/:id",
     {
       schema: {
-        description: "This is an endpoint for DELETING an existing master golongan.",
-        tags: ["master golongan"],
+        description: "This is an endpoint for DELETING an existing struktur data hirarki.",
+        tags: ["struktur data hirarki"],
         params: {
-          description: "master golongan by Id",
+          description: "struktur data hirarki by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for deleted data master golongan",
+          description: "Payload for deleted data struktur data hirarki",
           type: "object",
           properties: {
             deleted_by: { type: "number" },
@@ -268,62 +278,10 @@ module.exports = async function (fastify, opts) {
       const { deleted_by } = request.body;
 
       try {
-        await fastify.master_golongan.del(id, deleted_by);
+        await fastify.struktur_data_hirarki.del(id, deleted_by);
         reply.send({ message: "success", code: 204 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
-      }
-    }
-  );
-
-  fastify.get(
-    "/filter/:q",
-    {
-      schema: {
-        description: "This is an endpoint for filtering a master golongan",
-        tags: ["master golongan"],
-        params: {
-          description: "Filter master golongan by search",
-          type: "object",
-          properties: {
-            q: { type: "string" },
-          },
-        },
-        response: {
-          200: {
-            description: "Success Response",
-            type: "object",
-            properties: {
-              message: { type: "string" },
-              code: { type: "string" },
-              data: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    id: { type: "number" },
-                    golongan: { type: "string" },
-                    urutan_tingkat_golongan: { type: "string" },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    async (request, reply) => {
-      const { q } = request.params;
-      const exec = await fastify.master_golongan.filter(q);
-
-      try {
-        if (exec) {
-          reply.send({ message: "success", code: 200, data: exec });
-        } else {
-          reply.send({ message: "success", code: 204 });
-        }
-      } catch (error) {
-        reply.send({ message: error, code: 500 });
       }
     }
   );
