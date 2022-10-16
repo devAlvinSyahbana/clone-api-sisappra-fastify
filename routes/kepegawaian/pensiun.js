@@ -81,7 +81,7 @@ module.exports = async function (fastify, opts) {
               type: "string",
             },
             tahun_pensiun: {
-              type: "string",
+              type: "number",
             },
           },
           required: ["limit", "offset", "status"],
@@ -125,7 +125,7 @@ module.exports = async function (fastify, opts) {
                       type: "string"
                     },
                     tahun_pensiun: {
-                      type: "string"
+                      type: "number"
                     },
                   },
                 }
@@ -288,7 +288,7 @@ module.exports = async function (fastify, opts) {
               type: "string",
             },
             tahun_pensiun: {
-              type: "string",
+              type: "number",
             },
           },
           required: ["status"],
