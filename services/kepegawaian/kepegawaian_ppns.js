@@ -41,10 +41,31 @@ const kepegawaian_ppns = (db) => {
         return query;
     };
 
-    const getDataUnduh = (qwhere) => {
+    const unduhPpns = (skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat, pejabat_ppns_golongan) => {
+        let filter = "";
+
+        if (skpd != undefined) {
+            filter = filter + " and skpd ilike '" + "%" + skpd + "%" + "'"
+        }
+        if (pejabat_ppns_nama != undefined) {
+            filter = filter + " and pejabat_ppns_nama ilike '" + "%" + pejabat_ppns_nama + "%" + "'"
+        }
+        if (pejabat_ppns_nip != undefined) {
+            filter = filter + " and pejabat_ppns_nip ilike '" + "%" + pejabat_ppns_nip + "%" + "'"
+        }
+        if (pejabat_ppns_nrk != undefined) {
+            filter = filter + " and pejabat_ppns_nrk ilike '" + "%" + pejabat_ppns_nrk + "%" + "'"
+        }
+        if (pejabat_ppns_pangkat != undefined) {
+            filter = filter + " and pejabat_ppns_pangkat ilike '" + "%" + pejabat_ppns_pangkat + "%" + "'"
+        }
+        if (pejabat_ppns_golongan != undefined) {
+            filter = filter + " and pejabat_ppns_golongan ilike '" + "%" + pejabat_ppns_golongan + "%" + "'"
+        }
+
         const query = db.any(
-            "SELECT kppns.id, mskpd.nama, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, mpangkat.nama, mgol.nama, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns kppns left join master_skpd mskpd on kppns.skpd =  mskpd.id left join master_pangkat mpangkat on kppns.pejabat_ppns_pangkat = mpangkat.id left join master_golongan mgol on kppns.pejabat_ppns_golongan = mgol.id WHERE kppns.is_deleted = 0" +
-            qwhere + " order by kepegawaian_ppns.skpd ASC, pejabat_ppns_nama"
+            "SELECT id, skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat , pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns WHERE is_deleted = 0" + filter,
+            [filter]
         );
 
         return query;
@@ -98,14 +119,6 @@ const kepegawaian_ppns = (db) => {
 
         return query;
     };
-
-    const unduh = () => {
-        const query = db.any(
-            "SELECT id, skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat , pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns WHERE is_deleted = 0"
-        );
-        return query;
-    };
-
     return {
         find,
         findOne,
@@ -116,7 +129,7 @@ const kepegawaian_ppns = (db) => {
         countAllFilter,
         create,
         update,
-        unduh
+        unduhPpns
     };
 };
 
