@@ -234,7 +234,7 @@ module.exports = async function (fastify, opts) {
         headerData = ["Nama", "NIP", "No Pegawai", "Status Pegawai", "Jabatan", "Tempat Tugas", "Subbag Seksi Kecamatan", "Tempat Lahir", "Tanggal Lahir", "Tahun Pensiun"];
 
 
-        const getData = await fastify.kepegawaian_rekapitulasi.unduh_pensiun(nama, nrk_nptt_pjlp, tempat_tugas, seksi_kecamatan, status_pegawai, tahun_pensiun);
+        const getData = await fastify.kepegawaian_rekapitulasi.PensiunUnduh(nama, nrk_nptt_pjlp, tempat_tugas, seksi_kecamatan, status_pegawai, tahun_pensiun);
 
         const convertData = getData.map(function (item) {
           return Object.values(item);
