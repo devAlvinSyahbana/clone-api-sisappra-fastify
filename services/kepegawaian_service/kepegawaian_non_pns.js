@@ -4,7 +4,7 @@ const kepegawaian_non_pns = (db) => {
   const autocompliteFill = (qwhere) => {
     const query = db.any(
       "SELECT kpnns.id, kpnns.nama, kpnns.kepegawaian_nptt_npjlp as no_pegawai FROM kepegawaian_non_pns kpnns WHERE kpnns.is_deleted = 0" +
-        qwhere
+      qwhere
     );
 
     return query;
@@ -23,7 +23,7 @@ const kepegawaian_non_pns = (db) => {
   const countKeluarga = (id) => {
     const query = db.one(
       "SELECT COUNT(id) as total FROM kepegawaian_non_pns_keluarga WHERE is_deleted = 0 AND id_pegawai = " +
-        id
+      id
     );
 
     return query;
@@ -32,8 +32,8 @@ const kepegawaian_non_pns = (db) => {
   const findPendidikanTerakhir = (id) => {
     const query = db.any(
       "SELECT jenis_pendidikan FROM kepegawaian_non_pns_pendidikan WHERE is_deleted = 0 AND id_pegawai = " +
-        id +
-        " ORDER BY tgl_ijazah DESC"
+      id +
+      " ORDER BY tgl_ijazah DESC"
     );
 
     if (query) {
@@ -45,8 +45,8 @@ const kepegawaian_non_pns = (db) => {
   const findPendidikan = (id) => {
     const query = db.any(
       "SELECT kpen.* FROM kepegawaian_non_pns_pendidikan kpen WHERE kpen.is_deleted = 0 AND kpen.id_pegawai = " +
-        id +
-        " ORDER BY kpen.tgl_ijazah DESC"
+      id +
+      " ORDER BY kpen.tgl_ijazah DESC"
     );
 
     return query;
@@ -55,7 +55,7 @@ const kepegawaian_non_pns = (db) => {
   const findonePendidikan = (id) => {
     const query = db.one(
       "SELECT pend.* FROM kepegawaian_non_pns_pendidikan pend WHERE pend.is_deleted = 0 AND pend.id = " +
-        id
+      id
     );
     if (query) {
       return query;
@@ -66,7 +66,7 @@ const kepegawaian_non_pns = (db) => {
   const findKeluarga = (id) => {
     const query = db.any(
       "SELECT klgr.id, klgr.hubungan, klgr.nama, klgr.tempat_lahir, klgr.tgl_lahir, CASE WHEN klgr.jenis_kelamin = 'L' THEN 'Laki-laki' ELSE 'Perempuan' END AS jenis_kelamin FROM kepegawaian_non_pns_keluarga klgr WHERE klgr.is_deleted = 0 AND klgr.id_pegawai = " +
-        id
+      id
     );
 
     return query;
@@ -75,7 +75,7 @@ const kepegawaian_non_pns = (db) => {
   const findoneKeluarga = (id) => {
     const query = db.one(
       "SELECT klgr.* FROM kepegawaian_non_pns_keluarga klgr WHERE klgr.is_deleted = 0 AND klgr.id = " +
-        id
+      id
     );
     if (query) {
       return query;
@@ -87,11 +87,11 @@ const kepegawaian_non_pns = (db) => {
   const find = (limit, offset, status) => {
     const query = db.any(
       "SELECT kpnns.id, kpnns.nama, kpnns.tempat_lahir, to_char(kpnns.tgl_lahir, 'dd Mon YYYY') AS tgl_lahir, CASE WHEN kpnns.jenis_kelamin = 'L' THEN 'Laki-laki' ELSE 'Perempuan' END AS jenis_kelamin, kpnns.agama, kpnns.no_hp, kpnns.kepegawaian_nptt_npjlp as no_pegawai, kpnns.kepegawaian_status_pegawai, kpnns.foto FROM kepegawaian_non_pns kpnns WHERE kpnns.is_deleted = 0 AND kpnns.kepegawaian_status_pegawai = '" +
-        status +
-        "' ORDER BY kpnns.created_at DESC LIMIT " +
-        limit +
-        " OFFSET " +
-        offset
+      status +
+      "' ORDER BY kpnns.created_at DESC LIMIT " +
+      limit +
+      " OFFSET " +
+      offset
     );
 
     return query;
@@ -101,13 +101,13 @@ const kepegawaian_non_pns = (db) => {
   const filter = (limit, offset, status, qwhere) => {
     const query = db.any(
       "SELECT kpnns.id, kpnns.nama, kpnns.tempat_lahir, to_char(kpnns.tgl_lahir, 'dd Mon YYYY') AS tgl_lahir, CASE WHEN kpnns.jenis_kelamin = 'L' THEN 'Laki-laki' ELSE 'Perempuan' END AS jenis_kelamin, kpnns.agama, kpnns.no_hp, kpnns.kepegawaian_nptt_npjlp as no_pegawai, kpnns.kepegawaian_status_pegawai, kpnns.foto FROM kepegawaian_non_pns kpnns WHERE kpnns.is_deleted = 0 AND kpnns.kepegawaian_status_pegawai = '" +
-        status +
-        "'" +
-        qwhere +
-        " LIMIT " +
-        limit +
-        " OFFSET " +
-        (parseInt(offset) - 1)
+      status +
+      "'" +
+      qwhere +
+      " LIMIT " +
+      limit +
+      " OFFSET " +
+      (parseInt(offset) - 1)
     );
 
     return query;
@@ -116,8 +116,8 @@ const kepegawaian_non_pns = (db) => {
   const countAll = (status) => {
     const query = db.one(
       "SELECT COUNT(id) as total FROM kepegawaian_non_pns WHERE is_deleted = 0 AND kepegawaian_status_pegawai = '" +
-        status +
-        "'"
+      status +
+      "'"
     );
 
     return query;
@@ -126,9 +126,9 @@ const kepegawaian_non_pns = (db) => {
   const countAllFilter = (status, qwhere) => {
     const query = db.one(
       "SELECT COUNT(id) as total FROM kepegawaian_non_pns WHERE is_deleted = 0 AND kepegawaian_status_pegawai = '" +
-        status +
-        "'" +
-        qwhere
+      status +
+      "'" +
+      qwhere
     );
 
     return query;
@@ -276,9 +276,9 @@ const kepegawaian_non_pns = (db) => {
           ? kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat
           : null,
         kepegawaian_diklat_fungsional_pol_pp_no_sertifikat,
-        kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat
-          ? kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat
-          : null,
+        kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat ?
+        kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat :
+        null,
         updated_by,
         id,
       ]
@@ -334,7 +334,9 @@ const kepegawaian_non_pns = (db) => {
       [id, deleted_by]
     );
 
-    return { id };
+    return {
+      id
+    };
   };
 
   //create pendidikan non pns
@@ -400,7 +402,9 @@ const kepegawaian_non_pns = (db) => {
       [id, deleted_by]
     );
 
-    return { id };
+    return {
+      id
+    };
   };
 
   const updateFilePendidikan = (id, updated_by, values) => {
