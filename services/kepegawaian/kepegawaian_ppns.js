@@ -45,7 +45,7 @@ const kepegawaian_ppns = (db) => {
         let filter = "";
 
         if (skpd != undefined) {
-            filter = filter + " and skpd ilike '" + "%" + skpd + "%" + "'"
+            filter = filter + " and skpd = " + skpd
         }
         if (pejabat_ppns_nama != undefined) {
             filter = filter + " and pejabat_ppns_nama ilike '" + "%" + pejabat_ppns_nama + "%" + "'"
@@ -57,10 +57,10 @@ const kepegawaian_ppns = (db) => {
             filter = filter + " and pejabat_ppns_nrk ilike '" + "%" + pejabat_ppns_nrk + "%" + "'"
         }
         if (pejabat_ppns_pangkat != undefined) {
-            filter = filter + " and pejabat_ppns_pangkat ilike '" + "%" + pejabat_ppns_pangkat + "%" + "'"
+            filter = filter + " and pejabat_ppns_pangkat = " + pejabat_ppns_pangkat
         }
         if (pejabat_ppns_golongan != undefined) {
-            filter = filter + " and pejabat_ppns_golongan ilike '" + "%" + pejabat_ppns_golongan + "%" + "'"
+            filter = filter + " and pejabat_ppns_golongan = " + pejabat_ppns_golongan
         }
 
         const query = db.any(
