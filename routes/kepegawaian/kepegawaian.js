@@ -2257,7 +2257,9 @@ module.exports = async function (fastify, opts) {
         kelurahan
       } = request.query;
       const exec = await fastify.kepegawaian_rekapitulasi.find_rekapitulasi_jft(limit, offset, nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan);
-      const { count } = await fastify.kepegawaian_rekapitulasi.count_rekapitulasi_jft(nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan);
+      const {
+        count
+      } = await fastify.kepegawaian_rekapitulasi.count_rekapitulasi_jft(nama, nrk, id_jabatan, tempat_tugas, seksi_kecamatan, kelurahan);
       let total = count;
 
       try {
@@ -2579,7 +2581,9 @@ module.exports = async function (fastify, opts) {
         kelurahan
       } = request.query;
       const exec = await fastify.kepegawaian_rekapitulasi.find_rekapitulasi_kenaikan_pangkat(limit, offset, nama, nrk, nip, id_jabatan, id_pangkat, id_status_kenaikan_pangkat, tempat_tugas, seksi_kecamatan, kelurahan);
-      const {count} = await fastify.kepegawaian_rekapitulasi.count_rekapitulasi_kenaikan_pangkat(nama, nrk, nip, id_jabatan, id_pangkat, id_status_kenaikan_pangkat, tempat_tugas, seksi_kecamatan, kelurahan);
+      const {
+        count
+      } = await fastify.kepegawaian_rekapitulasi.count_rekapitulasi_kenaikan_pangkat(nama, nrk, nip, id_jabatan, id_pangkat, id_status_kenaikan_pangkat, tempat_tugas, seksi_kecamatan, kelurahan);
 
       try {
         if (exec) {
@@ -2613,7 +2617,9 @@ module.exports = async function (fastify, opts) {
           description: "Find one pegawai naik pangkat id",
           type: "object",
           properties: {
-            id: { type: "number" },
+            id: {
+              type: "number"
+            },
           },
         },
         response: {
@@ -2621,8 +2627,12 @@ module.exports = async function (fastify, opts) {
             description: "Success Response",
             type: "object",
             properties: {
-              message: { type: "string" },
-              code: { type: "string" },
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
               data: {
                 type: "object",
                 properties: {
@@ -2674,9 +2684,11 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {id} = request.params;
+      const {
+        id
+      } = request.params;
       const exec = await fastify.kepegawaian_rekapitulasi.findone_rekapitulasi_kenaikan_pangkat(id);
-      
+
 
       try {
         if (exec) {
@@ -2814,8 +2826,7 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.post(
-    "/rekapitulasi-duk-pegawai/create",
-    {
+    "/rekapitulasi-duk-pegawai/create", {
       schema: {
         description: "This is an endpoint for creating a pegawai",
         tags: ["endpoint rekapitulasi pegawai pejabat"],
@@ -2823,11 +2834,21 @@ module.exports = async function (fastify, opts) {
           description: "Payload for creating a pegawai",
           type: "object",
           properties: {
-            nama: { type: "string" },
-            nrk_nptt_npjlp: { type: "number" },
-            nip: { type: "string" },
-            status_pegawai: { type: "string" },
-            created_by: { type: "number" },
+            nama: {
+              type: "string"
+            },
+            nrk_nptt_npjlp: {
+              type: "number"
+            },
+            nip: {
+              type: "string"
+            },
+            status_pegawai: {
+              type: "string"
+            },
+            created_by: {
+              type: "number"
+            },
           },
         },
         response: {
@@ -2835,28 +2856,43 @@ module.exports = async function (fastify, opts) {
             description: "Success Response",
             type: "object",
             properties: {
-              message: { type: "string" },
-              code: { type: "string" },
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
             },
           },
         },
       },
     },
     async (request, reply) => {
-      const {nama, nrk_nptt_npjlp, nip, status_pegawai, created_by} = request.body;
+      const {
+        nama,
+        nrk_nptt_npjlp,
+        nip,
+        status_pegawai,
+        created_by
+      } = request.body;
 
       try {
         await fastify.kepegawaian_rekapitulasi.create_rekapitulasi_duk_pegawai(nama, nrk_nptt_npjlp, nip, status_pegawai, created_by);
-        reply.send({ message: "success", code: 200 });
+        reply.send({
+          message: "success",
+          code: 200
+        });
       } catch (error) {
-        reply.send({ message: error.message, code: 500 });
+        reply.send({
+          message: error.message,
+          code: 500
+        });
       }
     }
   );
 
   fastify.delete(
-    "/rekapitulasi-duk-pegawai/delete/:id",
-    {
+    "/rekapitulasi-duk-pegawai/delete/:id", {
       schema: {
         description: "This is an endpoint for DELETING an existing pegawai.",
         tags: ["endpoint rekapitulasi pegawai pejabat"],
@@ -2864,15 +2900,21 @@ module.exports = async function (fastify, opts) {
           description: "pegawai by Id",
           type: "object",
           properties: {
-            id: { type: "number" },
+            id: {
+              type: "number"
+            },
           },
         },
         body: {
           description: "Payload for deleted data pegawai",
           type: "object",
           properties: {
-            status_pegawai: { type: "string" },
-            deleted_by: { type: "number" },
+            status_pegawai: {
+              type: "string"
+            },
+            deleted_by: {
+              type: "number"
+            },
           },
         },
         response: {
@@ -2880,22 +2922,37 @@ module.exports = async function (fastify, opts) {
             description: "Success Response",
             type: "object",
             properties: {
-              message: { type: "string" },
-              code: { type: "string" },
+              message: {
+                type: "string"
+              },
+              code: {
+                type: "string"
+              },
             },
           },
         },
       },
     },
     async (request, reply) => {
-      const { id,  } = request.params;
-      const { status_pegawai, deleted_by } = request.body;
+      const {
+        id,
+      } = request.params;
+      const {
+        status_pegawai,
+        deleted_by
+      } = request.body;
 
       try {
         await fastify.kepegawaian_rekapitulasi.del_rekapitulasi_duk_pegawai(id, status_pegawai, deleted_by);
-        reply.send({ message: "success", code: 204 });
+        reply.send({
+          message: "success",
+          code: 204
+        });
       } catch (error) {
-        reply.send({ message: error.message, code: 500 });
+        reply.send({
+          message: error.message,
+          code: 500
+        });
       }
     }
   );
@@ -3392,7 +3449,9 @@ module.exports = async function (fastify, opts) {
         offset
       } = request.query;
       const exec = await fastify.kepegawaian_rekapitulasi.find_duk_rekapitulasi_pegawai(nama, nip, nrk_nptt_pjlp, status_pegawai, tempat_tugas, seksi_kecamatan, kelurahan, limit, offset);
-      const {count} = await fastify.kepegawaian_rekapitulasi.count_duk_rekapitulasi_pegawai(nama, nip, nrk_nptt_pjlp, status_pegawai, tempat_tugas, seksi_kecamatan, kelurahan);
+      const {
+        count
+      } = await fastify.kepegawaian_rekapitulasi.count_duk_rekapitulasi_pegawai(nama, nip, nrk_nptt_pjlp, status_pegawai, tempat_tugas, seksi_kecamatan, kelurahan);
 
       try {
         if (exec) {
