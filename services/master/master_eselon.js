@@ -1,10 +1,9 @@
 const fp = require("fastify-plugin");
 
 const master_eselon = (db) => {
-
   const find = () => {
     const query = db.any(
-      "SELECT id, nama as eselon, urutan_tingkat_eselon FROM master_eselon WHERE is_deleted = 0 ORDER BY created_at DESC",
+      "SELECT id, nama as eselon, urutan_tingkat_eselon FROM master_eselon WHERE is_deleted = 0 ORDER BY created_at DESC"
     );
 
     return query;
@@ -20,15 +19,18 @@ const master_eselon = (db) => {
   };
 
   const findone_by_eselon = (eselon) => {
-    const query = db.one(
-      "SELECT id, nama as eselon, urutan_tingkat_eselon FROM master_eselon WHERE nama ilike $1 AND is_deleted = 0",
-      [eselon]
+    const query = db.any(
+      "SELECT id, nama as eselon, urutan_tingkat_eselon FROM master_eselon WHERE nama ilike '%" +
+        eselon +
+        "%' AND is_deleted = 0"
     );
-
-    return query;
+    if (query) {
+      return query;
+    }
+    return false;
   };
 
-  const create = async(eselon, urutan_tingkat_eselon, created_by) => {
+  const create = async (eselon, urutan_tingkat_eselon, created_by) => {
     const query = db.one(
       "INSERT INTO master_eselon (nama, urutan_tingkat_eselon, is_deleted, created_by) VALUES ($1, $2, 0, $3) RETURNING id",
       [eselon, urutan_tingkat_eselon, created_by]
@@ -36,7 +38,6 @@ const master_eselon = (db) => {
 
     return query;
   };
-
 
   const update = (id, eselon, urutan_tingkat_eselon, updated_by) => {
     db.one(
@@ -52,7 +53,7 @@ const master_eselon = (db) => {
     );
 
     return {
-      id
+      id,
     };
   };
 
@@ -67,9 +68,6 @@ const master_eselon = (db) => {
 };
 
 module.exports = fp((fastify, options, next) => {
-  fastify.decorate(
-    "master_eselon",
-    master_eselon(fastify.db)
-  );
+  fastify.decorate("master_eselon", master_eselon(fastify.db));
   next();
 });
