@@ -1,4 +1,4 @@
-const master_eselon  = require("../../../services/master/master_eselon");
+const master_eselon = require("../../../services/master/master_eselon");
 
 module.exports = async function (fastify, opts) {
   fastify.register(master_eselon);
@@ -117,11 +117,14 @@ module.exports = async function (fastify, opts) {
               message: { type: "string" },
               code: { type: "string" },
               data: {
-                type: "object",
-                properties: {
-                  id: { type: "number" },
-                  eselon: { type: "string" },
-                  urutan_tingkat_eselon: { type: "number" },
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: { type: "number" },
+                    eselon: { type: "string" },
+                    urutan_tingkat_eselon: { type: "number" },
+                  },
                 },
               },
             },
@@ -172,10 +175,14 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {eselon, urutan_tingkat_eselon, created_by} = request.body;
+      const { eselon, urutan_tingkat_eselon, created_by } = request.body;
 
       try {
-        await fastify.master_eselon.create(eselon, urutan_tingkat_eselon, created_by);
+        await fastify.master_eselon.create(
+          eselon,
+          urutan_tingkat_eselon,
+          created_by
+        );
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -187,7 +194,8 @@ module.exports = async function (fastify, opts) {
     "/update/:id",
     {
       schema: {
-        description: "This is an endpoint for updating an existing master eselon",
+        description:
+          "This is an endpoint for updating an existing master eselon",
         tags: ["master eselon"],
         params: {
           description: "update master eselon by Id",
@@ -218,10 +226,15 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const {eselon, urutan_tingkat_eselon, updated_by } = request.body;
+      const { eselon, urutan_tingkat_eselon, updated_by } = request.body;
 
       try {
-        await fastify.master_eselon.update(id,eselon, urutan_tingkat_eselon, updated_by);
+        await fastify.master_eselon.update(
+          id,
+          eselon,
+          urutan_tingkat_eselon,
+          updated_by
+        );
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -233,7 +246,8 @@ module.exports = async function (fastify, opts) {
     "/delete/:id",
     {
       schema: {
-        description: "This is an endpoint for DELETING an existing master eselon.",
+        description:
+          "This is an endpoint for DELETING an existing master eselon.",
         tags: ["master eselon"],
         params: {
           description: "master eselon by Id",

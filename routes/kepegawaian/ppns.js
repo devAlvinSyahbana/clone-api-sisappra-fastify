@@ -113,10 +113,10 @@ module.exports = async function (fastify, opts) {
                       type: "string"
                     },
                     pejabat_ppns_pangkat: {
-                      type: "string"
+                      type: "number"
                     },
                     pejabat_ppns_golongan: {
-                      type: "string"
+                      type: "number"
                     },
                     no_sk_ppns: {
                       type: "string"
@@ -257,10 +257,10 @@ module.exports = async function (fastify, opts) {
                     type: "string"
                   },
                   pejabat_ppns_pangkat: {
-                    type: "string"
+                    type: "number"
                   },
                   pejabat_ppns_golongan: {
-                    type: "string"
+                    type: "number"
                   },
                   no_sk_ppns: {
                     type: "string"
@@ -426,7 +426,7 @@ module.exports = async function (fastify, opts) {
 
   // ^ Edit
   fastify.put(
-    "/update-ppns/:id", {
+    "/update-PPNS/:id", {
       schema: {
         description: "Endpoint ini digunakan untuk mengubah data kepegawaian dari salah satu pegawai berstatus PPNS berdasarkan id",
         tags: ["PPNS"],
@@ -522,6 +522,107 @@ module.exports = async function (fastify, opts) {
             return_id: id
           }
         });
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  );
+
+  // ^ Unduh
+  fastify.get(
+    "/unduh-PPNS", {
+      schema: {
+        description: "Endpoint unduh PPNS",
+        tags: ["PPNS"],
+        querystring: {
+          type: "object",
+          properties: {
+            skpd: {
+              type: "number"
+            },
+            pejabat_ppns_nama: {
+              type: "string"
+            },
+            pejabat_ppns_nip: {
+              type: "string"
+            },
+            pejabat_ppns_nrk: {
+              type: "string"
+            },
+            pejabat_ppns_pangkat: {
+              type: "number"
+            },
+            pejabat_ppns_golongan: {
+              type: "number"
+            },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "string",
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const {
+        skpd,
+        pejabat_ppns_nama,
+        pejabat_ppns_nip,
+        pejabat_ppns_nrk,
+        pejabat_ppns_pangkat,
+        pejabat_ppns_golongan,
+      } = request.query;
+      let headerData = [];
+      let data = [];
+      try {
+        const wb = XLSX.utils.book_new();
+        // Definisikan header
+        headerData = ["Id", "skpd", "Nama", "NIP", "Pangkat", "Golongan", "No SK PPNS", "No KTP PPNS", "Wilayah Kerja", "UU Yang Dikawal", ];
+
+        const getData = await fastify.kepegawaian_ppns.unduhPpns(skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat, pejabat_ppns_golongan);
+        const convertData = getData.map(function (item) {
+          ``
+          return Object.values(item);
+        });
+        data = convertData;
+
+        // Definisikan rows untuk ditulis ke dalam spreadsheet
+        const wsDataKepegawaian = [headerData, ...data];
+        // Buat Workbook
+        const fileName = "Rekapitulasi Pegawai PPNS";
+        wb.Props = {
+          Title: fileName,
+          Author: "SISAPPRA - Rekapitulasi Pegawai PPNS",
+          CreatedDate: new Date(),
+        };
+        // Buat Sheet
+        wb.SheetNames.push("DATA Rekapitulasi PPNS");
+        // Buat Sheet dengan Data
+        const ws = XLSX.utils.aoa_to_sheet(wsDataKepegawaian);
+        // const ws = XLSX.utils.aoa_to_sheet(wsData);
+        wb.Sheets["DATA Rekapitulasi PPNS"] = ws;
+
+        const wopts = {
+          bookType: "xlsx",
+          bookSST: false,
+          type: "buffer"
+        };
+        const wBuffer = XLSX.write(wb, wopts);
+
+        reply.header(
+          "Content-Type",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
+        reply.header(
+          "Content-Disposition",
+          "attachment; filename=" + `${fileName}.xlsx`
+        );
+        reply.send(wBuffer);
       } catch (error) {
         reply.send({
           message: error.message,

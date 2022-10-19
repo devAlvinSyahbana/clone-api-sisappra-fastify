@@ -1,11 +1,14 @@
 const kepegawaian_pns = require("../../services/kepegawaian/kepegawaian_pns");
 const kepegawaian_non_pns = require("../../services/kepegawaian/kepegawaian_non_pns");
+const kepegawaian_rekapitulasi = require("../../services/kepegawaian/kepegawaian_rekapitulasi");
 const multer = require("fastify-multer");
 const XLSX = require("xlsx");
+// const moment = require("moment");
 
 module.exports = async function (fastify, opts) {
   fastify.register(kepegawaian_pns);
   fastify.register(kepegawaian_non_pns);
+  fastify.register(kepegawaian_rekapitulasi);
   fastify.register(multer.contentParser);
   //------------ Define the Storage to Store files------------
   var filename = "";
@@ -46,7 +49,7 @@ module.exports = async function (fastify, opts) {
 
   // ^ Find and Filter Pensiun 
   fastify.get(
-    "/pegawai-pensiun", {
+    "/Pensiun", {
       schema: {
         description: "This is an endpoint for updating all pensiun",
         tags: ["pensiun"],
@@ -64,26 +67,23 @@ module.exports = async function (fastify, opts) {
             nama: {
               type: "string",
             },
-            nopegawai: {
+            nrk_nptt_pjlp: {
               type: "string",
             },
-            nip: {
+            tempat_tugas: {
               type: "string",
             },
-            tempat_tugas_bidang: {
+            seksi_kecamatan: {
               type: "string",
             },
-            tempat_tugas_kecamatan: {
-              type: "string",
-            },
-            status: {
+            status_pegawai: {
               type: "string",
             },
             tahun_pensiun: {
-              type: "string",
+              type: "number",
             },
           },
-          required: ["limit", "offset", "status"],
+          required: ["limit", "offset"],
         },
         response: {
           200: {
@@ -102,19 +102,22 @@ module.exports = async function (fastify, opts) {
                     nama: {
                       type: "string"
                     },
-                    kepegawaian_nip: {
+                    nip: {
                       type: "string"
                     },
-                    kepegawaian_nrk: {
+                    nrk_nptt_pjlp: {
                       type: "string"
                     },
-                    kepegawaian_jabatan: {
+                    kepegawaian_status_pegawai: {
                       type: "string"
                     },
-                    kepegawaian_tempat_tugas: {
+                    jabatan: {
                       type: "string"
                     },
-                    kepegawaian_subbag_seksi_kecamatan: {
+                    tempat_tugas: {
+                      type: "string"
+                    },
+                    subbag_seksi_kecamatan: {
                       type: "string"
                     },
                     tempat_lahir: {
@@ -124,11 +127,14 @@ module.exports = async function (fastify, opts) {
                       type: "string"
                     },
                     tahun_pensiun: {
-                      type: "string"
+                      type: "number"
                     },
                   },
                 }
-              }
+              },
+              total_data: {
+                type: "number"
+              },
             },
           },
         },
@@ -139,82 +145,24 @@ module.exports = async function (fastify, opts) {
         limit,
         offset,
         nama,
-        nopegawai,
-        nip,
-        tempat_tugas_bidang,
-        tempat_tugas_kecamatan,
-        status,
+        nrk_nptt_pjlp,
+        tempat_tugas,
+        seksi_kecamatan,
+        status_pegawai,
         tahun_pensiun
       } = request.query;
-      let exec = null;
-      let qwhere = "";
-      if (status === "PNS") {
-        if (nama || nopegawai || nip || tempat_tugas_bidang || tempat_tugas_kecamatan || tahun_pensiun) {
-          if (nama) {
-            qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
-          }
-          if (nopegawai) {
-            qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nopegawai}%'`;
-          }
-          if (nip) {
-            qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nip}%'`;
-          }
-          if (tempat_tugas_bidang) {
-            qwhere += ` AND kpns.kepegawaian_tempat_tugas ILIKE '%${tempat_tugas_bidang}%'`;
-          }
-          if (tempat_tugas_kecamatan) {
-            qwhere += ` AND kpns.kepegawaian_subbag_seksi_kecamatan ILIKE '%${tempat_tugas_kecamatan}%'`;
-          }
-          if (tahun_pensiun) {
-            qwhere += ` AND CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END = ${tahun_pensiun}`;
-          }
-          exec = await fastify.kepegawaian_pns.filterPensiun(limit, offset, qwhere);
-        } else {
-          exec = await fastify.kepegawaian_pns.findPensiun(limit, offset);
-        }
-      } else {
-        if (nama || nopegawai || nip || tempat_tugas_bidang || tempat_tugas_kecamatan || status || tahun_pensiun) {
-          if (nama) {
-            qwhere += ` AND nama ILIKE '%${nama}%'`;
-          }
-          if (nopegawai) {
-            qwhere += ` AND kepegawaian_nptt_npjlp ILIKE '%${nopegawai}%'`;
-          }
-          if (nip) {
-            qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nip}%'`;
-          }
-          if (tempat_tugas_bidang) {
-            qwhere += ` AND kepegawaian_tempat_tugas ILIKE '%${tempat_tugas_bidang}%'`;
-          }
-          if (tempat_tugas_kecamatan) {
-            qwhere += ` AND kepegawaian_subbag_seksi_kecamatan ILIKE '%${tempat_tugas_kecamatan}%'`;
-          }
-          if (status) {
-            qwhere += ` AND kepegawaian_status_pegawai ILIKE '%${status}%'`;
-          }
-          if (tahun_pensiun) {
-            qwhere += ` AND CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END = ${tahun_pensiun}`;
-          }
-          exec = await fastify.kepegawaian_non_pns.filterPensiun(
-            limit,
-            offset,
-            status,
-            qwhere
-          );
-        } else {
-          exec = await fastify.kepegawaian_non_pns.findPensiun(
-            limit,
-            offset,
-            status
-          );
-        }
-      }
+      const exec = await fastify.kepegawaian_rekapitulasi.PensiunFindFilter(nama, nrk_nptt_pjlp, tempat_tugas, seksi_kecamatan, status_pegawai, tahun_pensiun, limit, offset);
+      const {
+        count
+      } = await fastify.kepegawaian_rekapitulasi.PensiunCount(nama, nrk_nptt_pjlp, tempat_tugas, seksi_kecamatan, status_pegawai, tahun_pensiun);
+      console.log(count)
       try {
         if (exec) {
           reply.send({
             message: "success",
             code: 200,
             data: exec,
+            total_data: count
           });
         } else {
           reply.send({
@@ -224,7 +172,7 @@ module.exports = async function (fastify, opts) {
         }
       } catch (error) {
         reply.send({
-          message: error.message,
+          message: error,
           code: 500
         });
       }
@@ -233,36 +181,33 @@ module.exports = async function (fastify, opts) {
 
   // ^ Unduh
   fastify.get(
-    "/pensiun/unduh", {
+    "/Pensiun-unduh", {
       schema: {
-        description: "This is an endpoint for fetching a unduh pensiun",
+        description: "This is an endpoint for fetching a rekapitulasi pegawai pensiun",
         tags: ["pensiun"],
         querystring: {
+          description: "Find one pegawai pensiun",
           type: "object",
           properties: {
             nama: {
               type: "string",
             },
-            nopegawai: {
+            nrk_nptt_pjlp: {
               type: "string",
             },
-            nip: {
+            tempat_tugas: {
               type: "string",
             },
-            tempat_tugas_bidang: {
+            seksi_kecamatan: {
               type: "string",
             },
-            tempat_tugas_kecamatan: {
-              type: "string",
-            },
-            status: {
+            status_pegawai: {
               type: "string",
             },
             tahun_pensiun: {
-              type: "string",
+              type: "number",
             },
           },
-          required: ["status"],
         },
         response: {
           200: {
@@ -275,11 +220,10 @@ module.exports = async function (fastify, opts) {
     async (request, reply) => {
       const {
         nama,
-        nopegawai,
-        nip,
-        tempat_tugas_bidang,
-        tempat_tugas_kecamatan,
-        status,
+        nrk_nptt_pjlp,
+        tempat_tugas,
+        seksi_kecamatan,
+        status_pegawai,
         tahun_pensiun
       } = request.query;
       let headerData = [];
@@ -287,76 +231,10 @@ module.exports = async function (fastify, opts) {
       try {
         const wb = XLSX.utils.book_new();
         // Definisikan header
-        headerData = [
-          "Nama",
-          "No pegawai",
-          "NIP",
-          "Jabatan",
-          "Tempat Tugas / Bidang",
-          "Tempat Tugas Kecamatan / Seksi",
-          "Tempat Lahir",
-          "Tanggal Lahir",
-          "Tahun Pensiun"
-        ];
+        headerData = ["Nama", "NIP", "No Pegawai", "Status Pegawai", "Jabatan", "Tempat Tugas", "Subbag Seksi Kecamatan", "Tempat Lahir", "Tanggal Lahir", "Tahun Pensiun"];
 
-        let qwhere = "";
-        if (status === "PNS") {
-          if (nama || nopegawai || nip || tempat_tugas_bidang || tempat_tugas_kecamatan || tahun_pensiun) {
-            if (nama) {
-              qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
-            }
-            if (nopegawai) {
-              qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nopegawai}%'`;
-            }
-            if (nip) {
-              qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nip}%'`;
-            }
-            if (tempat_tugas_bidang) {
-              qwhere += ` AND kpns.tempat_tugas_bidang ILIKE '%${tempat_tugas_bidang}%'`;
-            }
-            if (tempat_tugas_kecamatan) {
-              qwhere += ` AND kpns.kepegawaian_subbag_seksi_kecamatan ILIKE '%${tempat_tugas_kecamatan}%'`;
-            }
-            if (tahun_pensiun) {
-              qwhere += ` AND CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END = ${tahun_pensiun}`;
-            }
-            exec = await fastify.kepegawaian_pns.filterPensiunUnduh(qwhere);
-          } else {
-            exec = await fastify.kepegawaian_pns.findPensiunUnduh();
-          }
-        } else {
-          if (nama || nopegawai || nip || tempat_tugas_bidang || tempat_tugas_kecamatan || status || tahun_pensiun) {
-            if (nama) {
-              qwhere += ` AND nama ILIKE '%${nama}%'`;
-            }
-            if (nopegawai) {
-              qwhere += ` AND kepegawaian_nptt_npjlp ILIKE '%${nopegawai}%'`;
-            }
-            if (nip) {
-              qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nip}%'`;
-            }
-            if (tempat_tugas_bidang) {
-              qwhere += ` AND tempat_tugas_bidang ILIKE '%${tempat_tugas_bidang}%'`;
-            }
-            if (tempat_tugas_kecamatan) {
-              qwhere += ` AND kepegawaian_subbag_seksi_kecamatan ILIKE '%${tempat_tugas_kecamatan}%'`;
-            }
-            if (status) {
-              qwhere += ` AND kepegawaian_status_pegawai ILIKE '%${status}%'`;
-            }
-            if (tahun_pensiun) {
-              qwhere += ` AND CASE WHEN kepegawaian_eselon = 1 or kepegawaian_eselon = 2 THEN EXTRACT(YEAR FROM tgl_lahir) + 60 ELSE EXTRACT(YEAR FROM tgl_lahir) + 58 END = ${tahun_pensiun}`;
-            }
-            getData = await fastify.kepegawaian_non_pns.filterPensiun(
-              status,
-              qwhere
-            );
-          } else {
-            getData = await fastify.kepegawaian_non_pns.findPensiun(
-              status
-            );
-          }
-        }
+
+        const getData = await fastify.kepegawaian_rekapitulasi.PensiunUnduh(nama, nrk_nptt_pjlp, tempat_tugas, seksi_kecamatan, status_pegawai, tahun_pensiun);
 
         const convertData = getData.map(function (item) {
           return Object.values(item);
@@ -366,18 +244,18 @@ module.exports = async function (fastify, opts) {
         // Definisikan rows untuk ditulis ke dalam spreadsheet
         const wsDataKepegawaian = [headerData, ...data];
         // Buat Workbook
-        const fileName = "DAFTAR NAMA";
+        const fileName = "REKAPITULASI PENSIUN KEPEGAWAIAN";
         wb.Props = {
           Title: fileName,
-          Author: "SISAPPRA - DAFTAR NAMA",
+          Author: "SISAPPRA - REKAPITULASI PENSIUN KEPEGAWAIAN",
           CreatedDate: new Date(),
         };
         // Buat Sheet
-        wb.SheetNames.push("DAFTAR NAMA");
+        wb.SheetNames.push("DATA REKAPITULASI");
         // Buat Sheet dengan Data
         const ws = XLSX.utils.aoa_to_sheet(wsDataKepegawaian);
         // const ws = XLSX.utils.aoa_to_sheet(wsData);
-        wb.Sheets["DAFTAR NAMA"] = ws;
+        wb.Sheets["DATA REKAPITULASI"] = ws;
 
         const wopts = {
           bookType: "xlsx",
