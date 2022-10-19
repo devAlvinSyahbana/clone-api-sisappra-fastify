@@ -284,13 +284,15 @@ module.exports = async function (fastify, opts) {
     async (request, reply) => {
       const params = request.query;
       let qwhere = "";
-      Object.keys(params).forEach(function (key) {
-        if (key == "id_tempat_pelaksanaan") {
-          qwhere += ` AND ${key} = ${params[key]}`;
-        } else {
-          qwhere += ` AND ${key} ILIKE '%${params[key]}%'`;
-        }
-      });
+      if (params) {
+        Object.keys(params).forEach(function (key) {
+          if (key == "id_tempat_pelaksanaan") {
+            qwhere += ` AND ${key} = ${params[key]}`;
+          } else {
+            qwhere += ` AND ${key} ILIKE '%${params[key]}%'`;
+          }
+        });
+      }
       const exec = await fastify.master_tempat_seksi_pelaksanaan.filter(qwhere);
 
       try {
