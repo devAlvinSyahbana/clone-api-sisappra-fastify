@@ -2494,6 +2494,9 @@ module.exports = async function (fastify, opts) {
             kelurahan: {
               type: "string",
             },
+            tahun_jnp: {
+              type: "number",
+            },
           },
           required: ["limit", "offset"],
         },
@@ -2576,10 +2579,11 @@ module.exports = async function (fastify, opts) {
         id_status_kenaikan_pangkat,
         tempat_tugas,
         seksi_kecamatan,
-        kelurahan
+        kelurahan,
+        tahun_jnp
       } = request.query;
-      const exec = await fastify.kepegawaian_rekapitulasi.find_rekapitulasi_kenaikan_pangkat(limit, offset, nama, nrk, nip, id_jabatan, id_pangkat, id_status_kenaikan_pangkat, tempat_tugas, seksi_kecamatan, kelurahan);
-      const {count} = await fastify.kepegawaian_rekapitulasi.count_rekapitulasi_kenaikan_pangkat(nama, nrk, nip, id_jabatan, id_pangkat, id_status_kenaikan_pangkat, tempat_tugas, seksi_kecamatan, kelurahan);
+      const exec = await fastify.kepegawaian_rekapitulasi.find_rekapitulasi_kenaikan_pangkat(limit, offset, nama, nrk, nip, id_jabatan, id_pangkat, id_status_kenaikan_pangkat, tempat_tugas, seksi_kecamatan, kelurahan, tahun_jnp);
+      const {count} = await fastify.kepegawaian_rekapitulasi.count_rekapitulasi_kenaikan_pangkat(nama, nrk, nip, id_jabatan, id_pangkat, id_status_kenaikan_pangkat, tempat_tugas, seksi_kecamatan, kelurahan, tahun_jnp);
 
       try {
         if (exec) {
@@ -2736,6 +2740,9 @@ module.exports = async function (fastify, opts) {
             kelurahan: {
               type: "string",
             },
+            tahun_jnp: {
+              type: "number",
+            },
           },
         },
         response: {
@@ -2756,7 +2763,8 @@ module.exports = async function (fastify, opts) {
         id_status_kenaikan_pangkat,
         tempat_tugas,
         seksi_kecamatan,
-        kelurahan
+        kelurahan,
+        tahun_jnp
       } = request.query;
       let headerData = [];
       let data = [];
@@ -2765,7 +2773,7 @@ module.exports = async function (fastify, opts) {
         // Definisikan header
         headerData = ["No", "Nama", "NIP", "NRK", "Jabatan", "Tempat Tugas", "Seksi Kecamatan", "Pangkat", "Golongan", "TMT Pangkat", "Eselon", "Status Kenaikan Pangkat", "Jadwal Kenaikan Pangkat", ];
 
-        const getData = await fastify.kepegawaian_rekapitulasi.unduh_rekapitulasi_kenaikan_pangkat(nama, nrk, nip, id_jabatan, id_pangkat, id_status_kenaikan_pangkat, tempat_tugas, seksi_kecamatan, kelurahan);
+        const getData = await fastify.kepegawaian_rekapitulasi.unduh_rekapitulasi_kenaikan_pangkat(nama, nrk, nip, id_jabatan, id_pangkat, id_status_kenaikan_pangkat, tempat_tugas, seksi_kecamatan, kelurahan, tahun_jnp);
 
         const convertData = getData.map(function (item) {
           return Object.values(item);
