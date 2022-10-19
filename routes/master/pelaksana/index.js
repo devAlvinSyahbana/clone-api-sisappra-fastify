@@ -178,14 +178,14 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const { name, id_tempat_pelaksanaan, kategori } = request.body;
+      const { name, id_tempat_pelaksanaan, updated_by } = request.body;
 
       try {
         await fastify.master_tempat_seksi_pelaksanaan.update(
           id,
           name,
-          id_tempat_pelaksanaan,
-          kategori
+          updated_by,
+          id_tempat_pelaksanaan
         );
         reply.send({ message: "success", code: 200 });
       } catch (error) {
