@@ -126,10 +126,10 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { skpd, kategori, created_by } = request.body;
+      const { name, kategori, created_by } = request.body;
 
       try {
-        await fastify.master_tempat_pelaksanaan.create(skpd, kategori, created_by);
+        await fastify.master_tempat_pelaksanaan.create(name, kategori, created_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -174,10 +174,10 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const { skpd, updated_by, kategori } = request.body;
+      const { name, updated_by, kategori } = request.body;
 
       try {
-        await fastify.master_tempat_pelaksanaan.update(id, skpd, updated_by, kategori);
+        await fastify.master_tempat_pelaksanaan.update(id, name, updated_by, kategori);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
