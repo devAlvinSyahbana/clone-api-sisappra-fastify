@@ -25,9 +25,9 @@ const master_tempat_pelaksanaan = (db) => {
 
     let a = "";
     if (max == undefined) {
-      a = "SKPD1";
+      a = "PLBK1";
     } else {
-      a = "SKPD" + (parseInt(max) + 1);
+      a = "PLBK" + (parseInt(max) + 1);
     }
 
     const query = db.one(
