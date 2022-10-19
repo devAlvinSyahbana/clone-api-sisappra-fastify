@@ -1,7 +1,7 @@
-const master_tempat_pelaksanaan = require("../../../services/master/master_tempat_pelaksanaan");
+const master_tempat_seksi_pelaksanaan = require("../../../services/master/master_tempat_seksi_pelaksanaan");
 
 module.exports = async function (fastify, opts) {
-  fastify.register(master_tempat_pelaksanaan);
+  fastify.register(master_tempat_seksi_pelaksanaan);
 
   fastify.get(
     "/find",
@@ -24,6 +24,7 @@ module.exports = async function (fastify, opts) {
                     id: { type: "number" },
                     nama: { type: "string" },
                     kode: { type: "string" },
+                    group: { type: "string" },
                   },
                 },
               },
@@ -33,7 +34,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const exec = await fastify.master_tempat_pelaksanaan.find();
+      const exec = await fastify.master_tempat_seksi_pelaksanaan.find();
 
       try {
         if (exec) {
@@ -71,8 +72,9 @@ module.exports = async function (fastify, opts) {
                 type: "object",
                 properties: {
                   id: { type: "number" },
-                  name: { type: "string" },
+                  nama: { type: "string" },
                   kode: { type: "string" },
+                  id_tempat_pelaksanaan: { type: "number" },
                 },
               },
             },
@@ -82,7 +84,7 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const exec = await fastify.master_tempat_pelaksanaan.findone(id);
+      const exec = await fastify.master_tempat_seksi_pelaksanaan.findone(id);
 
       try {
         if (exec) {
@@ -107,7 +109,7 @@ module.exports = async function (fastify, opts) {
           type: "object",
           properties: {
             name: { type: "string" },
-            kategori: { type: "string" }, //Bidang / Wilayah
+            id_tempat_pelaksanaan: { type: "number" },
             created_by: { type: "number" },
           },
         },
@@ -124,10 +126,14 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { skpd, kategori, created_by } = request.body;
+      const { name, id_tempat_pelaksanaan, created_by } = request.body;
 
       try {
-        await fastify.master_tempat_pelaksanaan.create(skpd, kategori, created_by);
+        await fastify.master_tempat_seksi_pelaksanaan.create(
+          name,
+          id_tempat_pelaksanaan,
+          created_by
+        );
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -154,7 +160,7 @@ module.exports = async function (fastify, opts) {
           type: "object",
           properties: {
             name: { type: "string" },
-            kategori: { type: "string" }, //Bidang / Wilayah
+            id_tempat_pelaksanaan: { type: "number" },
             updated_by: { type: "number" },
           },
         },
@@ -172,10 +178,15 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const { skpd, updated_by, kategori } = request.body;
+      const { name, id_tempat_pelaksanaan, kategori } = request.body;
 
       try {
-        await fastify.master_tempat_pelaksanaan.update(id, skpd, updated_by, kategori);
+        await fastify.master_tempat_seksi_pelaksanaan.update(
+          id,
+          name,
+          id_tempat_pelaksanaan,
+          kategori
+        );
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -221,7 +232,7 @@ module.exports = async function (fastify, opts) {
       const { deleted_by } = request.body;
 
       try {
-        await fastify.master_tempat_pelaksanaan.del(id, deleted_by);
+        await fastify.master_tempat_seksi_pelaksanaan.del(id, deleted_by);
         reply.send({ message: "success", code: 204 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -230,16 +241,20 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/filter/:q",
+    "/filter",
     {
       schema: {
         description: "This is an endpoint for filtering a master pelaksana",
         tags: ["master pelaksana"],
-        params: {
-          description: "Filter master pelaksana by search",
+        querystring: {
           type: "object",
           properties: {
-            q: { type: "string" },
+            nama: {
+              type: "string",
+            },
+            id_tempat_pelaksanaan: {
+              type: "number",
+            },
           },
         },
         response: {
@@ -255,8 +270,9 @@ module.exports = async function (fastify, opts) {
                   type: "object",
                   properties: {
                     id: { type: "number" },
-                    name: { type: "string" },
+                    nama: { type: "string" },
                     kode: { type: "string" },
+                    id_tempat_pelaksanaan: { type: "number" },
                   },
                 },
               },
@@ -266,8 +282,16 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { q } = request.params;
-      const exec = await fastify.master_tempat_pelaksanaan.filter(q);
+      const params = request.query;
+      let qwhere = "";
+      Object.keys(params).forEach(function (key) {
+        if (key == "id_tempat_pelaksanaan") {
+          qwhere += ` AND ${key} = ${params[key]}`;
+        } else {
+          qwhere += ` AND ${key} ILIKE '%${params[key]}%'`;
+        }
+      });
+      const exec = await fastify.master_tempat_seksi_pelaksanaan.filter(qwhere);
 
       try {
         if (exec) {
