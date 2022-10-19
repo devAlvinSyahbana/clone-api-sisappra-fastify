@@ -3,7 +3,7 @@ const fp = require("fastify-plugin");
 const master_tempat_pelaksanaan = (db) => {
   const find = () => {
     const query = db.any(
-      "SELECT id, nama, kode FROM master_tempat_pelaksanaan WHERE is_deleted = 0 ORDER BY created_at DESC"
+      "SELECT id, nama, kode, kategori FROM master_tempat_pelaksanaan WHERE is_deleted = 0 ORDER BY created_at DESC"
     );
 
     return query;
@@ -11,7 +11,7 @@ const master_tempat_pelaksanaan = (db) => {
 
   const findone = (id) => {
     const query = db.one(
-      "SELECT id, nama, kode FROM master_tempat_pelaksanaan WHERE id = $1 AND is_deleted = 0",
+      "SELECT id, nama, kode, kategori FROM master_tempat_pelaksanaan WHERE id = $1 AND is_deleted = 0",
       [id]
     );
 
@@ -58,7 +58,7 @@ const master_tempat_pelaksanaan = (db) => {
 
   const filter = (q) => {
     const query = db.any(
-      "SELECT id, nama, kode FROM master_tempat_pelaksanaan WHERE is_deleted = 0 AND nama ILIKE '%" +
+      "SELECT id, nama, kode, kategori FROM master_tempat_pelaksanaan WHERE is_deleted = 0 AND nama ILIKE '%" +
         q +
         "%'"
     );
