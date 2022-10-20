@@ -289,39 +289,18 @@ const kepegawaian_rekapitulasi = (db) => {
     offset,
     nama,
     nrk,
-    jabatan,
-    tempat_tugas,
-    seksi_kecamatan,
-    kelurahan
+    bidang_wilayah,
+    pelaksana,
+    jabatan
   ) => {
     let filter = "";
 
-    if (tempat_tugas != undefined) {
-      filter =
-        filter +
-        " and kp.kepegawaian_tempat_tugas ilike '" +
-        "%" +
-        tempat_tugas +
-        "%" +
-        "'";
+    if (bidang_wilayah != undefined) {
+      filter += " and kp.kepegawaian_tempat_tugas = '" + bidang_wilayah + "'";
     }
-    if (seksi_kecamatan != undefined) {
-      filter =
-        filter +
-        " and kp.kepegawaian_tempat_tugas ilike '" +
-        "%" +
-        seksi_kecamatan +
-        "%" +
-        "'";
-    }
-    if (kelurahan != undefined) {
-      filter =
-        filter +
-        " and kp.kepegawaian_kelurahan ilike '" +
-        "%" +
-        kelurahan +
-        "%" +
-        "'";
+    if (pelaksana != undefined) {
+      filter +=
+        " and kp.kepegawaian_subbag_seksi_kecamatan = '" + pelaksana + "'";
     }
     if (nama != undefined) {
       filter = filter + " and kp.nama ilike '" + "%" + nama + "%" + "'";
@@ -331,7 +310,7 @@ const kepegawaian_rekapitulasi = (db) => {
         filter + " and kp.kepegawaian_nrk ilike '" + "%" + nrk + "%" + "'";
     }
     if (jabatan != undefined) {
-      filter = filter + " and kp.kepegawaian_jabatan = " + jabatan;
+      filter = filter + " and kp.kepegawaian_jabatan = " + parseInt(jabatan);
     }
 
     const query = db.any(
@@ -350,39 +329,18 @@ const kepegawaian_rekapitulasi = (db) => {
   const count_rekapitulasi_jft = (
     nama,
     nrk,
-    jabatan,
-    tempat_tugas,
-    seksi_kecamatan,
-    kelurahan
+    bidang_wilayah,
+    pelaksana,
+    jabatan
   ) => {
     let filter = "";
 
-    if (tempat_tugas != undefined) {
-      filter =
-        filter +
-        " and kp.kepegawaian_tempat_tugas ilike '" +
-        "%" +
-        tempat_tugas +
-        "%" +
-        "'";
+    if (bidang_wilayah != undefined) {
+      filter += " and kp.kepegawaian_tempat_tugas = '" + bidang_wilayah + "'";
     }
-    if (seksi_kecamatan != undefined) {
-      filter =
-        filter +
-        " and kp.kepegawaian_tempat_tugas ilike '" +
-        "%" +
-        seksi_kecamatan +
-        "%" +
-        "'";
-    }
-    if (kelurahan != undefined) {
-      filter =
-        filter +
-        " and kp.kepegawaian_kelurahan ilike '" +
-        "%" +
-        kelurahan +
-        "%" +
-        "'";
+    if (pelaksana != undefined) {
+      filter +=
+        " and kp.kepegawaian_subbag_seksi_kecamatan = '" + pelaksana + "'";
     }
     if (nama != undefined) {
       filter = filter + " and kp.nama ilike '" + "%" + nama + "%" + "'";
@@ -392,7 +350,7 @@ const kepegawaian_rekapitulasi = (db) => {
         filter + " and kp.kepegawaian_nrk ilike '" + "%" + nrk + "%" + "'";
     }
     if (jabatan != undefined) {
-      filter = filter + " and kp.kepegawaian_jabatan = " + jabatan;
+      filter = filter + " and kp.kepegawaian_jabatan = " + parseInt(jabatan);
     }
 
     const query = db.one(
@@ -470,19 +428,76 @@ const kepegawaian_rekapitulasi = (db) => {
     );
   };
 
-  const find_rekapitulasi_kenaikan_pangkat = (limit, offset,nama, nrk, nip, jabatan, pangkat, status_kenaikan_pangkat, tempat_tugas, seksi_kecamatan, kelurahan, tahun_jnp) => {
+  const find_rekapitulasi_kenaikan_pangkat = (
+    limit,
+    offset,
+    nama,
+    nrk,
+    nip,
+    jabatan,
+    pangkat,
+    status_kenaikan_pangkat,
+    tempat_tugas,
+    seksi_kecamatan,
+    kelurahan,
+    tahun_jnp
+  ) => {
     let filter = "";
 
-    if (tempat_tugas != undefined){filter = filter + " and kp.kepegawaian_tempat_tugas ilike '" + "%"  +tempat_tugas + "%" + "'"}
-    if (seksi_kecamatan != undefined){filter = filter + " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" + "%" + seksi_kecamatan + "%" + "'"}
-    if (kelurahan != undefined){filter = filter + " and kp.kepegawaian_kelurahan ilike '"+ "%"  + kelurahan+ "%" + "'"}
-    if (nama != undefined){filter = filter + " and kp.nama ilike '" + "%" + nama + "%" + "'"}
-    if (nrk != undefined){filter = filter + " and kp.kepegawaian_nrk ilike '" + "%"  + nrk + "%" + "'"}
-    if (nip != undefined){filter = filter + " and kp.kepegawaian_nip ilike '" + "%"  + nip + "%" + "'"}
-    if (jabatan != undefined){filter = filter + " and kp.kepegawaian_jabatan = " + jabatan}
-    if (status_kenaikan_pangkat != undefined){filter = filter + " and kp.status_kenaikan_pangkat = "  + status_kenaikan_pangkat}
-    if (pangkat != undefined){filter = filter + " and kp.kepegawaian_pangkat = "  + pangkat}
-    if (tahun_jnp != undefined){filter = filter + " and (extract( year FROM kp.kepegawaian_tmtpangkat )::int + mskp.masa_naik_pangkat::int) = "  + tahun_jnp}
+    if (tempat_tugas != undefined) {
+      filter =
+        filter +
+        " and kp.kepegawaian_tempat_tugas ilike '" +
+        "%" +
+        tempat_tugas +
+        "%" +
+        "'";
+    }
+    if (seksi_kecamatan != undefined) {
+      filter =
+        filter +
+        " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" +
+        "%" +
+        seksi_kecamatan +
+        "%" +
+        "'";
+    }
+    if (kelurahan != undefined) {
+      filter =
+        filter +
+        " and kp.kepegawaian_kelurahan ilike '" +
+        "%" +
+        kelurahan +
+        "%" +
+        "'";
+    }
+    if (nama != undefined) {
+      filter = filter + " and kp.nama ilike '" + "%" + nama + "%" + "'";
+    }
+    if (nrk != undefined) {
+      filter =
+        filter + " and kp.kepegawaian_nrk ilike '" + "%" + nrk + "%" + "'";
+    }
+    if (nip != undefined) {
+      filter =
+        filter + " and kp.kepegawaian_nip ilike '" + "%" + nip + "%" + "'";
+    }
+    if (jabatan != undefined) {
+      filter = filter + " and kp.kepegawaian_jabatan = " + jabatan;
+    }
+    if (status_kenaikan_pangkat != undefined) {
+      filter =
+        filter + " and kp.status_kenaikan_pangkat = " + status_kenaikan_pangkat;
+    }
+    if (pangkat != undefined) {
+      filter = filter + " and kp.kepegawaian_pangkat = " + pangkat;
+    }
+    if (tahun_jnp != undefined) {
+      filter =
+        filter +
+        " and (extract( year FROM kp.kepegawaian_tmtpangkat )::int + mskp.masa_naik_pangkat::int) = " +
+        tahun_jnp;
+    }
 
     const query = db.any(
       "select kp.id, kp.nama, kp.kepegawaian_nip as nip, kp.kepegawaian_nrk as nrk, mj.nama as jabatan, kp.kepegawaian_tempat_tugas as tempat_tugas, kp.kepegawaian_subbag_seksi_kecamatan as subbag_seksi_kecamatan, mp.nama as pangkat, mg.nama as golongan, kp.kepegawaian_tmtpangkat as tmt_pangkat, me.nama as eselon, mskp.nama as status_kenaikan_pangkat, (extract( year FROM kp.kepegawaian_tmtpangkat )::int + mskp.masa_naik_pangkat::int) as jadwal_kenaikan_pangkat from kepegawaian_pns kp left join master_jabatan mj on kp.kepegawaian_jabatan = mj.id left join master_pangkat mp on kp.kepegawaian_pangkat = mp.id left join master_golongan mg on kp.kepegawaian_golongan = mg.id left join master_eselon me on kp.kepegawaian_eselon = me.id left join master_status_kenaikan_pangkat mskp on kp.status_kenaikan_pangkat = mskp.id where kp.is_deleted = 0 " +
@@ -497,19 +512,74 @@ const kepegawaian_rekapitulasi = (db) => {
     return query;
   };
 
-  const count_rekapitulasi_kenaikan_pangkat = (nama, nrk, nip, jabatan, pangkat, status_kenaikan_pangkat, tempat_tugas, seksi_kecamatan, kelurahan, tahun_jnp) => {
+  const count_rekapitulasi_kenaikan_pangkat = (
+    nama,
+    nrk,
+    nip,
+    jabatan,
+    pangkat,
+    status_kenaikan_pangkat,
+    tempat_tugas,
+    seksi_kecamatan,
+    kelurahan,
+    tahun_jnp
+  ) => {
     let filter = "";
 
-    if (tempat_tugas != undefined){filter = filter + " and kp.kepegawaian_tempat_tugas ilike '" + "%"  +tempat_tugas + "%" + "'"}
-    if (seksi_kecamatan != undefined){filter = filter + " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" + "%" + seksi_kecamatan + "%" + "'"}
-    if (kelurahan != undefined){filter = filter + " and kp.kepegawaian_kelurahan ilike '"+ "%"  + kelurahan+ "%" + "'"}
-    if (nama != undefined){filter = filter + " and kp.nama ilike '" + "%" + nama + "%" + "'"}
-    if (nrk != undefined){filter = filter + " and kp.kepegawaian_nrk ilike '" + "%"  + nrk + "%" + "'"}
-    if (nip != undefined){filter = filter + " and kp.kepegawaian_nip ilike '" + "%"  + nip + "%" + "'"}
-    if (jabatan != undefined){filter = filter + " and kp.kepegawaian_jabatan = " + jabatan}
-    if (status_kenaikan_pangkat != undefined){filter = filter + " and kp.status_kenaikan_pangkat = "  + status_kenaikan_pangkat}
-    if (pangkat != undefined){filter = filter + " and kp.kepegawaian_pangkat = "  + pangkat}
-    if (tahun_jnp != undefined){filter = filter + " and (extract( year FROM kp.kepegawaian_tmtpangkat )::int + mskp.masa_naik_pangkat::int) = "  + tahun_jnp}
+    if (tempat_tugas != undefined) {
+      filter =
+        filter +
+        " and kp.kepegawaian_tempat_tugas ilike '" +
+        "%" +
+        tempat_tugas +
+        "%" +
+        "'";
+    }
+    if (seksi_kecamatan != undefined) {
+      filter =
+        filter +
+        " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" +
+        "%" +
+        seksi_kecamatan +
+        "%" +
+        "'";
+    }
+    if (kelurahan != undefined) {
+      filter =
+        filter +
+        " and kp.kepegawaian_kelurahan ilike '" +
+        "%" +
+        kelurahan +
+        "%" +
+        "'";
+    }
+    if (nama != undefined) {
+      filter = filter + " and kp.nama ilike '" + "%" + nama + "%" + "'";
+    }
+    if (nrk != undefined) {
+      filter =
+        filter + " and kp.kepegawaian_nrk ilike '" + "%" + nrk + "%" + "'";
+    }
+    if (nip != undefined) {
+      filter =
+        filter + " and kp.kepegawaian_nip ilike '" + "%" + nip + "%" + "'";
+    }
+    if (jabatan != undefined) {
+      filter = filter + " and kp.kepegawaian_jabatan = " + jabatan;
+    }
+    if (status_kenaikan_pangkat != undefined) {
+      filter =
+        filter + " and kp.status_kenaikan_pangkat = " + status_kenaikan_pangkat;
+    }
+    if (pangkat != undefined) {
+      filter = filter + " and kp.kepegawaian_pangkat = " + pangkat;
+    }
+    if (tahun_jnp != undefined) {
+      filter =
+        filter +
+        " and (extract( year FROM kp.kepegawaian_tmtpangkat )::int + mskp.masa_naik_pangkat::int) = " +
+        tahun_jnp;
+    }
 
     const query = db.one(
       "select count(kp.id) from kepegawaian_pns kp left join master_jabatan mj on kp.kepegawaian_jabatan = mj.id left join master_pangkat mp on kp.kepegawaian_pangkat = mp.id left join master_golongan mg on kp.kepegawaian_golongan = mg.id left join master_eselon me on kp.kepegawaian_eselon = me.id left join master_status_kenaikan_pangkat mskp on kp.status_kenaikan_pangkat = mskp.id where kp.is_deleted = 0 " +
@@ -529,19 +599,74 @@ const kepegawaian_rekapitulasi = (db) => {
     return query;
   };
 
-  const unduh_rekapitulasi_kenaikan_pangkat = (nama, nrk, nip, jabatan, pangkat, status_kenaikan_pangkat, tempat_tugas, seksi_kecamatan, kelurahan, tahun_jnp) => {
+  const unduh_rekapitulasi_kenaikan_pangkat = (
+    nama,
+    nrk,
+    nip,
+    jabatan,
+    pangkat,
+    status_kenaikan_pangkat,
+    tempat_tugas,
+    seksi_kecamatan,
+    kelurahan,
+    tahun_jnp
+  ) => {
     let filter = "";
 
-    if (tempat_tugas != undefined){filter = filter + " and kp.kepegawaian_tempat_tugas ilike '" + "%"  +tempat_tugas + "%" + "'"}
-    if (seksi_kecamatan != undefined){filter = filter + " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" + "%" + seksi_kecamatan + "%" + "'"}
-    if (kelurahan != undefined){filter = filter + " and kp.kepegawaian_kelurahan ilike '"+ "%"  + kelurahan+ "%" + "'"}
-    if (nama != undefined){filter = filter + " and kp.nama ilike '" + "%" + nama + "%" + "'"}
-    if (nrk != undefined){filter = filter + " and kp.kepegawaian_nrk ilike '" + "%"  + nrk + "%" + "'"}
-    if (nip != undefined){filter = filter + " and kp.kepegawaian_nip ilike '" + "%"  + nip + "%" + "'"}
-    if (jabatan != undefined){filter = filter + " and kp.kepegawaian_jabatan = " + jabatan}
-    if (status_kenaikan_pangkat != undefined){filter = filter + " and kp.status_kenaikan_pangkat = "  + status_kenaikan_pangkat}
-    if (pangkat != undefined){filter = filter + " and kp.kepegawaian_pangkat = "  + pangkat}
-    if (tahun_jnp != undefined){filter = filter + " and (extract( year FROM kp.kepegawaian_tmtpangkat )::int + mskp.masa_naik_pangkat::int) = "  + tahun_jnp}
+    if (tempat_tugas != undefined) {
+      filter =
+        filter +
+        " and kp.kepegawaian_tempat_tugas ilike '" +
+        "%" +
+        tempat_tugas +
+        "%" +
+        "'";
+    }
+    if (seksi_kecamatan != undefined) {
+      filter =
+        filter +
+        " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" +
+        "%" +
+        seksi_kecamatan +
+        "%" +
+        "'";
+    }
+    if (kelurahan != undefined) {
+      filter =
+        filter +
+        " and kp.kepegawaian_kelurahan ilike '" +
+        "%" +
+        kelurahan +
+        "%" +
+        "'";
+    }
+    if (nama != undefined) {
+      filter = filter + " and kp.nama ilike '" + "%" + nama + "%" + "'";
+    }
+    if (nrk != undefined) {
+      filter =
+        filter + " and kp.kepegawaian_nrk ilike '" + "%" + nrk + "%" + "'";
+    }
+    if (nip != undefined) {
+      filter =
+        filter + " and kp.kepegawaian_nip ilike '" + "%" + nip + "%" + "'";
+    }
+    if (jabatan != undefined) {
+      filter = filter + " and kp.kepegawaian_jabatan = " + jabatan;
+    }
+    if (status_kenaikan_pangkat != undefined) {
+      filter =
+        filter + " and kp.status_kenaikan_pangkat = " + status_kenaikan_pangkat;
+    }
+    if (pangkat != undefined) {
+      filter = filter + " and kp.kepegawaian_pangkat = " + pangkat;
+    }
+    if (tahun_jnp != undefined) {
+      filter =
+        filter +
+        " and (extract( year FROM kp.kepegawaian_tmtpangkat )::int + mskp.masa_naik_pangkat::int) = " +
+        tahun_jnp;
+    }
 
     const query = db.any(
       "select ROW_NUMBER() OVER (ORDER BY kp.id desc), kp.nama, kp.kepegawaian_nip as nip, kp.kepegawaian_nrk as nrk, mj.nama as jabatan, kp.kepegawaian_tempat_tugas as tempat_tugas, kp.kepegawaian_subbag_seksi_kecamatan as subbag_seksi_kecamatan, mp.nama as pangkat, mg.nama as golongan, kp.kepegawaian_tmtpangkat as tmt_pangkat, me.nama as eselon, mskp.nama as status_kenaikan_pangkat, (extract( year FROM kp.kepegawaian_tmtpangkat )::int + mskp.masa_naik_pangkat::int) as jadwal_kenaikan_pangkat from kepegawaian_pns kp left join master_jabatan mj on kp.kepegawaian_jabatan = mj.id left join master_pangkat mp on kp.kepegawaian_pangkat = mp.id left join master_golongan mg on kp.kepegawaian_golongan = mg.id left join master_eselon me on kp.kepegawaian_eselon = me.id left join master_status_kenaikan_pangkat mskp on kp.status_kenaikan_pangkat = mskp.id where kp.is_deleted = 0 " +
