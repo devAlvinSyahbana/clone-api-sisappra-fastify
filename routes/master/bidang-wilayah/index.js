@@ -72,7 +72,7 @@ module.exports = async function (fastify, opts) {
                 type: "object",
                 properties: {
                   id: { type: "number" },
-                  name: { type: "string" },
+                  nama: { type: "string" },
                   kode: { type: "string" },
                   kategori: { type: "string" },
                 },
@@ -257,7 +257,7 @@ module.exports = async function (fastify, opts) {
                   type: "object",
                   properties: {
                     id: { type: "number" },
-                    name: { type: "string" },
+                    nama: { type: "string" },
                     kode: { type: "string" },
                   },
                 },
