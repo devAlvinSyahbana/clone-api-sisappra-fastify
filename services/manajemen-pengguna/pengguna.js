@@ -9,9 +9,17 @@ const pengguna = (db) => {
     return query;
   };
 
+  const findOne = (id) => {
+    const query = db.one(
+      "SELECT id, skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat , pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns WHERE id = $1 AND is_deleted = 0 ",
+      [id]
+    );
+    return query;
+  };
+
   const filter = (limit, offset, qwhere) => {
     const query = db.any(
-      "SELECT pgn.id, pgn.nama_lengkap, pgn.email, pgn.hak_akses FROM pengguna pgn WHERE pgn.is_deleted = 0" +
+      "SELECT pgn.id, pgn.nama_lengkap, pgn.email, pgn.hak_akses, pgn.created_at as tgl_bergabung, pgn.terakhir_login, status_pengguna, id_pegawai, no_pegawai FROM pengguna pgn WHERE pgn.is_deleted = 0" +
       qwhere +
       " LIMIT " +
       limit +
@@ -25,7 +33,7 @@ const pengguna = (db) => {
   const countAllFilter = (qwhere) => {
     const query = db.one(
       "SELECT COUNT(pgn.id) as total FROM pengguna pgn WHERE pgn.is_deleted = 0" +
-        qwhere
+      qwhere
     );
 
     return query;
@@ -115,13 +123,13 @@ const pengguna = (db) => {
 
   return {
     find,
+    findOne,
+    countAllFilter,
     create,
     filter,
     update,
     del,
-    countAllFilter,
     getDataUnduhManajemenPengguna,
-    //findone,
   };
 }
 
