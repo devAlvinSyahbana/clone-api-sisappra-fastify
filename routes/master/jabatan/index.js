@@ -368,16 +368,20 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/filter/:q",
+    "/filter",
     {
       schema: {
         description: "This is an endpoint for filtering a master jabatan",
         tags: ["master jabatan"],
-        params: {
-          description: "Filter master jabatan by search",
+        querystring: {
           type: "object",
           properties: {
-            q: { type: "string" },
+            nama: {
+              type: "string",
+            },
+            id_master_tempat_seksi_pelaksanaan: {
+              type: "number",
+            },
           },
         },
         response: {
@@ -403,8 +407,18 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { q } = request.params;
-      const exec = await fastify.master_jabatan.filter(q);
+      const params = request.query;
+      let qwhere = "";
+      if (params) {
+        Object.keys(params).forEach(function (key) {
+          if (key == "id_master_tempat_seksi_pelaksanaan") {
+            qwhere += ` AND ${key} = ${params[key]}`;
+          } else {
+            qwhere += ` AND ${key} ILIKE '%${params[key]}%'`;
+          }
+        });
+      }
+      const exec = await fastify.master_jabatan.filter(qwhere);
 
       try {
         if (exec) {
