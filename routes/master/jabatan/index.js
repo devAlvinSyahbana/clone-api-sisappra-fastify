@@ -1,4 +1,4 @@
-const master_jabatan  = require("../../../services/master/master_jabatan");
+const master_jabatan = require("../../../services/master/master_jabatan");
 
 module.exports = async function (fastify, opts) {
   fastify.register(master_jabatan);
@@ -9,6 +9,26 @@ module.exports = async function (fastify, opts) {
       schema: {
         description: "This is an endpoint for fetching all master jabatan",
         tags: ["master jabatan"],
+        querystring: {
+          type: "object",
+          properties: {
+            limit: {
+              type: "integer",
+              default: 10,
+            },
+            offset: {
+              type: "integer",
+              default: 1,
+            },
+            nama: {
+              type: "string",
+            },
+            kode: {
+              type: "string",
+            },
+          },
+          required: ["limit", "offset"],
+        },
         response: {
           200: {
             description: "Success Response",
@@ -25,8 +45,13 @@ module.exports = async function (fastify, opts) {
                     jabatan: { type: "string" },
                     kode: { type: "string" },
                     status: { type: "string" },
+                    id_master_tempat_seksi_pelaksanaan: { type: "number" },
+                    level: { type: "string" },
                   },
                 },
+              },
+              total_data: {
+                type: "number",
               },
             },
           },
@@ -34,11 +59,31 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const exec = await fastify.master_jabatan.find();
+      const params = request.query;
+      let qwhere = "";
+      if (params) {
+        Object.keys(params).forEach(function (key) {
+          if (key !== "limit" && key !== "offset") {
+            qwhere += ` AND ${key} LIKE '%${params[key]}%'`;
+          }
+        });
+      }
+      const exec = await fastify.master_jabatan.find(
+        params.limit,
+        params.offset,
+        qwhere
+      );
+
+      const { total_data } = await fastify.master_jabatan.countAll(qwhere);
 
       try {
         if (exec) {
-          reply.send({ message: "success", code: 200, data: exec });
+          reply.send({
+            message: "success",
+            code: 200,
+            data: exec,
+            total_data: total_data,
+          });
         } else {
           reply.send({ message: "success", code: 204 });
         }
@@ -75,6 +120,8 @@ module.exports = async function (fastify, opts) {
                   jabatan: { type: "string" },
                   kode: { type: "string" },
                   status: { type: "string" },
+                  id_master_tempat_seksi_pelaksanaan: { type: "number" },
+                  level: { type: "string" },
                 },
               },
             },
@@ -125,6 +172,8 @@ module.exports = async function (fastify, opts) {
                   jabatan: { type: "string" },
                   kode: { type: "string" },
                   status: { type: "string" },
+                  id_master_tempat_seksi_pelaksanaan: { type: "number" },
+                  level: { type: "string" },
                 },
               },
             },
@@ -158,8 +207,10 @@ module.exports = async function (fastify, opts) {
           description: "Payload for creating a master jabatan",
           type: "object",
           properties: {
-            jabatan: { type: "string" },
+            nama: { type: "string" },
             status: { type: "string" },
+            level: { type: "string" },
+            id_master_tempat_seksi_pelaksanaan: { type: "number" },
             created_by: { type: "number" },
           },
         },
@@ -176,10 +227,22 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {jabatan, status, created_by} = request.body;
+      const {
+        nama,
+        status,
+        level,
+        id_master_tempat_seksi_pelaksanaan,
+        created_by,
+      } = request.body;
 
       try {
-        await fastify.master_jabatan.create(jabatan, status, created_by);
+        await fastify.master_jabatan.create(
+          nama,
+          status,
+          level,
+          id_master_tempat_seksi_pelaksanaan,
+          created_by
+        );
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -191,7 +254,8 @@ module.exports = async function (fastify, opts) {
     "/update/:id",
     {
       schema: {
-        description: "This is an endpoint for updating an existing master jabatan",
+        description:
+          "This is an endpoint for updating an existing master jabatan",
         tags: ["master jabatan"],
         params: {
           description: "update master jabatan by Id",
@@ -204,8 +268,10 @@ module.exports = async function (fastify, opts) {
           description: "Payload for updating a master jabatan",
           type: "object",
           properties: {
-            jabatan: { type: "string" },
+            nama: { type: "string" },
             status: { type: "string" },
+            level: { type: "string" },
+            id_master_tempat_seksi_pelaksanaan: { type: "number" },
             updated_by: { type: "number" },
           },
         },
@@ -223,10 +289,31 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const {jabatan, status, updated_by } = request.body;
-
+      const {
+        nama,
+        status,
+        level,
+        id_master_tempat_seksi_pelaksanaan,
+        updated_by,
+      } = request.body;
+      let val = "";
+      if (nama && nama !== "") {
+        val += ` nama = '${nama}',`;
+      }
+      if (status && status !== "") {
+        val += ` status = '${status}',`;
+      }
+      if (level && level !== "") {
+        val += ` level = '${level}',`;
+      }
+      if (id_master_tempat_seksi_pelaksanaan) {
+        val += ` id_master_tempat_seksi_pelaksanaan = ${id_master_tempat_seksi_pelaksanaan},`;
+      }
+      if (updated_by) {
+        val += ` updated_by = '${updated_by}',`;
+      }
       try {
-        await fastify.master_jabatan.update(id,jabatan, status, updated_by);
+        await fastify.master_jabatan.update(id, val);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -238,7 +325,8 @@ module.exports = async function (fastify, opts) {
     "/delete/:id",
     {
       schema: {
-        description: "This is an endpoint for DELETING an existing master jabatan.",
+        description:
+          "This is an endpoint for DELETING an existing master jabatan.",
         tags: ["master jabatan"],
         params: {
           description: "master jabatan by Id",
