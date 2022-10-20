@@ -2288,16 +2288,13 @@ module.exports = async function (fastify, opts) {
             nrk: {
               type: "string",
             },
-            id_jabatan: {
-              type: "number",
-            },
-            tempat_tugas: {
+            bidang_wilayah: {
               type: "string",
             },
-            seksi_kecamatan: {
+            pelaksana: {
               type: "string",
             },
-            kelurahan: {
+            jabatan: {
               type: "string",
             },
           },
@@ -2311,14 +2308,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        nama,
-        nrk,
-        id_jabatan,
-        tempat_tugas,
-        seksi_kecamatan,
-        kelurahan,
-      } = request.query;
+      const { nama, nrk, bidang_wilayah, pelaksana, jabatan } = request.query;
       let headerData = [];
       let data = [];
       try {
@@ -2330,10 +2320,9 @@ module.exports = async function (fastify, opts) {
           await fastify.kepegawaian_rekapitulasi.unduh_rekapitulasi_jft(
             nama,
             nrk,
-            id_jabatan,
-            tempat_tugas,
-            seksi_kecamatan,
-            kelurahan
+            bidang_wilayah,
+            pelaksana,
+            jabatan
           );
 
         const convertData = getData.map(function (item) {

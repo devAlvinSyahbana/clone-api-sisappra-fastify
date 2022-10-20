@@ -364,39 +364,18 @@ const kepegawaian_rekapitulasi = (db) => {
   const unduh_rekapitulasi_jft = (
     nama,
     nrk,
-    jabatan,
-    tempat_tugas,
-    seksi_kecamatan,
-    kelurahan
+    bidang_wilayah,
+    pelaksana,
+    jabatan
   ) => {
     let filter = "";
 
-    if (tempat_tugas != undefined) {
-      filter =
-        filter +
-        " and kp.kepegawaian_tempat_tugas ilike '" +
-        "%" +
-        tempat_tugas +
-        "%" +
-        "'";
+    if (bidang_wilayah != undefined) {
+      filter += " and kp.kepegawaian_tempat_tugas = '" + bidang_wilayah + "'";
     }
-    if (seksi_kecamatan != undefined) {
-      filter =
-        filter +
-        " and kp.kepegawaian_tempat_tugas ilike '" +
-        "%" +
-        seksi_kecamatan +
-        "%" +
-        "'";
-    }
-    if (kelurahan != undefined) {
-      filter =
-        filter +
-        " and kp.kepegawaian_kelurahan ilike '" +
-        "%" +
-        kelurahan +
-        "%" +
-        "'";
+    if (pelaksana != undefined) {
+      filter +=
+        " and kp.kepegawaian_subbag_seksi_kecamatan = '" + pelaksana + "'";
     }
     if (nama != undefined) {
       filter = filter + " and kp.nama ilike '" + "%" + nama + "%" + "'";
@@ -406,7 +385,7 @@ const kepegawaian_rekapitulasi = (db) => {
         filter + " and kp.kepegawaian_nrk ilike '" + "%" + nrk + "%" + "'";
     }
     if (jabatan != undefined) {
-      filter = filter + " and kp.kepegawaian_jabatan = " + jabatan;
+      filter = filter + " and kp.kepegawaian_jabatan = " + parseInt(jabatan);
     }
 
     const query = db.any(
