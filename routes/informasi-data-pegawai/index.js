@@ -179,8 +179,9 @@ module.exports = async function (fastify, opts) {
               status,
               qwhere
             );
-            const { total } = await fastify.kepegawaian_non_pns.countAll(
-              status
+            const { total } = await fastify.kepegawaian_non_pns.countAllFilter(
+              status,
+              qwhere
             );
             totalDt = total;
           } else {
