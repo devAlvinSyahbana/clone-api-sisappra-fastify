@@ -47,11 +47,11 @@ const pengguna = (db) => {
     hak_akses,
     status_pengguna,
     nama_lengkap,
-    terakhir_login,
+    created_by
   ) => {
 
     const { id } = await db.one(
-      "INSERT INTO pengguna (id_pegawai, no_pegawai, kata_sandi, email, hak_akses, status_pengguna, nama_lengkap, terakhir_login) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id",
+      "INSERT INTO pengguna (id_pegawai, no_pegawai, kata_sandi, email, hak_akses, status_pengguna, nama_lengkap, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id",
       [
         id_pegawai,
         no_pegawai,
@@ -60,7 +60,7 @@ const pengguna = (db) => {
         hak_akses,
         status_pengguna,
         nama_lengkap,
-        terakhir_login
+        created_by
       ]
     );
 
@@ -72,7 +72,7 @@ const pengguna = (db) => {
       hak_akses,
       status_pengguna,
       nama_lengkap,
-      terakhir_login
+      created_by,
     };
   };
 
@@ -85,10 +85,10 @@ const pengguna = (db) => {
     hak_akses,
     status_pengguna,
     nama_lengkap,
-    terakhir_login
+    updated_by,
   ) => {
     db.one(
-      "UPDATE pengguna SET id_pegawai = $1, no_pegawai = $2, kata_sandi =$3, email = $4, hak_akses = $5, status_pengguna = $6, nama_lengkap = $7, terakhir_login = $8, updated_at = CURRENT_TIMESTAMP WHERE id = $9 RETURNING id",
+      "UPDATE pengguna SET id_pegawai = $1, no_pegawai = $2, kata_sandi =$3, email = $4, hak_akses = $5, status_pengguna = $6, nama_lengkap = $7, updated_by = $8, updated_at = CURRENT_TIMESTAMP WHERE id = $9 RETURNING id",
       [
         id_pegawai,
         no_pegawai,
@@ -97,7 +97,7 @@ const pengguna = (db) => {
         hak_akses,
         status_pengguna,
         nama_lengkap,
-        terakhir_login,
+        updated_by,
         id,
       ]
     );
