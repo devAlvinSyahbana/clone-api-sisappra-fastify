@@ -39,10 +39,10 @@ module.exports = async function (fastify, opts) {
                                 id_pegawai: {
                                     type: "string"
                                 },
-                                no_pegawai: {
+                                nama_lengkap: {
                                     type: "string"
                                 },
-                                kata_sandi: {
+                                no_pegawai: {
                                     type: "string"
                                 },
                                 email: {
@@ -51,8 +51,11 @@ module.exports = async function (fastify, opts) {
                                 hak_akses: {
                                     type: "number"
                                 },
-                                nama_lengkap: {
+                                status_pengguna: {
                                     type: "number"
+                                },
+                                tgl_bergabung: {
+                                    type: "string"
                                 },
                                 terakhir_login: {
                                     type: "string"
@@ -68,7 +71,7 @@ module.exports = async function (fastify, opts) {
             const {
                 id
             } = request.params;
-            const exec = await fastify.pengguna.findone(id);
+            const exec = await fastify.pengguna.findOne(id);
             try {
                 if (exec) {
                     reply.send({
