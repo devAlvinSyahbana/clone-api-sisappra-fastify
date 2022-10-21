@@ -11,7 +11,7 @@ const pengguna = (db) => {
 
   const findOne = (id) => {
     const query = db.one(
-      "SELECT id, skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat , pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns WHERE id = $1 AND is_deleted = 0 ",
+      "SELECT id, id_pegawai, nama_lengkap, no_pegawai, email, hak_akses, status_pengguna, terakhir_login, created_at as tgl_bergabung FROM pengguna WHERE id = $1 AND is_deleted = 0 ",
       [id]
     );
     return query;
