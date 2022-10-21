@@ -47,7 +47,6 @@ const pengguna = (db) => {
     hak_akses,
     status_pengguna,
     nama_lengkap,
-    terakhir_login,
   ) => {
 
     const { id } = await db.one(
@@ -60,7 +59,6 @@ const pengguna = (db) => {
         hak_akses,
         status_pengguna,
         nama_lengkap,
-        terakhir_login
       ]
     );
 
@@ -72,7 +70,6 @@ const pengguna = (db) => {
       hak_akses,
       status_pengguna,
       nama_lengkap,
-      terakhir_login
     };
   };
 
@@ -85,7 +82,6 @@ const pengguna = (db) => {
     hak_akses,
     status_pengguna,
     nama_lengkap,
-    terakhir_login
   ) => {
     db.one(
       "UPDATE pengguna SET id_pegawai = $1, no_pegawai = $2, kata_sandi =$3, email = $4, hak_akses = $5, status_pengguna = $6, nama_lengkap = $7, terakhir_login = $8, updated_at = CURRENT_TIMESTAMP WHERE id = $9 RETURNING id",
@@ -97,7 +93,6 @@ const pengguna = (db) => {
         hak_akses,
         status_pengguna,
         nama_lengkap,
-        terakhir_login,
         id,
       ]
     );

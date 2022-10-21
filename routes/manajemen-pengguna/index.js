@@ -313,7 +313,6 @@ module.exports = async function (fastify, opts) {
                         email: { type: "string" },
                         hak_akses: { type: "number" },
                         status_pengguna: { type: "number" },
-                        terakhir_login: { type: "string" },
                     },
                 },
                 response: {
@@ -329,7 +328,6 @@ module.exports = async function (fastify, opts) {
                             email: { type: "string" },
                             hak_akses: { type: "number" },
                             status_pengguna: { type: "number" },
-                            terakhir_login: { type: "string" },
                         },
                     },
                 },
@@ -343,8 +341,7 @@ module.exports = async function (fastify, opts) {
                 email,
                 hak_akses,
                 status_pengguna,
-                nama_lengkap,
-                terakhir_login } = request.body;
+                nama_lengkap } = request.body;
             const exec = await fastify.pengguna.create(
                 id_pegawai,
                 no_pegawai,
@@ -353,7 +350,6 @@ module.exports = async function (fastify, opts) {
                 hak_akses,
                 status_pengguna,
                 nama_lengkap,
-                terakhir_login
             );
             reply.code(201).send(exec);
         }
@@ -387,7 +383,6 @@ module.exports = async function (fastify, opts) {
                         email: { type: "string" },
                         hak_akses: { type: "number" },
                         status_pengguna: { type: "number" },
-                        terakhir_login: { type: "string" },
                     },
                 },
                 response: {
@@ -412,7 +407,6 @@ module.exports = async function (fastify, opts) {
                 hak_akses,
                 status_pengguna,
                 nama_lengkap,
-                terakhir_login,
             } = request.body;
 
             try {
@@ -424,8 +418,7 @@ module.exports = async function (fastify, opts) {
                     email,
                     hak_akses,
                     status_pengguna,
-                    nama_lengkap,
-                    terakhir_login
+                    nama_lengkap
                 );
 
                 reply.send({ message: "success", code: 200 });
