@@ -64,21 +64,21 @@ module.exports = async function (fastify, opts) {
               type: "integer",
               default: 1,
             },
-            nama: {
-              type: "string",
-            },
-            nrk_nptt_pjlp: {
-              type: "string",
-            },
+            // nama: {
+            //   type: "string",
+            // },
+            // nrk_nptt_pjlp: {
+            //   type: "string",
+            // },
             tempat_tugas: {
               type: "string",
             },
             seksi_kecamatan: {
               type: "string",
             },
-            status_pegawai: {
-              type: "string",
-            },
+            // status_pegawai: {
+            //   type: "string",
+            // },
             tahun_pensiun: {
               type: "number",
             },
@@ -99,18 +99,18 @@ module.exports = async function (fastify, opts) {
                 items: {
                   type: "object",
                   properties: {
-                    nama: {
-                      type: "string"
-                    },
-                    nip: {
-                      type: "string"
-                    },
-                    nrk_nptt_pjlp: {
-                      type: "string"
-                    },
-                    kepegawaian_status_pegawai: {
-                      type: "string"
-                    },
+                    // nama: {
+                    //   type: "string"
+                    // },
+                    // nip: {
+                    //   type: "string"
+                    // },
+                    // nrk_nptt_pjlp: {
+                    //   type: "string"
+                    // },
+                    // kepegawaian_status_pegawai: {
+                    //   type: "string"
+                    // },
                     jabatan: {
                       type: "string"
                     },
