@@ -125,7 +125,7 @@ const kepegawaian_non_pns = (db) => {
 
   const countAllFilter = (status, qwhere) => {
     const query = db.one(
-      "SELECT COUNT(id) as total FROM kepegawaian_non_pns WHERE is_deleted = 0 AND kepegawaian_status_pegawai = '" +
+      "SELECT COUNT(kpnns.id) as total FROM kepegawaian_non_pns kpnns WHERE kpnns.is_deleted = 0 AND kpnns.kepegawaian_status_pegawai = '" +
       status +
       "'" +
       qwhere
