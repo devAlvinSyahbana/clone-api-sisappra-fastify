@@ -9,9 +9,17 @@ const pengguna = (db) => {
     return query;
   };
 
+  const findOne = (id) => {
+    const query = db.one(
+      "SELECT id, id_pegawai, nama_lengkap, no_pegawai, email, hak_akses, status_pengguna, terakhir_login, created_at as tgl_bergabung FROM pengguna WHERE id = $1 AND is_deleted = 0 ",
+      [id]
+    );
+    return query;
+  };
+
   const filter = (limit, offset, qwhere) => {
     const query = db.any(
-      "SELECT pgn.id, pgn.nama_lengkap, pgn.email, pgn.hak_akses FROM pengguna pgn WHERE pgn.is_deleted = 0" +
+      "SELECT pgn.id, pgn.nama_lengkap, pgn.email, pgn.hak_akses, pgn.created_at as tgl_bergabung, pgn.terakhir_login, status_pengguna, id_pegawai, no_pegawai FROM pengguna pgn WHERE pgn.is_deleted = 0" +
       qwhere +
       " LIMIT " +
       limit +
@@ -25,7 +33,7 @@ const pengguna = (db) => {
   const countAllFilter = (qwhere) => {
     const query = db.one(
       "SELECT COUNT(pgn.id) as total FROM pengguna pgn WHERE pgn.is_deleted = 0" +
-        qwhere
+      qwhere
     );
 
     return query;
@@ -39,11 +47,11 @@ const pengguna = (db) => {
     hak_akses,
     status_pengguna,
     nama_lengkap,
-    terakhir_login,
+    created_by
   ) => {
 
     const { id } = await db.one(
-      "INSERT INTO pengguna (id_pegawai, no_pegawai, kata_sandi, email, hak_akses, status_pengguna, nama_lengkap, terakhir_login) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id",
+      "INSERT INTO pengguna (id_pegawai, no_pegawai, kata_sandi, email, hak_akses, status_pengguna, nama_lengkap, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id",
       [
         id_pegawai,
         no_pegawai,
@@ -52,7 +60,7 @@ const pengguna = (db) => {
         hak_akses,
         status_pengguna,
         nama_lengkap,
-        terakhir_login
+        created_by
       ]
     );
 
@@ -64,7 +72,7 @@ const pengguna = (db) => {
       hak_akses,
       status_pengguna,
       nama_lengkap,
-      terakhir_login
+      created_by,
     };
   };
 
@@ -77,10 +85,10 @@ const pengguna = (db) => {
     hak_akses,
     status_pengguna,
     nama_lengkap,
-    terakhir_login
+    updated_by,
   ) => {
     db.one(
-      "UPDATE pengguna SET id_pegawai = $1, no_pegawai = $2, kata_sandi =$3, email = $4, hak_akses = $5, status_pengguna = $6, nama_lengkap = $7, terakhir_login = $8, updated_at = CURRENT_TIMESTAMP WHERE id = $9 RETURNING id",
+      "UPDATE pengguna SET id_pegawai = $1, no_pegawai = $2, kata_sandi =$3, email = $4, hak_akses = $5, status_pengguna = $6, nama_lengkap = $7, updated_by = $8, updated_at = CURRENT_TIMESTAMP WHERE id = $9 RETURNING id",
       [
         id_pegawai,
         no_pegawai,
@@ -89,7 +97,7 @@ const pengguna = (db) => {
         hak_akses,
         status_pengguna,
         nama_lengkap,
-        terakhir_login,
+        updated_by,
         id,
       ]
     );
@@ -115,13 +123,13 @@ const pengguna = (db) => {
 
   return {
     find,
+    findOne,
+    countAllFilter,
     create,
     filter,
     update,
     del,
-    countAllFilter,
     getDataUnduhManajemenPengguna,
-    //findone,
   };
 }
 
