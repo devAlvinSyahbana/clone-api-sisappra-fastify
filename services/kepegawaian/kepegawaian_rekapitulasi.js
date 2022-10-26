@@ -173,7 +173,7 @@ const kepegawaian_rekapitulasi = (db) => {
     }
 
     const query = db.any(
-      "select kp.id, kp.nama, kp.kepegawaian_nip as nip, kp.kepegawaian_nrk as nrk, mj.nama as jabatan, kp.kepegawaian_tempat_tugas as tempat_tugas from kepegawaian_pns kp inner join master_jabatan mj on kp.kepegawaian_jabatan = mj.id where kp.is_deleted = 0 and mj.status = 'JFT' " +
+      "select kp.id, kp.nama, kp.kepegawaian_nip as nip, kp.kepegawaian_nrk as nrk, mj.nama as jabatan, mtp.nama as tempat_tugas from kepegawaian_pns kp inner join master_jabatan mj on kp.kepegawaian_jabatan = mj.id left join master_tempat_pelaksanaan mtp on kp.kepegawaian_tempat_tugas = mtp.id where kp.is_deleted = 0 and mj.status = 'JFT' " +
         filter +
         " order by kp.id desc LIMIT " +
         limit +
@@ -195,11 +195,11 @@ const kepegawaian_rekapitulasi = (db) => {
     let filter = "";
 
     if (bidang_wilayah != undefined) {
-      filter += " and kp.kepegawaian_tempat_tugas = '" + bidang_wilayah + "'";
+      filter += " and kp.kepegawaian_tempat_tugas = " + bidang_wilayah;
     }
     if (pelaksana != undefined) {
       filter +=
-        " and kp.kepegawaian_subbag_seksi_kecamatan = '" + pelaksana + "'";
+        " and kp.kepegawaian_subbag_seksi_kecamatan = " + pelaksana;
     }
     if (nama != undefined) {
       filter = filter + " and kp.nama ilike '" + "%" + nama + "%" + "'";
