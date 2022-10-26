@@ -119,6 +119,7 @@ const kepegawaian_ppns = (db) => {
 
         return query;
     };
+
     return {
         find,
         findOne,
