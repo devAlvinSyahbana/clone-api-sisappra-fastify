@@ -7,57 +7,23 @@ const kepegawaian_rekapitulasi = (db) => {
     let filter_3 = "";
 
     if (tempat_tugas != undefined) {
-      filter_1 =
-        filter_1 +
-        " and kp.kepegawaian_tempat_tugas ilike '" +
-        "%" +
-        tempat_tugas +
-        "%" +
-        "'";
-      filter_2 =
-        filter_2 +
-        " and knp.kepegawaian_tempat_tugas ilike '" +
-        "%" +
-        tempat_tugas +
-        "%" +
-        "'";
-      filter_3 =
-        filter_3 + " and kp2.wilayah_kerja ilike '" + "%" + tempat_tugas + "'";
+      filter_1 += ` and kp.kepegawaian_tempat_tugas = ${tempat_tugas}`;
+      filter_2 += ` and knp.kepegawaian_tempat_tugas = ${tempat_tugas}`;
+      filter_3 = ` and kp2.wilayah_kerja ilike '%${tempat_tugas}%'`;
     }
 
     if (seksi_kecamatan != undefined) {
-      filter_1 =
-        filter_1 +
-        " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" +
-        "%" +
-        seksi_kecamatan +
-        "%" +
-        "'";
-      filter_2 =
-        filter_2 +
-        " and knp.kepegawaian_subbag_seksi_kecamatan ilike '" +
-        "%" +
-        seksi_kecamatan +
-        "%" +
-        "'";
+      filter_1 += ` and kp.kepegawaian_subbag_seksi_kecamatan = ${seksi_kecamatan}`;
+      filter_2 += ` and knp.kepegawaian_subbag_seksi_kecamatan = ${seksi_kecamatan}`;
+      filter_3 = ` and kp2.wilayah_kerja ilike '%${seksi_kecamatan}%'`;
     }
 
     if (kelurahan != undefined) {
-      filter_1 =
-        filter_1 +
-        " and kp.kepegawaian_kelurahan ilike '" +
-        "%" +
-        kelurahan +
-        "%" +
-        "'";
-      filter_2 =
-        filter_2 +
-        " and knp.kepegawaian_kelurahan ilike '" +
-        "%" +
-        kelurahan +
-        "%" +
-        "'";
+      filter_1 += ` and kp.kepegawaian_jabatan = ${kelurahan}`;
+      filter_2 += ` and knp.kepegawaian_jabatan = ${kelurahan}`;
+      filter_3 = ` and kp2.wilayah_kerja ilike '%${kelurahan}%'`;
     }
+    
     const query = db.one(
       "select (z.a + y.a) as jmlh_seluruh_pegawai_satpol, z.b as jmlh_seluruh_pns, z.c as jmlh_seluruh_cpns, y.a as jmlh_seluruh_non_pns, y.b as jmlh_seluruh_non_pns_ptt, y.c as jmlh_seluruh_non_pns_pjlp, x.a as jmlh_seluruh_ppns_satpolpp, x.b as jmlh_seluruh_ppns_unit_kerja_lain from( select count(kp.*) as a, count(case when kp.kepegawaian_status_pegawai  = 'PNS' then 1 end) as b, count(case when kp.kepegawaian_status_pegawai  = 'CPNS' then 1 end) as c from kepegawaian_pns kp where kp.is_deleted = 0 " +
         filter_1 +
