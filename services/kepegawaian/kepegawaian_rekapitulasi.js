@@ -7,57 +7,23 @@ const kepegawaian_rekapitulasi = (db) => {
     let filter_3 = "";
 
     if (tempat_tugas != undefined) {
-      filter_1 =
-        filter_1 +
-        " and kp.kepegawaian_tempat_tugas ilike '" +
-        "%" +
-        tempat_tugas +
-        "%" +
-        "'";
-      filter_2 =
-        filter_2 +
-        " and knp.kepegawaian_tempat_tugas ilike '" +
-        "%" +
-        tempat_tugas +
-        "%" +
-        "'";
-      filter_3 =
-        filter_3 + " and kp2.wilayah_kerja ilike '" + "%" + tempat_tugas + "'";
+      filter_1 += ` and kp.kepegawaian_tempat_tugas = ${tempat_tugas}`;
+      filter_2 += ` and knp.kepegawaian_tempat_tugas = ${tempat_tugas}`;
+      filter_3 = ` and kp2.wilayah_kerja ilike '%${tempat_tugas}%'`;
     }
 
     if (seksi_kecamatan != undefined) {
-      filter_1 =
-        filter_1 +
-        " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" +
-        "%" +
-        seksi_kecamatan +
-        "%" +
-        "'";
-      filter_2 =
-        filter_2 +
-        " and knp.kepegawaian_subbag_seksi_kecamatan ilike '" +
-        "%" +
-        seksi_kecamatan +
-        "%" +
-        "'";
+      filter_1 += ` and kp.kepegawaian_subbag_seksi_kecamatan = ${seksi_kecamatan}`;
+      filter_2 += ` and knp.kepegawaian_subbag_seksi_kecamatan = ${seksi_kecamatan}`;
+      filter_3 = ` and kp2.wilayah_kerja ilike '%${seksi_kecamatan}%'`;
     }
 
     if (kelurahan != undefined) {
-      filter_1 =
-        filter_1 +
-        " and kp.kepegawaian_kelurahan ilike '" +
-        "%" +
-        kelurahan +
-        "%" +
-        "'";
-      filter_2 =
-        filter_2 +
-        " and knp.kepegawaian_kelurahan ilike '" +
-        "%" +
-        kelurahan +
-        "%" +
-        "'";
+      filter_1 += ` and kp.kepegawaian_jabatan = ${kelurahan}`;
+      filter_2 += ` and knp.kepegawaian_jabatan = ${kelurahan}`;
+      filter_3 = ` and kp2.wilayah_kerja ilike '%${kelurahan}%'`;
     }
+
     const query = db.one(
       "select (z.a + y.a) as jmlh_seluruh_pegawai_satpol, z.b as jmlh_seluruh_pns, z.c as jmlh_seluruh_cpns, y.a as jmlh_seluruh_non_pns, y.b as jmlh_seluruh_non_pns_ptt, y.c as jmlh_seluruh_non_pns_pjlp, x.a as jmlh_seluruh_ppns_satpolpp, x.b as jmlh_seluruh_ppns_unit_kerja_lain from( select count(kp.*) as a, count(case when kp.kepegawaian_status_pegawai  = 'PNS' then 1 end) as b, count(case when kp.kepegawaian_status_pegawai  = 'CPNS' then 1 end) as c from kepegawaian_pns kp where kp.is_deleted = 0 " +
         filter_1 +
@@ -80,60 +46,24 @@ const kepegawaian_rekapitulasi = (db) => {
     let filter_2 = "";
 
     if (tempat_tugas != undefined) {
-      filter_1 =
-        filter_1 +
-        " and kp.kepegawaian_tempat_tugas ilike '" +
-        "%" +
-        tempat_tugas +
-        "%" +
-        "'";
-      filter_2 =
-        filter_2 +
-        " and knp.kepegawaian_tempat_tugas ilike '" +
-        "%" +
-        tempat_tugas +
-        "%" +
-        "'";
+      filter_1 += ` and kp.kepegawaian_tempat_tugas = ${tempat_tugas}`;
+      filter_2 += ` and knp.kepegawaian_tempat_tugas = ${tempat_tugas}`;
     }
 
     if (seksi_kecamatan != undefined) {
-      filter_1 =
-        filter_1 +
-        " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" +
-        "%" +
-        seksi_kecamatan +
-        "%" +
-        "'";
-      filter_2 =
-        filter_2 +
-        " and knp.kepegawaian_subbag_seksi_kecamatan ilike '" +
-        "%" +
-        seksi_kecamatan +
-        "%" +
-        "'";
+      filter_1 += ` and kp.kepegawaian_subbag_seksi_kecamatan = ${seksi_kecamatan}`;
+      filter_2 += ` and knp.kepegawaian_subbag_seksi_kecamatan = ${seksi_kecamatan}`;
     }
 
     if (kelurahan != undefined) {
-      filter_1 =
-        filter_1 +
-        " and kp.kepegawaian_kelurahan ilike '" +
-        "%" +
-        kelurahan +
-        "%" +
-        "'";
-      filter_2 =
-        filter_2 +
-        " and knp.kepegawaian_kelurahan ilike '" +
-        "%" +
-        kelurahan +
-        "%" +
-        "'";
+      filter_1 += ` and kp.kepegawaian_jabatan = ${kelurahan}`;
+      filter_2 += ` and knp.kepegawaian_jabatan = ${kelurahan}`;
     }
 
     const query = db.any(
-      "select z.pendidikan, sum(z.jumlah) as jumlah from (select mp.nama as pendidikan, count(kp.*) as jumlah from kepegawaian_pns kp inner join master_pendidikan mp on kp.kepegawaian_pendidikan_pada_sk = mp.id where kp.is_deleted = 0 " +
+      "select z.pendidikan, sum(z.jumlah) as jumlah from (select mp.nama as pendidikan, count(kp.id) as jumlah from kepegawaian_pns kp inner join master_pendidikan mp on kp.kepegawaian_pendidikan_pada_sk = mp.id where kp.is_deleted = 0 " +
         filter_1 +
-        " group by mp.nama union all select mp.nama as pendidikan, count(knp.*) as jumlah from kepegawaian_non_pns knp inner join master_pendidikan mp on knp.kepegawaian_pendidikan_pada_sk = mp.id where knp.is_deleted = 0 " +
+        " group by mp.nama union all select mp.nama as pendidikan, count(knp.id) as jumlah from kepegawaian_non_pns knp inner join master_pendidikan mp on knp.kepegawaian_pendidikan_pada_sk = mp.id where knp.is_deleted = 0 " +
         filter_2 +
         " group by mp.nama) as z group by z.pendidikan"
     );
@@ -151,64 +81,29 @@ const kepegawaian_rekapitulasi = (db) => {
     let filter_3 = "";
 
     if (tempat_tugas != undefined) {
-      filter_1 =
-        filter_1 +
-        " and kp.kepegawaian_tempat_tugas ilike '" +
-        "%" +
-        tempat_tugas +
-        "%" +
-        "'";
-      filter_2 =
-        filter_2 +
-        " and knp.kepegawaian_tempat_tugas ilike '" +
-        "%" +
-        tempat_tugas +
-        "%" +
-        "'";
-      filter_3 =
-        filter_3 + " and kp2.wilayah_kerja ilike '" + tempat_tugas + "'";
+      filter_1 += ` and kp.kepegawaian_tempat_tugas = ${tempat_tugas}`;
+      filter_2 += ` and knp.kepegawaian_tempat_tugas = ${tempat_tugas}`;
+      filter_3 = ` and kp2.wilayah_kerja ilike '%${tempat_tugas}%'`;
     }
 
     if (seksi_kecamatan != undefined) {
-      filter_1 =
-        filter_1 +
-        " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" +
-        "%" +
-        seksi_kecamatan +
-        "%" +
-        "'";
-      filter_2 =
-        filter_2 +
-        " and knp.kepegawaian_subbag_seksi_kecamatan ilike '" +
-        "%" +
-        seksi_kecamatan +
-        "%" +
-        "'";
+      filter_1 += ` and kp.kepegawaian_subbag_seksi_kecamatan = ${seksi_kecamatan}`;
+      filter_2 += ` and knp.kepegawaian_subbag_seksi_kecamatan = ${seksi_kecamatan}`;
+      filter_3 = ` and kp2.wilayah_kerja ilike '%${seksi_kecamatan}%'`;
     }
 
     if (kelurahan != undefined) {
-      filter_1 =
-        filter_1 +
-        " and kp.kepegawaian_kelurahan ilike '" +
-        "%" +
-        kelurahan +
-        "%" +
-        "'";
-      filter_2 =
-        filter_2 +
-        " and knp.kepegawaian_kelurahan ilike '" +
-        "%" +
-        kelurahan +
-        "%" +
-        "'";
+      filter_1 += ` and kp.kepegawaian_jabatan = ${kelurahan}`;
+      filter_2 += ` and knp.kepegawaian_jabatan = ${kelurahan}`;
+      filter_3 = ` and kp2.wilayah_kerja ilike '%${kelurahan}%'`;
     }
 
     const query = db.any(
-      "select z.golongan, sum(z.jumlah) as jumlah from ( select mg.nama as golongan, count(kp.*) as jumlah from kepegawaian_pns kp inner join master_golongan mg on kp.kepegawaian_golongan = mg.id where kp.is_deleted = 0 " +
+      "select z.golongan, sum(z.jumlah) as jumlah from ( select mg.nama as golongan, count(kp.id) as jumlah from kepegawaian_pns kp inner join master_golongan mg on kp.kepegawaian_golongan = mg.id where kp.is_deleted = 0 " +
         filter_1 +
-        " group by mg.nama union all select mg.nama as golongan, count(knp.*) as jumlah from kepegawaian_non_pns knp inner join master_golongan mg on knp.kepegawaian_golongan = mg.id where knp.is_deleted = 0 " +
+        " group by mg.nama union all select mg.nama as golongan, count(knp.id) as jumlah from kepegawaian_non_pns knp inner join master_golongan mg on knp.kepegawaian_golongan = mg.id where knp.is_deleted = 0 " +
         filter_2 +
-        " group by mg.nama union all select mg.nama as golongan, count(kp2.*) as jumlah from kepegawaian_ppns kp2 inner join master_golongan mg on kp2.pejabat_ppns_golongan = mg.id where kp2.is_deleted = 0 " +
+        " group by mg.nama union all select mg.nama as golongan, count(kp2.id) as jumlah from kepegawaian_ppns kp2 inner join master_golongan mg on kp2.pejabat_ppns_golongan = mg.id where kp2.is_deleted = 0 " +
         filter_3 +
         " group by mg.nama) as z group by z.golongan"
     );
@@ -225,54 +120,18 @@ const kepegawaian_rekapitulasi = (db) => {
     let filter_2 = "";
 
     if (tempat_tugas != undefined) {
-      filter_1 =
-        filter_1 +
-        " and kp.kepegawaian_tempat_tugas ilike '" +
-        "%" +
-        tempat_tugas +
-        "%" +
-        "'";
-      filter_2 =
-        filter_2 +
-        " and knp.kepegawaian_tempat_tugas ilike '" +
-        "%" +
-        tempat_tugas +
-        "%" +
-        "'";
+      filter_1 += ` and kp.kepegawaian_tempat_tugas = ${tempat_tugas}`;
+      filter_2 += ` and knp.kepegawaian_tempat_tugas = ${tempat_tugas}`;
     }
 
     if (seksi_kecamatan != undefined) {
-      filter_1 =
-        filter_1 +
-        " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" +
-        "%" +
-        seksi_kecamatan +
-        "%" +
-        "'";
-      filter_2 =
-        filter_2 +
-        " and knp.kepegawaian_subbag_seksi_kecamatan ilike '" +
-        "%" +
-        seksi_kecamatan +
-        "%" +
-        "'";
+      filter_1 += ` and kp.kepegawaian_subbag_seksi_kecamatan = ${seksi_kecamatan}`;
+      filter_2 += ` and knp.kepegawaian_subbag_seksi_kecamatan = ${seksi_kecamatan}`;
     }
 
     if (kelurahan != undefined) {
-      filter_1 =
-        filter_1 +
-        " and kp.kepegawaian_kelurahan ilike '" +
-        "%" +
-        kelurahan +
-        "%" +
-        "'";
-      filter_2 =
-        filter_2 +
-        " and knp.kepegawaian_kelurahan ilike '" +
-        "%" +
-        kelurahan +
-        "%" +
-        "'";
+      filter_1 += ` and kp.kepegawaian_jabatan = ${kelurahan}`;
+      filter_2 += ` and knp.kepegawaian_jabatan = ${kelurahan}`;
     }
 
     const query = db.one(
@@ -296,11 +155,11 @@ const kepegawaian_rekapitulasi = (db) => {
     let filter = "";
 
     if (bidang_wilayah != undefined) {
-      filter += " and kp.kepegawaian_tempat_tugas = '" + bidang_wilayah + "'";
+      filter += " and kp.kepegawaian_tempat_tugas = " + bidang_wilayah;
     }
     if (pelaksana != undefined) {
       filter +=
-        " and kp.kepegawaian_subbag_seksi_kecamatan = '" + pelaksana + "'";
+        " and kp.kepegawaian_subbag_seksi_kecamatan = " + pelaksana;
     }
     if (nama != undefined) {
       filter = filter + " and kp.nama ilike '" + "%" + nama + "%" + "'";
@@ -371,11 +230,10 @@ const kepegawaian_rekapitulasi = (db) => {
     let filter = "";
 
     if (bidang_wilayah != undefined) {
-      filter += " and kp.kepegawaian_tempat_tugas = '" + bidang_wilayah + "'";
+      filter += " and kp.kepegawaian_tempat_tugas = " + bidang_wilayah;
     }
     if (pelaksana != undefined) {
-      filter +=
-        " and kp.kepegawaian_subbag_seksi_kecamatan = '" + pelaksana + "'";
+      filter += " and kp.kepegawaian_subbag_seksi_kecamatan = " + pelaksana;
     }
     if (nama != undefined) {
       filter = filter + " and kp.nama ilike '" + "%" + nama + "%" + "'";
@@ -389,7 +247,7 @@ const kepegawaian_rekapitulasi = (db) => {
     }
 
     const query = db.any(
-      "select ROW_NUMBER() OVER (ORDER BY kp.id desc) AS nomor, kp.nama, kp.kepegawaian_nip as nip, kp.kepegawaian_nrk as nrk, mj.nama as jabatan, kp.kepegawaian_tempat_tugas as tempat_tugas from kepegawaian_pns kp inner join master_jabatan mj on kp.kepegawaian_jabatan = mj.id where kp.is_deleted = 0 and mj.status = 'JFT' " +
+      "select ROW_NUMBER() OVER (ORDER BY kp.id desc) AS nomor, kp.nama, kp.kepegawaian_nip as nip, kp.kepegawaian_nrk as nrk, mj.nama as jabatan, mtp.nama as tempat_tugas from kepegawaian_pns kp inner join master_jabatan mj on kp.kepegawaian_jabatan = mj.id left join master_tempat_pelaksanaan mtp on kp.kepegawaian_tempat_tugas = mtp.id where kp.is_deleted = 0 and mj.status = 'JFT' " +
         filter
     );
 
