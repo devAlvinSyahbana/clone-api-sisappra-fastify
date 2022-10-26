@@ -67,6 +67,14 @@ const master_jenis_kegiatan = (db) => {
     };
   };
 
+  const filter = (q) => {
+    const query = db.any(
+      "SELECT id, nama as jenis_kegiatan FROM master_jenis_kegiatan WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
+    );
+
+    return query;
+  };
+
   return {
     find,
     findone,
@@ -74,6 +82,7 @@ const master_jenis_kegiatan = (db) => {
     create,
     update,
     del,
+    filter,
   };
 };
 

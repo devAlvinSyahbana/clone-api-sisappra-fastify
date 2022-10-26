@@ -71,7 +71,7 @@ const master_agama = (db) => {
     create,
     update,
     del,
-    filter
+    filter,
   };
 };
 

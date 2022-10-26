@@ -56,6 +56,14 @@ const master_jenis_penertiban = (db) => {
     };
   };
 
+  const filter = (q) => {
+    const query = db.any(
+      "SELECT id, nama as jenis_penertiban FROM master_jenis_penertiban WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
+    );
+
+    return query;
+  };
+
   return {
     find,
     findone,
@@ -63,6 +71,7 @@ const master_jenis_penertiban = (db) => {
     create,
     update,
     del,
+    filter,
   };
 };
 
