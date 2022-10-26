@@ -23,7 +23,7 @@ const kepegawaian_rekapitulasi = (db) => {
       filter_2 += ` and knp.kepegawaian_jabatan = ${kelurahan}`;
       filter_3 = ` and kp2.wilayah_kerja ilike '%${kelurahan}%'`;
     }
-    
+
     const query = db.one(
       "select (z.a + y.a) as jmlh_seluruh_pegawai_satpol, z.b as jmlh_seluruh_pns, z.c as jmlh_seluruh_cpns, y.a as jmlh_seluruh_non_pns, y.b as jmlh_seluruh_non_pns_ptt, y.c as jmlh_seluruh_non_pns_pjlp, x.a as jmlh_seluruh_ppns_satpolpp, x.b as jmlh_seluruh_ppns_unit_kerja_lain from( select count(kp.*) as a, count(case when kp.kepegawaian_status_pegawai  = 'PNS' then 1 end) as b, count(case when kp.kepegawaian_status_pegawai  = 'CPNS' then 1 end) as c from kepegawaian_pns kp where kp.is_deleted = 0 " +
         filter_1 +
@@ -155,11 +155,11 @@ const kepegawaian_rekapitulasi = (db) => {
     let filter = "";
 
     if (bidang_wilayah != undefined) {
-      filter += " and kp.kepegawaian_tempat_tugas = '" + bidang_wilayah + "'";
+      filter += " and kp.kepegawaian_tempat_tugas = " + bidang_wilayah;
     }
     if (pelaksana != undefined) {
       filter +=
-        " and kp.kepegawaian_subbag_seksi_kecamatan = '" + pelaksana + "'";
+        " and kp.kepegawaian_subbag_seksi_kecamatan = " + pelaksana;
     }
     if (nama != undefined) {
       filter = filter + " and kp.nama ilike '" + "%" + nama + "%" + "'";
@@ -230,11 +230,10 @@ const kepegawaian_rekapitulasi = (db) => {
     let filter = "";
 
     if (bidang_wilayah != undefined) {
-      filter += " and kp.kepegawaian_tempat_tugas = '" + bidang_wilayah + "'";
+      filter += " and kp.kepegawaian_tempat_tugas = " + bidang_wilayah;
     }
     if (pelaksana != undefined) {
-      filter +=
-        " and kp.kepegawaian_subbag_seksi_kecamatan = '" + pelaksana + "'";
+      filter += " and kp.kepegawaian_subbag_seksi_kecamatan = " + pelaksana;
     }
     if (nama != undefined) {
       filter = filter + " and kp.nama ilike '" + "%" + nama + "%" + "'";
@@ -248,7 +247,7 @@ const kepegawaian_rekapitulasi = (db) => {
     }
 
     const query = db.any(
-      "select ROW_NUMBER() OVER (ORDER BY kp.id desc) AS nomor, kp.nama, kp.kepegawaian_nip as nip, kp.kepegawaian_nrk as nrk, mj.nama as jabatan, kp.kepegawaian_tempat_tugas as tempat_tugas from kepegawaian_pns kp inner join master_jabatan mj on kp.kepegawaian_jabatan = mj.id where kp.is_deleted = 0 and mj.status = 'JFT' " +
+      "select ROW_NUMBER() OVER (ORDER BY kp.id desc) AS nomor, kp.nama, kp.kepegawaian_nip as nip, kp.kepegawaian_nrk as nrk, mj.nama as jabatan, mtp.nama as tempat_tugas from kepegawaian_pns kp inner join master_jabatan mj on kp.kepegawaian_jabatan = mj.id left join master_tempat_pelaksanaan mtp on kp.kepegawaian_tempat_tugas = mtp.id where kp.is_deleted = 0 and mj.status = 'JFT' " +
         filter
     );
 
