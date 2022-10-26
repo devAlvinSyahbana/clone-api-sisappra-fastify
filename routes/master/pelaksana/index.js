@@ -1,14 +1,14 @@
-const master_eselon = require("../../../services/master/master_eselon");
+const master_tempat_seksi_pelaksanaan = require("../../../services/master/master_tempat_seksi_pelaksanaan");
 
 module.exports = async function (fastify, opts) {
-  fastify.register(master_eselon);
+  fastify.register(master_tempat_seksi_pelaksanaan);
 
   fastify.get(
     "/find",
     {
       schema: {
-        description: "This is an endpoint for fetching all master eselon",
-        tags: ["master eselon"],
+        description: "This is an endpoint for fetching all master pelaksana",
+        tags: ["master pelaksana"],
         response: {
           200: {
             description: "Success Response",
@@ -22,8 +22,9 @@ module.exports = async function (fastify, opts) {
                   type: "object",
                   properties: {
                     id: { type: "number" },
-                    eselon: { type: "string" },
-                    urutan_tingkat_eselon: { type: "number" },
+                    nama: { type: "string" },
+                    kode: { type: "string" },
+                    group: { type: "string" },
                   },
                 },
               },
@@ -33,7 +34,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const exec = await fastify.master_eselon.find();
+      const exec = await fastify.master_tempat_seksi_pelaksanaan.find();
 
       try {
         if (exec) {
@@ -51,10 +52,10 @@ module.exports = async function (fastify, opts) {
     "/findone/:id",
     {
       schema: {
-        description: "This is an endpoint for fetching a master eselon",
-        tags: ["master eselon"],
+        description: "This is an endpoint for fetching a master pelaksana",
+        tags: ["master pelaksana"],
         params: {
-          description: "Find one master eselon id",
+          description: "Find one master pelaksana id",
           type: "object",
           properties: {
             id: { type: "number" },
@@ -71,8 +72,9 @@ module.exports = async function (fastify, opts) {
                 type: "object",
                 properties: {
                   id: { type: "number" },
-                  eselon: { type: "string" },
-                  urutan_tingkat_eselon: { type: "number" },
+                  nama: { type: "string" },
+                  kode: { type: "string" },
+                  id_tempat_pelaksanaan: { type: "number" },
                 },
               },
             },
@@ -82,59 +84,7 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const exec = await fastify.master_eselon.findone(id);
-
-      try {
-        if (exec) {
-          reply.send({ message: "success", code: 200, data: exec });
-        } else {
-          reply.send({ message: "success", code: 204 });
-        }
-      } catch (error) {
-        reply.send({ message: error, code: 500 });
-      }
-    }
-  );
-
-  fastify.get(
-    "/findone-by-eselon/:eselon",
-    {
-      schema: {
-        description: "This is an endpoint for fetching a master eselon",
-        tags: ["master eselon"],
-        params: {
-          description: "Find one master eselon by eselon",
-          type: "object",
-          properties: {
-            eselon: { type: "string" },
-          },
-        },
-        response: {
-          200: {
-            description: "Success Response",
-            type: "object",
-            properties: {
-              message: { type: "string" },
-              code: { type: "string" },
-              data: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    id: { type: "number" },
-                    eselon: { type: "string" },
-                    urutan_tingkat_eselon: { type: "number" },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    async (request, reply) => {
-      const { eselon } = request.params;
-      const exec = await fastify.master_eselon.findone_by_eselon(eselon);
+      const exec = await fastify.master_tempat_seksi_pelaksanaan.findone(id);
 
       try {
         if (exec) {
@@ -152,13 +102,14 @@ module.exports = async function (fastify, opts) {
     "/create",
     {
       schema: {
-        description: "This is an endpoint for creating a master eselon",
-        tags: ["master eselon"],
+        description: "This is an endpoint for creating a master pelaksana",
+        tags: ["master pelaksana"],
         body: {
-          description: "Payload for creating a master eselon",
+          description: "Payload for creating a master pelaksana",
           type: "object",
           properties: {
-            eselon: { type: "string" },
+            name: { type: "string" },
+            id_tempat_pelaksanaan: { type: "number" },
             created_by: { type: "number" },
           },
         },
@@ -175,12 +126,12 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { eselon, urutan_tingkat_eselon, created_by } = request.body;
+      const { name, id_tempat_pelaksanaan, created_by } = request.body;
 
       try {
-        await fastify.master_eselon.create(
-          eselon,
-          urutan_tingkat_eselon,
+        await fastify.master_tempat_seksi_pelaksanaan.create(
+          name,
+          id_tempat_pelaksanaan,
           created_by
         );
         reply.send({ message: "success", code: 200 });
@@ -195,20 +146,21 @@ module.exports = async function (fastify, opts) {
     {
       schema: {
         description:
-          "This is an endpoint for updating an existing master eselon",
-        tags: ["master eselon"],
+          "This is an endpoint for updating an existing master pelaksana",
+        tags: ["master pelaksana"],
         params: {
-          description: "update master eselon by Id",
+          description: "update master pelaksana by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for updating a master eselon",
+          description: "Payload for updating a master pelaksana",
           type: "object",
           properties: {
-            eselon: { type: "string" },
+            name: { type: "string" },
+            id_tempat_pelaksanaan: { type: "number" },
             updated_by: { type: "number" },
           },
         },
@@ -226,14 +178,14 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const { eselon, urutan_tingkat_eselon, updated_by } = request.body;
+      const { name, id_tempat_pelaksanaan, updated_by } = request.body;
 
       try {
-        await fastify.master_eselon.update(
+        await fastify.master_tempat_seksi_pelaksanaan.update(
           id,
-          eselon,
-          urutan_tingkat_eselon,
-          updated_by
+          name,
+          updated_by,
+          id_tempat_pelaksanaan
         );
         reply.send({ message: "success", code: 200 });
       } catch (error) {
@@ -247,17 +199,17 @@ module.exports = async function (fastify, opts) {
     {
       schema: {
         description:
-          "This is an endpoint for DELETING an existing master eselon.",
-        tags: ["master eselon"],
+          "This is an endpoint for DELETING an existing master pelaksana.",
+        tags: ["master pelaksana"],
         params: {
-          description: "master eselon by Id",
+          description: "master pelaksana by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for deleted data master eselon",
+          description: "Payload for deleted data master pelaksana",
           type: "object",
           properties: {
             deleted_by: { type: "number" },
@@ -280,10 +232,77 @@ module.exports = async function (fastify, opts) {
       const { deleted_by } = request.body;
 
       try {
-        await fastify.master_eselon.del(id, deleted_by);
+        await fastify.master_tempat_seksi_pelaksanaan.del(id, deleted_by);
         reply.send({ message: "success", code: 204 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
+      }
+    }
+  );
+
+  fastify.get(
+    "/filter",
+    {
+      schema: {
+        description: "This is an endpoint for filtering a master pelaksana",
+        tags: ["master pelaksana"],
+        querystring: {
+          type: "object",
+          properties: {
+            nama: {
+              type: "string",
+            },
+            id_tempat_pelaksanaan: {
+              type: "number",
+            },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: { type: "number" },
+                    nama: { type: "string" },
+                    kode: { type: "string" },
+                    id_tempat_pelaksanaan: { type: "number" },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const params = request.query;
+      let qwhere = "";
+      if (params) {
+        Object.keys(params).forEach(function (key) {
+          if (key == "id_tempat_pelaksanaan") {
+            qwhere += ` AND ${key} = ${params[key]}`;
+          } else {
+            qwhere += ` AND ${key} ILIKE '%${params[key]}%'`;
+          }
+        });
+      }
+      const exec = await fastify.master_tempat_seksi_pelaksanaan.filter(qwhere);
+
+      try {
+        if (exec) {
+          reply.send({ message: "success", code: 200, data: exec });
+        } else {
+          reply.send({ message: "success", code: 204 });
+        }
+      } catch (error) {
+        reply.send({ message: error, code: 500 });
       }
     }
   );
