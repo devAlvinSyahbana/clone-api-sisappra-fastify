@@ -2466,23 +2466,20 @@ module.exports = async function (fastify, opts) {
             nip: {
               type: "string",
             },
-            id_jabatan: {
-              type: "number",
-            },
             id_pangkat: {
               type: "number",
             },
             id_status_kenaikan_pangkat: {
               type: "number",
             },
-            tempat_tugas: {
-              type: "string",
+            id_tempat_tugas: {
+              type: "number",
             },
-            seksi_kecamatan: {
-              type: "string",
+            id_seksi_kecamatan: {
+              type: "number",
             },
-            kelurahan: {
-              type: "string",
+            id_jabatan_kelurahan: {
+              type: "number",
             },
             tahun_jnp: {
               type: "number",
@@ -2564,12 +2561,11 @@ module.exports = async function (fastify, opts) {
         nama,
         nrk,
         nip,
-        id_jabatan,
         id_pangkat,
         id_status_kenaikan_pangkat,
-        tempat_tugas,
-        seksi_kecamatan,
-        kelurahan,
+        id_tempat_tugas,
+        id_seksi_kecamatan,
+        id_jabatan_kelurahan,
         tahun_jnp,
       } = request.query;
       const exec =
@@ -2579,12 +2575,11 @@ module.exports = async function (fastify, opts) {
           nama,
           nrk,
           nip,
-          id_jabatan,
           id_pangkat,
           id_status_kenaikan_pangkat,
-          tempat_tugas,
-          seksi_kecamatan,
-          kelurahan,
+          id_tempat_tugas,
+          id_seksi_kecamatan,
+          id_jabatan_kelurahan,
           tahun_jnp
         );
       const { count } =
@@ -2592,12 +2587,11 @@ module.exports = async function (fastify, opts) {
           nama,
           nrk,
           nip,
-          id_jabatan,
           id_pangkat,
           id_status_kenaikan_pangkat,
-          tempat_tugas,
-          seksi_kecamatan,
-          kelurahan,
+          id_tempat_tugas,
+          id_seksi_kecamatan,
+          id_jabatan_kelurahan,
           tahun_jnp
         );
 
@@ -2749,23 +2743,20 @@ module.exports = async function (fastify, opts) {
             nip: {
               type: "string",
             },
-            id_jabatan: {
-              type: "number",
-            },
             id_pangkat: {
               type: "number",
             },
             id_status_kenaikan_pangkat: {
               type: "number",
             },
-            tempat_tugas: {
-              type: "string",
+            id_tempat_tugas: {
+              type: "number",
             },
-            seksi_kecamatan: {
-              type: "string",
+            id_seksi_kecamatan: {
+              type: "number",
             },
-            kelurahan: {
-              type: "string",
+            id_jabatan_kelurahan: {
+              type: "number",
             },
             tahun_jnp: {
               type: "number",
@@ -2785,12 +2776,11 @@ module.exports = async function (fastify, opts) {
         nama,
         nrk,
         nip,
-        id_jabatan,
         id_pangkat,
         id_status_kenaikan_pangkat,
-        tempat_tugas,
-        seksi_kecamatan,
-        kelurahan,
+        id_tempat_tugas,
+        id_seksi_kecamatan,
+        id_jabatan_kelurahan,
         tahun_jnp,
       } = request.query;
       let headerData = [];
@@ -2819,12 +2809,11 @@ module.exports = async function (fastify, opts) {
             nama,
             nrk,
             nip,
-            id_jabatan,
             id_pangkat,
             id_status_kenaikan_pangkat,
-            tempat_tugas,
-            seksi_kecamatan,
-            kelurahan,
+            id_tempat_tugas,
+            id_seksi_kecamatan,
+            id_jabatan_kelurahan,
             tahun_jnp
           );
 
@@ -3415,14 +3404,14 @@ module.exports = async function (fastify, opts) {
             status_pegawai: {
               type: "string",
             },
-            tempat_tugas: {
-              type: "string",
+            id_tempat_tugas: {
+              type: "number",
             },
-            seksi_kecamatan: {
-              type: "string",
+            id_seksi_kecamatan: {
+              type: "number",
             },
-            kelurahan: {
-              type: "string",
+            id_jabatan_kelurahan: {
+              type: "number",
             },
           },
           required: ["limit", "offset"],
@@ -3490,9 +3479,9 @@ module.exports = async function (fastify, opts) {
         nip,
         nrk_nptt_pjlp,
         status_pegawai,
-        tempat_tugas,
-        seksi_kecamatan,
-        kelurahan,
+        id_tempat_tugas,
+        id_seksi_kecamatan,
+        id_jabatan_kelurahan,
         limit,
         offset,
       } = request.query;
@@ -3502,9 +3491,9 @@ module.exports = async function (fastify, opts) {
           nip,
           nrk_nptt_pjlp,
           status_pegawai,
-          tempat_tugas,
-          seksi_kecamatan,
-          kelurahan,
+          id_tempat_tugas,
+          id_seksi_kecamatan,
+          id_jabatan_kelurahan,
           limit,
           offset
         );
@@ -3514,9 +3503,9 @@ module.exports = async function (fastify, opts) {
           nip,
           nrk_nptt_pjlp,
           status_pegawai,
-          tempat_tugas,
-          seksi_kecamatan,
-          kelurahan
+          id_tempat_tugas,
+          id_seksi_kecamatan,
+          id_jabatan_kelurahan,
         );
 
       try {
@@ -3565,14 +3554,14 @@ module.exports = async function (fastify, opts) {
             status_pegawai: {
               type: "string",
             },
-            tempat_tugas: {
-              type: "string",
+            id_tempat_tugas: {
+              type: "number",
             },
-            seksi_kecamatan: {
-              type: "string",
+            id_seksi_kecamatan: {
+              type: "number",
             },
-            kelurahan: {
-              type: "string",
+            id_jabatan_kelurahan: {
+              type: "number",
             },
           },
         },
@@ -3590,9 +3579,9 @@ module.exports = async function (fastify, opts) {
         nip,
         nrk_nptt_pjlp,
         status_pegawai,
-        tempat_tugas,
-        seksi_kecamatan,
-        kelurahan,
+        id_tempat_tugas,
+        id_seksi_kecamatan,
+        id_jabatan_kelurahan,
       } = request.query;
       let headerData = [];
       let data = [];
@@ -3618,9 +3607,9 @@ module.exports = async function (fastify, opts) {
             nip,
             nrk_nptt_pjlp,
             status_pegawai,
-            tempat_tugas,
-            seksi_kecamatan,
-            kelurahan
+            id_tempat_tugas,
+            id_seksi_kecamatan,
+            id_jabatan_kelurahan,
           );
 
         const convertData = getData.map(function (item) {

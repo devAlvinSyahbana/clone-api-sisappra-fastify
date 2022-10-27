@@ -582,7 +582,7 @@ module.exports = async function (fastify, opts) {
       try {
         const wb = XLSX.utils.book_new();
         // Definisikan header
-        headerData = ["Id", "skpd", "Nama", "NIP", "Pangkat", "Golongan", "No SK PPNS", "No KTP PPNS", "Wilayah Kerja", "UU Yang Dikawal", ];
+        headerData = ["Id", "SKPD", "Nama", "NIP", "NRK", "Pangkat", "Golongan", "No SK PPNS", "No KTP PPNS", "Wilayah Kerja", "UU Yang Dikawal", ];
 
         const getData = await fastify.kepegawaian_ppns.unduhPpns(skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat, pejabat_ppns_golongan);
         const convertData = getData.map(function (item) {
