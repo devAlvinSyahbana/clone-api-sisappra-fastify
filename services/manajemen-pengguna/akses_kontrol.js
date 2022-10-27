@@ -9,40 +9,72 @@ const akses_kontrol = (db) => {
         return query;
     };
 
+    const findOne = (id) => {
+        const query = db.one(
+          "SELECT id, nama_akses_kontrol, kode_akses_kontrol, level, created_at as tanggal_buat FROM akses_kontrol WHERE id = $1 AND is_deleted = 0 ",
+          [id]
+        );
+        return query;
+      };
+
     const create = async (
         nama_akses_kontrol,
         kode_akses_kontrol,
-        level,
-        tanggal_buat
+        level
     ) => {
 
         const { id } = await db.one(
-            "INSERT INTO pengguna (nama_akses_kontrol, kode_akses_kontrol, level, tanggal_buat) VALUES ($1, $2, $3, $4) RETURNING id",
+            "INSERT INTO akses_kontrol (nama_akses_kontrol, kode_akses_kontrol, level) VALUES ($1, $2, $3) RETURNING id",
             [
                 nama_akses_kontrol,
                 kode_akses_kontrol,
-                level,
-                tanggal_buat
+                level
             ]
         );
 
         return {
             nama_akses_kontrol,
             kode_akses_kontrol,
-            level,
-            tanggal_buat,
+            level
         };
     };
+
+    const update = (
+        id,
+        nama_akses_kontrol,
+        kode_akses_kontrol,
+        level,
+
+    ) => {
+        db.one(
+            "UPDATE akses_kontrol SET nama_akses_kontrol = $1, kode_akses_kontrol = $2, level =$3, updated_at = CURRENT_TIMESTAMP WHERE id = $4 RETURNING id",
+            [
+                nama_akses_kontrol,
+                kode_akses_kontrol,
+                level,
+                id,
+            ]
+        );
+    };
+
+    const del = async (id) => {
+        await db.one(
+          "UPDATE akses_kontrol SET is_deleted = 1, deleted_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id",
+          [id]
+        );
+    
+        return { id };
+      };
 
 
     return {
         find,
-        // findOne,
+        findOne,
         // countAllFilter,
         create,
         // filter,
-        // update,
-        // del,
+        update,
+        del,
         // getDataUnduhManajemenPengguna,
     };
 }
