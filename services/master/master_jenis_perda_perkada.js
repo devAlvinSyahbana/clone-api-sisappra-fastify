@@ -63,6 +63,14 @@ const master_jenis_perda_perkada = (db) => {
     };
   };
 
+  const filter = (q) => {
+    const query = db.any(
+      "SELECT id, nama as status_sarana_prasarana FROM status_sarana_prasarana WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
+    );
+
+    return query;
+  };
+
   return {
     find,
     findone,
@@ -70,6 +78,7 @@ const master_jenis_perda_perkada = (db) => {
     create,
     update,
     del,
+    filter,
   };
 };
 
