@@ -585,35 +585,23 @@ const kepegawaian_rekapitulasi = (db) => {
     if (tempat_tugas != undefined) {
       filter_1 =
         filter_1 +
-        " and kp.kepegawaian_tempat_tugas ilike '" +
-        "%" +
-        tempat_tugas +
-        "%" +
-        "'";
+        " and kp.kepegawaian_tempat_tugas = " +
+        tempat_tugas;
       filter_2 =
         filter_2 +
-        " and knp.kepegawaian_tempat_tugas ilike '" +
-        "%" +
-        tempat_tugas +
-        "%" +
-        "'";
+        " and knp.kepegawaian_tempat_tugas = " +
+        tempat_tugas;
     }
 
     if (seksi_kecamatan != undefined) {
       filter_1 =
         filter_1 +
-        " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" +
-        "%" +
-        seksi_kecamatan +
-        "%" +
-        "'";
+        " and kp.kepegawaian_subbag_seksi_kecamatan = " +
+        seksi_kecamatan;
       filter_2 =
         filter_2 +
-        " and knp.kepegawaian_subbag_seksi_kecamatan ilike '" +
-        "%" +
-        seksi_kecamatan +
-        "%" +
-        "'";
+        " and knp.kepegawaian_subbag_seksi_kecamatan = " +
+        seksi_kecamatan;
     }
 
     if (tahun_pensiun != undefined) {
@@ -632,11 +620,11 @@ const kepegawaian_rekapitulasi = (db) => {
     console.log(filter_1);
     console.log(filter_2);
     const query = db.any(
-      "select y.* from (select z.*from (select kp.nama, kp.kepegawaian_nip as nip,kp.kepegawaian_nrk as nrk_nptt_pjlp,kp.kepegawaian_status_pegawai,mj.nama as jabatan,kp.kepegawaian_tempat_tugas as tempat_tugas,kp.kepegawaian_subbag_seksi_kecamatan as subbag_seksi_kecamatan, kp.tempat_lahir,kp.tgl_lahir,case when kp.kepegawaian_eselon = 1 or kp.kepegawaian_eselon = 2 then (date_part('year', kp.tgl_lahir) + 60) else  (date_part('year', kp.tgl_lahir) + 58) end as tahun_pensiun from kepegawaian_pns kp left join master_jabatan mj on kp.kepegawaian_jabatan = mj.id where kp.is_deleted = 0 " +
+      "select y.* from (select z.* from (select kp.id, kp.nama, kp.kepegawaian_nip as nip,kp.kepegawaian_nrk as nrk_nptt_pjlp,kp.kepegawaian_status_pegawai,mj.nama as jabatan, mtp.nama as tempat_tugas, mtsp.nama as subbag_seksi_kecamatan, kp.tempat_lahir,kp.tgl_lahir,case when kp.kepegawaian_eselon = 1 or kp.kepegawaian_eselon = 2 then (date_part('year', kp.tgl_lahir) + 60) else  (date_part('year', kp.tgl_lahir) + 58) end as tahun_pensiun from kepegawaian_pns kp left join master_jabatan mj on kp.kepegawaian_jabatan = mj.id left join master_tempat_pelaksanaan mtp on kp.kepegawaian_tempat_tugas = mtp.id left join master_tempat_seksi_pelaksanaan mtsp on kp.kepegawaian_subbag_seksi_kecamatan = mtsp.id where kp.is_deleted = 0 " +
         filter_1 +
         " ) as z where " +
         filter_pensiun_1 +
-        " union select x.*from (select knp.nama, knp.kepegawaian_nip,knp.kepegawaian_nptt_npjlp,knp.kepegawaian_status_pegawai,mj2.nama,knp.kepegawaian_tempat_tugas,knp.kepegawaian_subbag_seksi_kecamatan,knp.tempat_lahir,knp.tgl_lahir,(date_part('year', knp.tgl_lahir) + 56) as tahun_pensiun from kepegawaian_non_pns knp left join master_jabatan mj2 on knp.kepegawaian_jabatan = mj2.id where knp.is_deleted = 0 " +
+        " union select x.* from (select knp.id, knp.nama, knp.kepegawaian_nip,knp.kepegawaian_nptt_npjlp,knp.kepegawaian_status_pegawai,mj2.nama, mtp.nama as tempat_tugas, mtsp.nama as subbag_seksi_kecamatan, knp.tempat_lahir,knp.tgl_lahir,(date_part('year', knp.tgl_lahir) + 56) as tahun_pensiun from kepegawaian_non_pns knp left join master_jabatan mj2 on knp.kepegawaian_jabatan = mj2.id left join master_tempat_pelaksanaan mtp on knp.kepegawaian_tempat_tugas = mtp.id left join master_tempat_seksi_pelaksanaan mtsp on knp.kepegawaian_subbag_seksi_kecamatan = mtsp.id where knp.is_deleted = 0 " +
         filter_2 +
         " ) as x where " +
         filter_pensiun_2 +
@@ -704,35 +692,23 @@ const kepegawaian_rekapitulasi = (db) => {
     if (tempat_tugas != undefined) {
       filter_1 =
         filter_1 +
-        " and kp.kepegawaian_tempat_tugas ilike '" +
-        "%" +
-        tempat_tugas +
-        "%" +
-        "'";
+        " and kp.kepegawaian_tempat_tugas = " +
+        tempat_tugas;
       filter_2 =
         filter_2 +
-        " and knp.kepegawaian_tempat_tugas ilike '" +
-        "%" +
-        tempat_tugas +
-        "%" +
-        "'";
+        " and knp.kepegawaian_tempat_tugas = " +
+        tempat_tugas;
     }
 
     if (seksi_kecamatan != undefined) {
       filter_1 =
         filter_1 +
-        " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" +
-        "%" +
-        seksi_kecamatan +
-        "%" +
-        "'";
+        " and kp.kepegawaian_subbag_seksi_kecamatan = " +
+        seksi_kecamatan;
       filter_2 =
         filter_2 +
-        " and knp.kepegawaian_subbag_seksi_kecamatan ilike '" +
-        "%" +
-        seksi_kecamatan +
-        "%" +
-        "'";
+        " and knp.kepegawaian_subbag_seksi_kecamatan = " +
+        seksi_kecamatan;
     }
 
     if (tahun_pensiun != undefined) {
@@ -750,11 +726,11 @@ const kepegawaian_rekapitulasi = (db) => {
     }
 
     const query = db.one(
-      "select count(y.*) from (select z.*from (select kp.nama, kp.kepegawaian_nip as nip,kp.kepegawaian_nrk as no_pegawai,kp.kepegawaian_status_pegawai,mj.nama as jabatan,kp.kepegawaian_tempat_tugas as tempat_tugas,kp.kepegawaian_subbag_seksi_kecamatan as subbag_seksi_kecamatan, kp.tempat_lahir,kp.tgl_lahir,case when kp.kepegawaian_eselon = 1 or kp.kepegawaian_eselon = 2 then (date_part('year', kp.tgl_lahir) + 60) else  (date_part('year', kp.tgl_lahir) + 58) end as tahun_pensiun from kepegawaian_pns kp left join master_jabatan mj on kp.kepegawaian_jabatan = mj.id where kp.is_deleted = 0 " +
+      "select count(y.*) from (select z.*from (select kp.id, kp.nama, kp.kepegawaian_nip as nip,kp.kepegawaian_nrk as nrk_nptt_pjlp,kp.kepegawaian_status_pegawai,mj.nama as jabatan, mtp.nama as tempat_tugas, mtsp.nama as subbag_seksi_kecamatan, kp.tempat_lahir,kp.tgl_lahir,case when kp.kepegawaian_eselon = 1 or kp.kepegawaian_eselon = 2 then (date_part('year', kp.tgl_lahir) + 60) else  (date_part('year', kp.tgl_lahir) + 58) end as tahun_pensiun from kepegawaian_pns kp left join master_jabatan mj on kp.kepegawaian_jabatan = mj.id left join master_tempat_pelaksanaan mtp on kp.kepegawaian_tempat_tugas = mtp.id left join master_tempat_seksi_pelaksanaan mtsp on kp.kepegawaian_subbag_seksi_kecamatan = mtsp.id where kp.is_deleted = 0 " +
         filter_1 +
         " ) as z where " +
         filter_pensiun_1 +
-        " union all select x.*from (select knp.nama, knp.kepegawaian_nip,knp.kepegawaian_nptt_npjlp,knp.kepegawaian_status_pegawai,mj2.nama,knp.kepegawaian_tempat_tugas,knp.kepegawaian_subbag_seksi_kecamatan,knp.tempat_lahir,knp.tgl_lahir,(date_part('year', knp.tgl_lahir) + 56) as tahun_pensiun from kepegawaian_non_pns knp left join master_jabatan mj2 on knp.kepegawaian_jabatan = mj2.id where knp.is_deleted = 0 " +
+        " union all select x.*from (select knp.id, knp.nama, knp.kepegawaian_nip,knp.kepegawaian_nptt_npjlp,knp.kepegawaian_status_pegawai,mj2.nama, mtp.nama as tempat_tugas, mtsp.nama as subbag_seksi_kecamatan, knp.tempat_lahir,knp.tgl_lahir,(date_part('year', knp.tgl_lahir) + 56) as tahun_pensiun from kepegawaian_non_pns knp left join master_jabatan mj2 on knp.kepegawaian_jabatan = mj2.id left join master_tempat_pelaksanaan mtp on knp.kepegawaian_tempat_tugas = mtp.id left join master_tempat_seksi_pelaksanaan mtsp on knp.kepegawaian_subbag_seksi_kecamatan = mtsp.id where knp.is_deleted = 0 " +
         filter_2 +
         " ) as x where " +
         filter_pensiun_2 +
@@ -819,35 +795,23 @@ const kepegawaian_rekapitulasi = (db) => {
     if (tempat_tugas != undefined) {
       filter_1 =
         filter_1 +
-        " and kp.kepegawaian_tempat_tugas ilike '" +
-        "%" +
-        tempat_tugas +
-        "%" +
-        "'";
+        " and kp.kepegawaian_tempat_tugas = " +
+        tempat_tugas;
       filter_2 =
         filter_2 +
-        " and knp.kepegawaian_tempat_tugas ilike '" +
-        "%" +
-        tempat_tugas +
-        "%" +
-        "'";
+        " and knp.kepegawaian_tempat_tugas = " +
+        tempat_tugas;
     }
 
     if (seksi_kecamatan != undefined) {
       filter_1 =
         filter_1 +
-        " and kp.kepegawaian_subbag_seksi_kecamatan ilike '" +
-        "%" +
-        seksi_kecamatan +
-        "%" +
-        "'";
+        " and kp.kepegawaian_subbag_seksi_kecamatan = " +
+        seksi_kecamatan;
       filter_2 =
         filter_2 +
-        " and knp.kepegawaian_subbag_seksi_kecamatan ilike '" +
-        "%" +
-        seksi_kecamatan +
-        "%" +
-        "'";
+        " and knp.kepegawaian_subbag_seksi_kecamatan = " +
+        seksi_kecamatan;
     }
 
     if (tahun_pensiun != undefined) {
@@ -865,11 +829,11 @@ const kepegawaian_rekapitulasi = (db) => {
     }
 
     const query = db.any(
-      "select y.* from (select z.*from (select kp.nama, kp.kepegawaian_nip as nip,kp.kepegawaian_nrk as no_pegawai,kp.kepegawaian_status_pegawai,mj.nama as jabatan,kp.kepegawaian_tempat_tugas as tempat_tugas,kp.kepegawaian_subbag_seksi_kecamatan as subbag_seksi_kecamatan, kp.tempat_lahir,kp.tgl_lahir,case when kp.kepegawaian_eselon = 1 or kp.kepegawaian_eselon = 2 then (date_part('year', kp.tgl_lahir) + 60) else  (date_part('year', kp.tgl_lahir) + 58) end as tahun_pensiun from kepegawaian_pns kp left join master_jabatan mj on kp.kepegawaian_jabatan = mj.id where kp.is_deleted = 0 " +
+      "select y.* from (select z.*from (select kp.nama, kp.kepegawaian_nip as nip,kp.kepegawaian_nrk as nrk_nptt_pjlp,kp.kepegawaian_status_pegawai,mj.nama as jabatan, mtp.nama as tempat_tugas, mtsp.nama as subbag_seksi_kecamatan, kp.tempat_lahir,kp.tgl_lahir,case when kp.kepegawaian_eselon = 1 or kp.kepegawaian_eselon = 2 then (date_part('year', kp.tgl_lahir) + 60) else  (date_part('year', kp.tgl_lahir) + 58) end as tahun_pensiun from kepegawaian_pns kp left join master_jabatan mj on kp.kepegawaian_jabatan = mj.id left join master_tempat_pelaksanaan mtp on kp.kepegawaian_tempat_tugas = mtp.id left join master_tempat_seksi_pelaksanaan mtsp on kp.kepegawaian_subbag_seksi_kecamatan = mtsp.id where kp.is_deleted = 0 " +
         filter_1 +
         " ) as z where " +
         filter_pensiun_1 +
-        " union all select x.*from (select knp.nama, knp.kepegawaian_nip,knp.kepegawaian_nptt_npjlp,knp.kepegawaian_status_pegawai,mj2.nama,knp.kepegawaian_tempat_tugas,knp.kepegawaian_subbag_seksi_kecamatan,knp.tempat_lahir,knp.tgl_lahir,(date_part('year', knp.tgl_lahir) + 56) as tahun_pensiun from kepegawaian_non_pns knp left join master_jabatan mj2 on knp.kepegawaian_jabatan = mj2.id where knp.is_deleted = 0 " +
+        " union all select x.*from (select knp.nama, knp.kepegawaian_nip,knp.kepegawaian_nptt_npjlp,knp.kepegawaian_status_pegawai,mj2.nama, mtp.nama as tempat_tugas, mtsp.nama as subbag_seksi_kecamatan, knp.tempat_lahir,knp.tgl_lahir,(date_part('year', knp.tgl_lahir) + 56) as tahun_pensiun from kepegawaian_non_pns knp left join master_jabatan mj2 on knp.kepegawaian_jabatan = mj2.id left join master_tempat_pelaksanaan mtp on knp.kepegawaian_tempat_tugas = mtp.id left join master_tempat_seksi_pelaksanaan mtsp on knp.kepegawaian_subbag_seksi_kecamatan = mtsp.id where knp.is_deleted = 0 " +
         filter_2 +
         " ) as x where " +
         filter_pensiun_2 +

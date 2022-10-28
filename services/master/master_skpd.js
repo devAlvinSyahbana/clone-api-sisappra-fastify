@@ -84,7 +84,7 @@ const master_skpd = (db) => {
     create,
     update,
     del,
-    filter
+    filter,
   };
 };
 
