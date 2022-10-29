@@ -71,10 +71,10 @@ module.exports = async function (fastify, opts) {
             //   type: "string",
             // },
             tempat_tugas: {
-              type: "string",
+              type: "number",
             },
             seksi_kecamatan: {
-              type: "string",
+              type: "number",
             },
             // status_pegawai: {
             //   type: "string",
@@ -99,6 +99,9 @@ module.exports = async function (fastify, opts) {
                 items: {
                   type: "object",
                   properties: {
+                    id: {
+                      type: "number"
+                    },
                     nama: {
                       type: "string"
                     },
@@ -196,10 +199,10 @@ module.exports = async function (fastify, opts) {
               type: "string",
             },
             tempat_tugas: {
-              type: "string",
+              type: "number",
             },
             seksi_kecamatan: {
-              type: "string",
+              type: "number",
             },
             status_pegawai: {
               type: "string",
