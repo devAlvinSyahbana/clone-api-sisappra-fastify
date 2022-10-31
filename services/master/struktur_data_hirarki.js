@@ -4,7 +4,7 @@ const struktur_data_hirarki = (db) => {
 
   const find = () => {
     const query = db.any(
-      "SELECT id, level, sub_level, id_relasi_hirarki, kategori FROM struktur_data_hirarki WHERE is_deleted = 0 ORDER BY level DESC",
+      "SELECT id, parent_id, nama, jabatan, tim FROM struktur_data_hirarki WHERE is_deleted = 0 order by id asc",
     );
 
     return query;
@@ -12,35 +12,35 @@ const struktur_data_hirarki = (db) => {
 
   const findone = (id) => {
     const query = db.one(
-      "SELECT id, level, sub_level, id_relasi_hirarki, kategori FROM struktur_data_hirarki WHERE id = $1 AND is_deleted = 0",
+      "SELECT id, parent_id, nama, jabatan, tim FROM struktur_data_hirarki WHERE id = $1 AND is_deleted = 0",
       [id]
     );
 
     return query;
   };
 
-  const findone_by_sub_level = (sub_level) => {
-    const query = db.one(
-      "SELECT id, level, sub_level, id_relasi_hirarki, kategori FROM struktur_data_hirarki WHERE sub_level ilike '%" + sub_level + "%' AND is_deleted = 0",
+  const find_by_parent_id = (parent_id) => {
+    const query = db.any(
+      "SELECT id, parent_id, nama, jabatan, tim FROM struktur_data_hirarki WHERE parent_id = " + parent_id + "AND is_deleted = 0 order by id asc"
     );
 
     return query;
   };
 
-  const create = async(level, sub_level, id_relasi_hirarki, kategori, created_by) => {
+  const create = async (parent_id, nama, jabatan, tim, created_by) => {
     const query = db.one(
-      "INSERT INTO struktur_data_hirarki (level, sub_level, id_relasi_hirarki, kategori, is_deleted, created_by) VALUES ($1, $2, $3, $4, 0, $5) RETURNING id",
-      [level, sub_level, id_relasi_hirarki, kategori, created_by]
+      "INSERT INTO struktur_data_hirarki (parent_id, nama, jabatan, tim, is_deleted, created_by) VALUES ($1, $2, $3, $4, 0, $5) RETURNING id",
+      [parent_id, nama, jabatan, tim, created_by]
     );
 
     return query;
   };
 
 
-  const update = (id, level, sub_level, id_relasi_hirarki, kategori, updated_by) => {
+  const update = (id, parent_id, nama, jabatan, tim, updated_by) => {
     db.one(
-      "UPDATE struktur_data_hirarki SET level = $1, sub_level = $2, id_relasi_hirarki = $3, kategori = $4, updated_by = $5, updated_at = CURRENT_TIMESTAMP WHERE id = $6 RETURNING id",
-      [level, sub_level, id_relasi_hirarki, kategori, updated_by, id]
+      "UPDATE struktur_data_hirarki SET parent_id = $1, nama = $2, jabatan = $3, tim = $4, updated_by = $5, updated_at = CURRENT_TIMESTAMP WHERE id = $6 RETURNING id",
+      [parent_id, nama, jabatan, tim, updated_by, id]
     );
   };
 
@@ -58,7 +58,7 @@ const struktur_data_hirarki = (db) => {
   return {
     find,
     findone,
-    findone_by_sub_level,
+    find_by_parent_id,
     create,
     update,
     del
