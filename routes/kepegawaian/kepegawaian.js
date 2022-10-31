@@ -2170,13 +2170,13 @@ module.exports = async function (fastify, opts) {
               type: "string",
             },
             bidang_wilayah: {
-              type: "string",
+              type: "number",
             },
             pelaksana: {
-              type: "string",
+              type: "number",
             },
             jabatan: {
-              type: "string",
+              type: "number",
             },
           },
           required: ["limit", "offset"],
@@ -2289,13 +2289,13 @@ module.exports = async function (fastify, opts) {
               type: "string",
             },
             bidang_wilayah: {
-              type: "string",
+              type: "number",
             },
             pelaksana: {
-              type: "string",
+              type: "number",
             },
             jabatan: {
-              type: "string",
+              type: "number",
             },
           },
         },
