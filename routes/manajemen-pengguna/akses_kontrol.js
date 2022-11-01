@@ -19,8 +19,8 @@ module.exports = async function (fastify, opts) {
                             type: "object",
                             properties: {
                                 id: { type: "number" },
-                                nama_akses_kontrol: { type: "string" },
-                                kode_akses_kontrol: { type: "string" },
+                                modul: { type: "string" },
+                                kode: { type: "string" },
                                 level: { type: "string" },
                                 tanggal_buat: { type: "string" },
                             },
@@ -68,10 +68,10 @@ module.exports = async function (fastify, opts) {
                                 id: {
                                     type: "number"
                                 },
-                                nama_akses_kontrol: {
+                                modul: {
                                     type: "string"
                                 },
-                                kode_akses_kontrol: {
+                                kode: {
                                     type: "string"
                                 },
                                 level: {
@@ -115,6 +115,118 @@ module.exports = async function (fastify, opts) {
         }
     );
 
+    //filter data akses kontrol
+    fastify.get(
+        "akses-kontrol/filter/:modul", {
+        schema: {
+            description: "Endpoint ini digunakan untuk memfilter akses kontrol",
+            tags: ["akses kontrol"],
+            querystring: {
+                type: "object",
+                properties: {
+                    limit: {
+                        type: "integer",
+                        default: 10,
+                    },
+                    offset: {
+                        type: "integer",
+                        default: 1,
+                    },
+                    modul: {
+                        type: "string",
+                    },
+                },
+                required: ["limit", "offset"],
+            },
+            response: {
+                200: {
+                    description: "Success Response",
+                    type: "object",
+                    properties: {
+                        message: {
+                            type: "string"
+                        },
+                        code: {
+                            type: "string"
+                        },
+                        data: {
+                            type: "array",
+                            items: {
+                                type: "object",
+                                properties: {
+                                    id: {
+                                        type: "number"
+                                    },
+                                    modul: {
+                                        type: "string"
+                                    },
+                                    kode: {
+                                        type: "string"
+                                    },
+                                    level: {
+                                        type: "string"
+                                    },
+                                },
+                            },
+                        },
+                        total_data: {
+                            type: "number"
+                        },
+                    },
+                },
+            },
+        },
+    },
+        async (request, reply) => {
+            const {
+                limit,
+                offset,
+                modul,
+                kode,
+                level
+            } = request.query;
+            let exec = null;
+            let totalDt = 0;
+            let qwhere = "";
+            if (modul) {
+                qwhere += ` AND modul ILIKE '%${modul}%'`;
+            }
+            if (kode) {
+                qwhere += ` AND kode ILIKE '%${kode}%'`;
+            }
+            if (level) {
+                qwhere += ` AND level ILIKE '%${level}%'`;
+            }
+            exec = await fastify.akses_kontrol.filter(limit, offset, qwhere);
+            const {
+                total
+            } = await fastify.akses_kontrol.countAllFilter(
+                qwhere
+            );
+            totalDt = total;
+            try {
+                if (exec) {
+                    reply.send({
+                        message: "success",
+                        code: 200,
+                        data: exec,
+                        total_data: totalDt,
+                    });
+                } else {
+                    reply.send({
+                        message: "success",
+                        code: 204
+                    });
+                }
+            } catch (error) {
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
+            }
+        }
+    )
+
     // create data akses kontrol
     fastify.post(
         "/akses-kontrol/create",
@@ -127,8 +239,7 @@ module.exports = async function (fastify, opts) {
                     description: "Payload for creating a akses kontrol",
                     type: "object",
                     properties: {
-                        nama_akses_kontrol: { type: "string" },
-                        kode_akses_kontrol: { type: "string" },
+                        modul: { type: "string" },
                         level: { type: "string" },
                     },
                 },
@@ -138,8 +249,7 @@ module.exports = async function (fastify, opts) {
                         type: "object",
                         properties: {
                             id: { type: "number" },
-                            nama_akses_kontrol: { type: "string" },
-                            kode_akses_kontrol: { type: "string" },
+                            modul: { type: "string" },
                             level: { type: "string" },
                         },
                     },
@@ -148,12 +258,10 @@ module.exports = async function (fastify, opts) {
         },
         async (request, reply) => {
             const {
-                nama_akses_kontrol,
-                kode_akses_kontrol,
+                modul,
                 level } = request.body;
             const exec = await fastify.akses_kontrol.create(
-                nama_akses_kontrol,
-                kode_akses_kontrol,
+                modul,
                 level,
             );
             reply.code(201).send(exec);
@@ -181,8 +289,7 @@ module.exports = async function (fastify, opts) {
                     description: "Payload for updating a data akses kontrol",
                     type: "object",
                     properties: {
-                        nama_akses_kontrol: { type: "string" },
-                        kode_akses_kontrol: { type: "string" },
+                        modul: { type: "string" },
                         level: { type: "string" },
                     },
                 },
@@ -201,16 +308,14 @@ module.exports = async function (fastify, opts) {
         async (request, reply) => {
             const { id } = request.params;
             const {
-                nama_akses_kontrol,
-                kode_akses_kontrol,
+                modul,
                 level,
             } = request.body;
 
             try {
                 await fastify.akses_kontrol.update(
                     id,
-                    nama_akses_kontrol,
-                    kode_akses_kontrol,
+                    modul,
                     level,
                 );
 
