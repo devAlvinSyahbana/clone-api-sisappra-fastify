@@ -23,12 +23,21 @@ const master_kelurahan = (db) => {
     if (kecamatan == undefined){kecamatan = ""}
     if (kelurahan == undefined){kelurahan = ""}
 
-    let a = "%"+kelurahan;
-    let b = "%"+kecamatan;
+    let a = kelurahan + "%";
+    let b = kecamatan + "%";
 
     const query = db.any(
-      "SELECT mk.id, mk.kode as kode_kelurahan, mk.nama as kelurahan, mk.kode_kecamatan, mkec.nama as kecamatan FROM master_kelurahan mk JOIN master_kecamatan mkec on mk.kode_kecamatan = mkec.kode WHERE mk.nama LIKE $1 AND mkec.nama LIKE $2 AND mk.is_deleted = 0",
+      "SELECT mk.id, mk.kode as kode_kelurahan, mk.nama as kelurahan, mk.kode_kecamatan, mkec.nama as kecamatan FROM master_kelurahan mk JOIN master_kecamatan mkec on mk.kode_kecamatan = mkec.kode WHERE mk.nama ILIKE $1 AND mkec.nama ILIKE $2 AND mk.is_deleted = 0",
       [a, b]
+    );
+
+    return query;
+  };
+  
+  const find_by_kode_kecamatan = (kode_kecamatan) => {
+    const query = db.any(
+      "SELECT mk.id, mk.kode as kode_kelurahan, mk.nama as kelurahan, mk.kode_kecamatan, mkec.nama as kecamatan FROM master_kelurahan mk JOIN master_kecamatan mkec on mk.kode_kecamatan = mkec.kode WHERE mk.kode_kecamatan ILIKE $1 AND mk.is_deleted = 0",
+      [kode_kecamatan]
     );
 
     return query;
@@ -73,13 +82,23 @@ const master_kelurahan = (db) => {
     };
   };
 
+  const filter = (q) => {
+    const query = db.any(
+      "SELECT id, nama as kelurahan FROM master_kelurahan WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
+    );
+
+    return query;
+  };
+
   return {
     find,
     findone,
     findone_by_kelurahan,
+    find_by_kode_kecamatan,
     create,
     update,
     del,
+    filter
   };
 };
 

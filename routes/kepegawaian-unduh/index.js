@@ -1,17 +1,17 @@
 const kepegawaian_pns = require("../../services/kepegawaian/kepegawaian_pns");
+const kepegawaian_ppns = require("../../services/kepegawaian/kepegawaian_ppns");
 const kepegawaian_non_pns = require("../../services/kepegawaian/kepegawaian_non_pns");
 const XLSX = require("xlsx");
 
 module.exports = async function (fastify, opts) {
   fastify.register(kepegawaian_pns);
+  fastify.register(kepegawaian_ppns);
   fastify.register(kepegawaian_non_pns);
 
   fastify.get(
-    "/unduh-pegawai",
-    {
+    "/unduh-pegawai", {
       schema: {
-        description:
-          "Endpoint ini digunakan untuk mengunduh seluruh data kepegawaian berstatus PNS, PTT, PJLP",
+        description: "Endpoint ini digunakan untuk mengunduh seluruh data kepegawaian berstatus PNS, PTT, PJLP",
         tags: ["endpoint kepegawaian"],
         querystring: {
           type: "object",
@@ -31,7 +31,9 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { status } = request.query;
+      const {
+        status
+      } = request.query;
       let headerKepegawaian = [];
       let dataKepegawaian = [];
       let headerKeluarga = [];
@@ -127,7 +129,10 @@ module.exports = async function (fastify, opts) {
           dataKepegawaian = convertData;
 
           const employeDataKeluarga = await getData.filter((item) => {
-            return { id: item.id, nama: item.nama };
+            return {
+              id: item.id,
+              nama: item.nama
+            };
           });
           if (employeDataKeluarga) {
             let r = 2;
@@ -164,7 +169,10 @@ module.exports = async function (fastify, opts) {
           }
 
           const employeDataPendidikan = await getData.filter((item) => {
-            return { id: item.id, nama: item.nama };
+            return {
+              id: item.id,
+              nama: item.nama
+            };
           });
 
           if (employeDataPendidikan) {
@@ -299,7 +307,10 @@ module.exports = async function (fastify, opts) {
           dataKepegawaian = convertData;
 
           const employeDataKeluarga = await getData.filter((item) => {
-            return { id: item.id, nama: item.nama };
+            return {
+              id: item.id,
+              nama: item.nama
+            };
           });
           if (employeDataKeluarga) {
             let r = 2;
@@ -336,7 +347,10 @@ module.exports = async function (fastify, opts) {
           }
 
           const employeDataPendidikan = await getData.filter((item) => {
-            return { id: item.id, nama: item.nama };
+            return {
+              id: item.id,
+              nama: item.nama
+            };
           });
 
           if (employeDataPendidikan) {
@@ -471,7 +485,10 @@ module.exports = async function (fastify, opts) {
           dataKepegawaian = convertData;
 
           const employeDataKeluarga = await getData.filter((item) => {
-            return { id: item.id, nama: item.nama };
+            return {
+              id: item.id,
+              nama: item.nama
+            };
           });
           if (employeDataKeluarga) {
             let r = 2;
@@ -508,7 +525,10 @@ module.exports = async function (fastify, opts) {
           }
 
           const employeDataPendidikan = await getData.filter((item) => {
-            return { id: item.id, nama: item.nama };
+            return {
+              id: item.id,
+              nama: item.nama
+            };
           });
 
           if (employeDataPendidikan) {
@@ -582,7 +602,11 @@ module.exports = async function (fastify, opts) {
         wb.Sheets["DATA KELUARGA"] = ws_keluarga;
         wb.Sheets["DATA PENDIDIKAN"] = ws_pendidikan;
 
-        const wopts = { bookType: "xlsx", bookSST: false, type: "buffer" };
+        const wopts = {
+          bookType: "xlsx",
+          bookSST: false,
+          type: "buffer"
+        };
         const wBuffer = XLSX.write(wb, wopts);
 
         reply.header(
@@ -595,17 +619,18 @@ module.exports = async function (fastify, opts) {
         );
         reply.send(wBuffer);
       } catch (error) {
-        reply.send({ message: error.message, code: 500 });
+        reply.send({
+          message: error.message,
+          code: 500
+        });
       }
     }
   );
 
   fastify.get(
-    "/unduh-data-pegawai-struktural",
-    {
+    "/unduh-data-pegawai-struktural", {
       schema: {
-        description:
-          "Endpoint ini digunakan untuk mengunduh data pegawai pejabat struktural",
+        description: "Endpoint ini digunakan untuk mengunduh data pegawai pejabat struktural",
         tags: ["endpoint rekapitulasi pegawai pejabat"],
         querystring: {
           type: "object",
@@ -639,7 +664,14 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { nama, nrk, kecamatan_seksi, jabatan, kelurahan, nip } = request.query;
+      const {
+        nama,
+        nrk,
+        kecamatan_seksi,
+        jabatan,
+        kelurahan,
+        nip
+      } = request.query;
       let headerKepegawaian = [];
       let dataKepegawaian = [];
       try {
@@ -676,12 +708,12 @@ module.exports = async function (fastify, opts) {
         }
 
         const getData = await fastify.kepegawaian_pns.getDataUnduhPejabatStruktural(qwhere);
-        
+
         const convertData = await getData.map(function (item) {
           return Object.values(item);
         });
         dataKepegawaian = convertData;
-        
+
 
         // Definisikan rows untuk ditulis ke dalam spreadsheet
         const wsDataKepegawaian = [headerKepegawaian, ...dataKepegawaian];
@@ -704,7 +736,11 @@ module.exports = async function (fastify, opts) {
         wb.Sheets["DATA PEJABAT STRUKTURAL"] = ws_kepegawaian;
 
 
-        const wopts = { bookType: "xlsx", bookSST: false, type: "buffer" };
+        const wopts = {
+          bookType: "xlsx",
+          bookSST: false,
+          type: "buffer"
+        };
         const wBuffer = XLSX.write(wb, wopts);
 
         reply.header(
@@ -717,8 +753,12 @@ module.exports = async function (fastify, opts) {
         );
         reply.send(wBuffer);
       } catch (error) {
-        reply.send({ message: error.message, code: 500 });
+        reply.send({
+          message: error.message,
+          code: 500
+        });
       }
     }
   );
+
 };

@@ -1,0 +1,140 @@
+const fp = require("fastify-plugin");
+
+
+const kepegawaian_ppns = (db) => {
+    // ─── FIND ALL ────────────────────────────────────────────────────────────────
+    const find = (limit, offset) => {
+        const query = db.any(
+            "SELECT id, skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat , pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns WHERE is_deleted = 0 LIMIT " +
+            limit + " OFFSET " + (parseInt(offset) - 1)
+        );
+        return query;
+    };
+
+    const findOne = (id) => {
+        const query = db.one(
+            "SELECT id, skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat , pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns WHERE id = $1 AND is_deleted = 0 ",
+            [id]
+        );
+        return query;
+    };
+
+    const countAll = () => {
+        const query = db.one(
+            "SELECT COUNT(id) as total FROM kepegawaian_ppns WHERE is_deleted = 0"
+        );
+
+        return query;
+    };
+
+    const find_rekap = (limit) => {
+        const query = db.any(
+            "SELECT mskpd.nama as skpd, count (kppns.skpd) as jumlah FROM public.kepegawaian_ppns kppns left join master_skpd mskpd on kppns.skpd = mskpd.id group by mskpd.nama UNION ALL SELECT 'Jumlah Keseluruhan' skpd, COUNT(skpd) FROM public.kepegawaian_ppns"
+        );
+        return query;
+    };
+
+    const find_rekap_jumlah = () => {
+        const query = db.one(
+            "select count (skpd) as jumlah_ppns, count(case when kp.skpd = 1 then 1 END) as satpol_pp, count(case when kp.skpd != 1 then 1 END) as skpd_lain from kepegawaian_ppns kp where is_deleted = 0"
+        );
+        return query;
+    };
+
+    const unduhPpns = (skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat, pejabat_ppns_golongan) => {
+        let filter = "";
+
+        if (skpd != undefined) {
+            filter = filter + " and skpd = " + skpd
+        }
+        if (pejabat_ppns_nama != undefined) {
+            filter = filter + " and pejabat_ppns_nama ilike '" + "%" + pejabat_ppns_nama + "%" + "'"
+        }
+        if (pejabat_ppns_nip != undefined) {
+            filter = filter + " and pejabat_ppns_nip ilike '" + "%" + pejabat_ppns_nip + "%" + "'"
+        }
+        if (pejabat_ppns_nrk != undefined) {
+            filter = filter + " and pejabat_ppns_nrk ilike '" + "%" + pejabat_ppns_nrk + "%" + "'"
+        }
+        if (pejabat_ppns_pangkat != undefined) {
+            filter = filter + " and pejabat_ppns_pangkat = " + pejabat_ppns_pangkat
+        }
+        if (pejabat_ppns_golongan != undefined) {
+            filter = filter + " and pejabat_ppns_golongan = " + pejabat_ppns_golongan
+        }
+
+        const query = db.any(
+            "SELECT id, skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat , pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns WHERE is_deleted = 0" + filter,
+            [filter]
+        );
+
+        return query;
+    };
+
+    // ─── FILTER ──────────────────────────────────────────────────────────────────
+    const filter = (limit, offset, qwhere) => {
+        const query = db.any(
+            "SELECT id, skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat , pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal FROM public.kepegawaian_ppns WHERE is_deleted = 0" +
+            qwhere +
+            " LIMIT " +
+            limit + " OFFSET " + (parseInt(offset) - 1)
+        );
+        return query;
+    };
+
+    const countAllFilter = (qwhere) => {
+        const query = db.one(
+            "SELECT COUNT(kppns.id) as total FROM kepegawaian_ppns kppns WHERE kppns.is_deleted = 0" +
+            qwhere
+        );
+
+        return query;
+    };
+
+    const create = (
+        skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat, pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal, created_by
+    ) => {
+        const query = db.one(
+            "INSERT INTO kepegawaian_ppns(skpd, pejabat_ppns_nama,pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat, pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id",
+            [
+                skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat, pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal, created_by
+            ]
+        );
+
+        return query;
+    };
+
+    const update = (
+        skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat, pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal, updated_by, id
+    ) => {
+        console.log([
+            skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat, pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal, updated_by, id
+        ])
+        const query = db.one(
+            "UPDATE public.kepegawaian_ppns SET skpd = $1, pejabat_ppns_nama = $2, pejabat_ppns_nip = $3, pejabat_ppns_nrk = $4, pejabat_ppns_pangkat = $5, pejabat_ppns_golongan = $6, no_sk_ppns = $7, no_ktp_ppns = $8, wilayah_kerja = $9, uu_yg_dikawal = $10, updated_by = $11 WHERE id = $12 RETURNING id ",
+            [
+                skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat, pejabat_ppns_golongan, no_sk_ppns, no_ktp_ppns, wilayah_kerja, uu_yg_dikawal, updated_by, id
+            ]
+        );
+
+        return query;
+    };
+
+    return {
+        find,
+        findOne,
+        countAll,
+        find_rekap,
+        find_rekap_jumlah,
+        filter,
+        countAllFilter,
+        create,
+        update,
+        unduhPpns
+    };
+};
+
+module.exports = fp((fastify, options, next) => {
+    fastify.decorate("kepegawaian_ppns", kepegawaian_ppns(fastify.db));
+    next();
+});

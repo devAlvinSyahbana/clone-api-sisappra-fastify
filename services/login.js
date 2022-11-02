@@ -3,7 +3,7 @@ const fp = require("fastify-plugin");
 const login = (db) => {
 
   const find_token = (token) => {
-    const query = db.any(
+    const query = db.one(
       "SELECT id_pengguna, token FROM auth_token WHERE token = $1",
       [token]
     );
@@ -28,6 +28,15 @@ const login = (db) => {
     return query;
   };
 
+  const findone_pegawai = (no_pegawai) => {
+    const query = db.one(
+      "select z.* from( select kp.id, kp.nama, kp.kepegawaian_nrk as nrk_nptt_npjlp from kepegawaian_pns kp where kp.is_deleted = 0 and kp.kepegawaian_nrk = $1 union all select knp.id, knp.nama, knp.kepegawaian_nptt_npjlp as nrk from kepegawaian_non_pns knp where knp.is_deleted = 0 and knp.kepegawaian_nptt_npjlp = $1) as z",
+      [no_pegawai]
+    );
+
+    return query;
+  };
+
   const findone_no_pegawai = (no_pegawai) => {
     const query = db.one(
       "SELECT count(id) as jmlh FROM pengguna WHERE no_pegawai = $1 AND is_deleted = 0",
@@ -46,10 +55,10 @@ const login = (db) => {
     return query;
   };
 
-  const create = (id_pegawai, no_pegawai, kata_sandi, email, hak_akses, created_by) => {
+  const create = (id_pegawai, no_pegawai, kata_sandi, email, nama_pegawai, created_by) => {
     const query = db.one(
-      "INSERT INTO pengguna (id_pegawai, no_pegawai, kata_sandi, email, hak_akses, status_pengguna, is_deleted, created_by) VALUES ($1, $2, $3, $4, $5, 0, 0, $6) RETURNING id",
-      [id_pegawai, no_pegawai, kata_sandi, email, hak_akses, created_by]
+      "INSERT INTO pengguna (id_pegawai, no_pegawai, kata_sandi, email, hak_akses, nama_lengkap, status_pengguna, is_deleted, created_by) VALUES ($1, $2, $3, $4, 1,  $5, 0, 0, $6) RETURNING id",
+      [id_pegawai, no_pegawai, kata_sandi, email, nama_pegawai, created_by]
     );
 
     return query;
@@ -95,6 +104,7 @@ const login = (db) => {
     find_token,
     find,
     findone,
+    findone_pegawai,
     findone_sign_in,
     findone_no_pegawai,
     update,

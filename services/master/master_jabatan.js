@@ -1,10 +1,19 @@
 const fp = require("fastify-plugin");
 
 const master_jabatan = (db) => {
-
-  const find = () => {
+  const find = (limit, offset, qwhere) => {
     const query = db.any(
-      "SELECT id, nama as jabatan, kode, status FROM master_jabatan WHERE is_deleted = 0 ORDER BY created_at DESC",
+      `SELECT id, nama as jabatan, kode, status, id_master_tempat_seksi_pelaksanaan, level FROM master_jabatan WHERE is_deleted = 0${qwhere} ORDER BY created_at DESC LIMIT ${limit} OFFSET ${
+        parseInt(offset) - 1
+      }`
+    );
+
+    return query;
+  };
+
+  const countAll = (qwhere) => {
+    const query = db.one(
+      `SELECT COUNT(id) as total_data FROM master_jabatan WHERE is_deleted = 0${qwhere}`
     );
 
     return query;
@@ -12,7 +21,7 @@ const master_jabatan = (db) => {
 
   const findone = (id) => {
     const query = db.one(
-      "SELECT id, nama as jabatan, kode, status FROM master_jabatan WHERE id = $1 AND is_deleted = 0",
+      "SELECT id, nama as jabatan, kode, status, id_master_tempat_seksi_pelaksanaan, level FROM master_jabatan WHERE id = $1 AND is_deleted = 0",
       [id]
     );
 
@@ -21,38 +30,47 @@ const master_jabatan = (db) => {
 
   const findone_by_jabatan = (jabatan) => {
     const query = db.one(
-      "SELECT id, nama as jabatan, kode, status FROM master_jabatan WHERE nama ilike $1 AND is_deleted = 0",
+      "SELECT id, nama as jabatan, kode, status, id_master_tempat_seksi_pelaksanaan, level FROM master_jabatan WHERE nama ilike $1 AND is_deleted = 0",
       [jabatan]
     );
 
     return query;
   };
 
-  const create = async(jabatan, status, created_by) => {
-    const { max } = await db.one(
-        "SELECT MAX(id) FROM master_jabatan"
-      );
+  const create = async (
+    nama,
+    status,
+    level,
+    id_master_tempat_seksi_pelaksanaan,
+    created_by
+  ) => {
+    const { max } = await db.one("SELECT MAX(id) FROM master_jabatan");
 
-      let a = "";
-      if (max == undefined ) {
-        a = "JBT1";
-      } else {
-        a = "JBT" + (parseInt(max) + 1);
-      }
+    let a = "";
+    if (max == undefined) {
+      a = "JBT1";
+    } else {
+      a = "JBT" + (parseInt(max) + 1);
+    }
 
     const query = db.one(
-      "INSERT INTO master_jabatan (nama, kode, status, is_deleted, created_by) VALUES ($1, $2, $3, 0, $4) RETURNING id",
-      [jabatan, a, status, created_by]
+      "INSERT INTO master_jabatan (nama, kode, status, created_by, level, id_master_tempat_seksi_pelaksanaan) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+      [
+        nama,
+        a,
+        status,
+        created_by,
+        level && level !== "" ? level : a,
+        id_master_tempat_seksi_pelaksanaan,
+      ]
     );
 
     return query;
   };
 
-
-  const update = (id, jabatan, status, updated_by) => {
+  const update = (id, values) => {
     db.one(
-      "UPDATE master_jabatan SET nama = $1, status = $2, updated_by = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $4 RETURNING id",
-      [jabatan, status, updated_by, id]
+      `UPDATE master_jabatan SET${values} updated_at = CURRENT_TIMESTAMP WHERE id = ${id} RETURNING id`
     );
   };
 
@@ -63,8 +81,16 @@ const master_jabatan = (db) => {
     );
 
     return {
-      id
+      id,
     };
+  };
+
+  const filter = (qwhere) => {
+    const query = db.any(
+      `SELECT id, nama as jabatan FROM master_jabatan WHERE is_deleted = 0${qwhere}`
+    );
+
+    return query;
   };
 
   return {
@@ -74,13 +100,12 @@ const master_jabatan = (db) => {
     create,
     update,
     del,
+    filter,
+    countAll,
   };
 };
 
 module.exports = fp((fastify, options, next) => {
-  fastify.decorate(
-    "master_jabatan",
-    master_jabatan(fastify.db)
-  );
+  fastify.decorate("master_jabatan", master_jabatan(fastify.db));
   next();
 });
