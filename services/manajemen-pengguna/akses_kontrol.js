@@ -17,6 +17,14 @@ const akses_kontrol = (db) => {
         return query;
     };
 
+    const findOne_modul = (modul) => {
+        const query = db.one(
+            "SELECT id, modul, kode, level, created_at as tanggal_buat FROM akses_kontrol WHERE modul = $1 AND is_deleted = 0 ",
+            [modul]
+        );
+        return query;
+    };
+
     const filter = (limit, offset, qwhere) => {
         const query = db.any(
           "SELECT ak.id, ak.modul FROM akses_kontrol ak WHERE ak.is_deleted = 0" +
@@ -100,6 +108,7 @@ const akses_kontrol = (db) => {
     return {
         find,
         findOne,
+        findOne_modul,
         countAllFilter,
         create,
         filter,

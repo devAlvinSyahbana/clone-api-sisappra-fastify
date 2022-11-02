@@ -38,7 +38,7 @@ module.exports = async function (fastify, opts) {
 
     // get semua data akses kontrol by id
     fastify.get(
-        "/akses-kontrol/find/:id", {
+        "/akses-kontrol/findone/:id", {
         schema: {
             description: "Endpoint ini digunakan untuk mengambil data akses kontrol",
             tags: ["akses kontrol"],
@@ -115,9 +115,88 @@ module.exports = async function (fastify, opts) {
         }
     );
 
+    // get semua data akses kontrol by modul
+    fastify.get(
+        "/akses-kontrol/findone-by-modul/:modul", {
+        schema: {
+            description: "Endpoint ini digunakan untuk mengambil data akses kontrol",
+            tags: ["akses kontrol"],
+            params: {
+                description: "Parameter yang digunakan",
+                type: "object",
+                properties: {
+                    modul: {
+                        type: "string"
+                    },
+                },
+            },
+            response: {
+                200: {
+                    description: "Success Response",
+                    type: "object",
+                    properties: {
+                        message: {
+                            type: "string"
+                        },
+                        code: {
+                            type: "string"
+                        },
+                        data: {
+                            type: "object",
+                            properties: {
+                                id: {
+                                    type: "number"
+                                },
+                                modul: {
+                                    type: "string"
+                                },
+                                kode: {
+                                    type: "string"
+                                },
+                                level: {
+                                    type: "string"
+                                },
+                                tanggal_buat: {
+                                    type: "string"
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    },
+        async (request, reply) => {
+            const {
+                modul
+            } = request.params;
+            const exec = await fastify.akses_kontrol.findOne_modul(modul);
+            try {
+                if (exec) {
+                    reply.send({
+                        message: "success",
+                        code: 200,
+                        data: exec
+                    });
+                } else {
+                    reply.send({
+                        message: "success",
+                        code: 204
+                    });
+                }
+
+            } catch (error) {
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
+            }
+        }
+    );
+
     //filter data akses kontrol
     fastify.get(
-        "akses-kontrol/filter/:modul", {
+        "/akses-kontrol/filter/:modul", {
         schema: {
             description: "Endpoint ini digunakan untuk memfilter akses kontrol",
             tags: ["akses kontrol"],
