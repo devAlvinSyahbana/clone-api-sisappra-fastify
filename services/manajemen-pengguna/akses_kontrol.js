@@ -19,7 +19,7 @@ const akses_kontrol = (db) => {
 
     const filter = (limit, offset, qwhere) => {
         const query = db.any(
-          "SELECT * FROM akses_kontrol WHERE is_deleted = 0 AND level = '' AND modul ILIKE '%{modul}%'" +
+          "SELECT ak.id, ak.modul FROM akses_kontrol ak WHERE ak.is_deleted = 0" +
           qwhere +
           " LIMIT " +
           limit +
@@ -29,6 +29,19 @@ const akses_kontrol = (db) => {
     
         return query;
       };
+
+    // const filter = (limit, offset, qwhere) => {
+    //     const query = db.any(
+    //       "SELECT * FROM akses_kontrol WHERE is_deleted = 0 AND level = '' AND modul ILIKE '%{modul}%'" +
+    //       qwhere +
+    //       " LIMIT " +
+    //       limit +
+    //       " OFFSET " +
+    //       (parseInt(offset) - 1)
+    //     );
+    
+    //     return query;
+    //   };
 
       const countAllFilter = (qwhere) => {
         const query = db.one(
