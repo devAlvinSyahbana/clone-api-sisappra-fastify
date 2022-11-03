@@ -1,14 +1,14 @@
-const master_skpd  = require("../../../services/master/master_skpd");
+const master_sumber_informasi  = require("../../../services/master/master_sumber_informasi");
 
 module.exports = async function (fastify, opts) {
-  fastify.register(master_skpd);
+  fastify.register(master_sumber_informasi);
 
   fastify.get(
     "/find",
     {
       schema: {
-        description: "This is an endpoint for fetching all master skpd",
-        tags: ["master skpd"],
+        description: "This is an endpoint for fetching all master sumber informasi",
+        tags: ["master sumber informasi"],
         response: {
           200: {
             description: "Success Response",
@@ -22,7 +22,7 @@ module.exports = async function (fastify, opts) {
                   type: "object",
                   properties: {
                     id: { type: "number" },
-                    skpd: { type: "string" },
+                    sumber_informasi: { type: "string" },
                     kode: { type: "string" },
                   },
                 },
@@ -33,7 +33,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const exec = await fastify.master_skpd.find();
+      const exec = await fastify.sumber_informasi.find();
 
       try {
         if (exec) {
@@ -51,10 +51,10 @@ module.exports = async function (fastify, opts) {
     "/findone/:id",
     {
       schema: {
-        description: "This is an endpoint for fetching a master skpd",
-        tags: ["master skpd"],
+        description: "This is an endpoint for fetching a master sumber informasi",
+        tags: ["master sumber informasi"],
         params: {
-          description: "Find one master skpd id",
+          description: "Find one master sumber informasi id",
           type: "object",
           properties: {
             id: { type: "number" },
@@ -71,7 +71,7 @@ module.exports = async function (fastify, opts) {
                 type: "object",
                 properties: {
                   id: { type: "number" },
-                  skpd: { type: "string" },
+                  sumber_informasi: { type: "string" },
                   kode: { type: "string" },
                 },
               },
@@ -82,7 +82,7 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const exec = await fastify.master_skpd.findone(id);
+      const exec = await fastify.sumber_informasi.findone(id);
 
       try {
         if (exec) {
@@ -97,16 +97,16 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/findone-by-skpd/:skpd",
+    "/findone-by-sumber_informasi/:sumber_informasi",
     {
       schema: {
-        description: "This is an endpoint for fetching a master skpd",
-        tags: ["master skpd"],
+        description: "This is an endpoint for fetching a master sumber informasi",
+        tags: ["master sumber informasi"],
         params: {
-          description: "Find one master skpd by skpd",
+          description: "Find one master sumber informasi by sumber_informasi",
           type: "object",
           properties: {
-            skpd: { type: "string" },
+            sumber_informasi: { type: "string" },
           },
         },
         response: {
@@ -120,7 +120,7 @@ module.exports = async function (fastify, opts) {
                 type: "object",
                 properties: {
                   id: { type: "number" },
-                  skpd: { type: "string" },
+                  sumber_informasi: { type: "string" },
                   kode: { type: "string" },
                 },
               },
@@ -130,8 +130,8 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { skpd } = request.params;
-      const exec = await fastify.master_skpd.findone_by_skpd(skpd);
+      const { sumber_informasi } = request.params;
+      const exec = await fastify.sumber_informasi.findone_by_sumber_informasi(sumber_informasi);
 
       try {
         if (exec) {
@@ -149,13 +149,13 @@ module.exports = async function (fastify, opts) {
     "/create",
     {
       schema: {
-        description: "This is an endpoint for creating a master skpd",
-        tags: ["master skpd"],
+        description: "This is an endpoint for creating a master sumber informasi",
+        tags: ["master sumber informasi"],
         body: {
-          description: "Payload for creating a master skpd",
+          description: "Payload for creating a master sumber informasi",
           type: "object",
           properties: {
-            skpd: { type: "string" },
+            sumber_informasi: { type: "string" },
             created_by: { type: "number" },
           },
         },
@@ -172,10 +172,10 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {skpd,created_by} = request.body;
+      const {sumber_informasi,created_by} = request.body;
 
       try {
-        await fastify.master_skpd.create(skpd,created_by);
+        await fastify.sumber_informasi.create(sumber_informasi,created_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -187,20 +187,20 @@ module.exports = async function (fastify, opts) {
     "/update/:id",
     {
       schema: {
-        description: "This is an endpoint for updating an existing master skpd",
-        tags: ["master skpd"],
+        description: "This is an endpoint for updating an existing master sumber informasi",
+        tags: ["master sumber informasi"],
         params: {
-          description: "update master skpd by Id",
+          description: "update master sumber informasi by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for updating a master skpd",
+          description: "Payload for updating a master sumber informasi",
           type: "object",
           properties: {
-            skpd: { type: "string" },
+            sumber_informasi: { type: "string" },
             updated_by: { type: "number" },
           },
         },
@@ -218,10 +218,10 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const {skpd, updated_by } = request.body;
+      const {sumber_informasi, updated_by } = request.body;
 
       try {
-        await fastify.master_skpd.update(id,skpd,updated_by);
+        await fastify.sumber_informasi.update(id,sumber_informasi,updated_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -233,17 +233,17 @@ module.exports = async function (fastify, opts) {
     "/delete/:id",
     {
       schema: {
-        description: "This is an endpoint for DELETING an existing master skpd.",
-        tags: ["master skpd"],
+        description: "This is an endpoint for DELETING an existing master sumber informasi.",
+        tags: ["master sumber informasi"],
         params: {
-          description: "master skpd by Id",
+          description: "master sumber informasi by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for deleted data master skpd",
+          description: "Payload for deleted data master sumber informasi",
           type: "object",
           properties: {
             deleted_by: { type: "number" },
@@ -266,7 +266,7 @@ module.exports = async function (fastify, opts) {
       const { deleted_by } = request.body;
 
       try {
-        await fastify.master_skpd.del(id, deleted_by);
+        await fastify.sumber_informasi.del(id, deleted_by);
         reply.send({ message: "success", code: 204 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -278,10 +278,10 @@ module.exports = async function (fastify, opts) {
     "/filter/:q",
     {
       schema: {
-        description: "This is an endpoint for filtering a master skpd",
-        tags: ["master skpd"],
+        description: "This is an endpoint for filtering a master sumber informasi",
+        tags: ["master sumber informasi"],
         params: {
-          description: "Filter master skpd by search",
+          description: "Filter master sumber informasi by search",
           type: "object",
           properties: {
             q: { type: "string" },
@@ -300,7 +300,7 @@ module.exports = async function (fastify, opts) {
                   type: "object",
                   properties: {
                     id: { type: "number" },
-                    skpd: { type: "string" },
+                    sumber_informasi: { type: "string" },
                     kode: { type: "string" },
                   },
                 },
@@ -312,7 +312,7 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { q } = request.params;
-      const exec = await fastify.master_skpd.filter(q);
+      const exec = await fastify.sumber_informasi.filter(q);
 
       try {
         if (exec) {
