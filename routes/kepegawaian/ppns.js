@@ -585,6 +585,17 @@ module.exports = async function (fastify, opts) {
         headerData = ["Id", "SKPD", "Nama", "NIP", "NRK", "Pangkat", "Golongan", "No SK PPNS", "No KTP PPNS", "Wilayah Kerja", "UU Yang Dikawal", ];
 
         const getData = await fastify.kepegawaian_ppns.unduhPpns(skpd, pejabat_ppns_nama, pejabat_ppns_nip, pejabat_ppns_nrk, pejabat_ppns_pangkat, pejabat_ppns_golongan);
+        // const getRelasi = getData.map(async function (item) {
+        //   ``
+        //   const fetchMasterSKPD = await getFetchRelasi(`http://127.0.0.1:3000/master/skpd/findone/${item.skpd}`)
+        //   console.log(fetchMasterSKPD)
+        //   const fetchMasterPangkat = await getFetchRelasi(`http://127.0.0.1:3000/master/pangkat/findone${item.pejabat_ppns_pangkat}`)
+        //   console.log(fetchMasterPangkat)
+        //   const fetchMasterGolongan = await getFetchRelasi(`http://127.0.0.1:3000/master/golongan/findone${item.pejabat_ppns_golongan}`)
+        //   console.log(fetchMasterGolongan)
+
+        //   return true;
+        // });
         const convertData = getData.map(function (item) {
           ``
           return Object.values(item);
@@ -632,6 +643,17 @@ module.exports = async function (fastify, opts) {
     }
   );
 
+  function getFetchRelasi(url) {
+    try {
+      fetch(url)
+        .then(res => res.JSON())
+        .then(result => {
+          return result
+        })
+    } catch (err) {
+      throw err;
+    }
+  }
   // ─── Rekap PPNS ──────────────────────────────────────────────────────────────
   // ^ table ppns
   fastify.get(
