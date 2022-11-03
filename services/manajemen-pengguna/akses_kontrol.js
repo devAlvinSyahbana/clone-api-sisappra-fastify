@@ -60,24 +60,44 @@ const akses_kontrol = (db) => {
         return query;
       };
 
-    const create = async (
-        modul,
-        level
-    ) => {
-
-        const { id } = await db.one(
-            "INSERT INTO akses_kontrol (modul, level) VALUES ($1, $2) RETURNING id",
-            [
-                modul,
-                level
-            ]
+      const create = async(modul, level) => {
+        const { max } = await db.one(
+          "SELECT MAX(id) FROM akses_kontrol"
         );
+    
+        let a = "";
+        if (max == undefined ) {
+          a = "AK";
+        } else {
+          a = "AK" + (parseInt(max) + 1);
+        }
+    
+    
+        const query = db.one(
+          "INSERT INTO akses_kontrol (modul, level, is_deleted) VALUES ($1, $2, 0) RETURNING id",
+          [modul, a, level]
+        );
+    
+        return query;
+      };
 
-        return {
-            modul,
-            level
-        };
-    };
+    // const create = async (
+    //     modul,
+    //     level
+    // ) => {
+    //     const { id } = await db.one(
+    //         "INSERT INTO akses_kontrol (modul, level) VALUES ($1, $2) RETURNING id",
+    //         [
+    //             modul,
+    //             level
+    //         ]
+    //     );
+
+    //     return {
+    //         modul,
+    //         level
+    //     };
+    // };
 
     const update = (
         id,
