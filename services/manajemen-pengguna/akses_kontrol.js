@@ -81,24 +81,6 @@ const akses_kontrol = (db) => {
     return query;
   };
 
-  // const create = async (
-  //     modul,
-  //     level
-  // ) => {
-  //     const { id } = await db.one(
-  //         "INSERT INTO akses_kontrol (modul, level) VALUES ($1, $2) RETURNING id",
-  //         [
-  //             modul,
-  //             level
-  //         ]
-  //     );
-
-  //     return {
-  //         modul,
-  //         level
-  //     };
-  // };
-
   const update = (
     id,
     modul,
