@@ -339,11 +339,12 @@ module.exports = async function (fastify, opts) {
             const {
                 modul,
                 level } = request.body;
-            const exec = await fastify.akses_kontrol.create(
-                modul,
-                level,
-            );
-            reply.code(201).send(exec);
+            try {
+                await fastify.akses_kontrol.create(modul, level);
+                reply.send({ message: "success", code: 200 });
+            } catch (error) {
+                reply.send({ message: error.message, code: 500 });
+            }
         }
     );
 
