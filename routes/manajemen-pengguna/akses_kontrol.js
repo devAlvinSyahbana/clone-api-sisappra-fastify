@@ -56,7 +56,7 @@ module.exports = async function (fastify, opts) {
     fastify.get(
         "/akses-kontrol/findone/:id", {
         schema: {
-            description: "Endpoint ini digunakan untuk mengambil data akses kontrol",
+            description: "Endpoint ini digunakan untuk mengambil data akses kontrol by id",
             tags: ["akses kontrol"],
             params: {
                 description: "Parameter yang digunakan",
