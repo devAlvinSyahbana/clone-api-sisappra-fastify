@@ -3,7 +3,7 @@ const fp = require("fastify-plugin");
 const modul_permission = (db) => {
     const find = () => {
         const query = db.any(
-            "SELECT id, akses_kontrol, nama_permission, status FROM modul_permission WHERE is_deleted = 0 ORDER BY created_at DESC"
+            "SELECT id, akses_kontrol, nama_permission, status FROM modul_permission WHERE is_deleted = 0 AND status = 0"
         );
 
         return query;
