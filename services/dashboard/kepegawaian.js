@@ -15,7 +15,7 @@ const kepegawaian = (db) => {
 
     const get_status_kepegawaian = () => {
         const query = db.any(
-            "SELECT status_kepegawaian, COUNT(*) FROM public.dashboard_kepegawaian GROUP BY status_kepegawaian;"
+            "SELECT kepegawaian_status_pegawai, COUNT(*) FROM public.kepegawaian_pns  GROUP BY kepegawaian_status_pegawai union SELECT kepegawaian_status_pegawai, COUNT(*) FROM public.kepegawaian_non_pns GROUP BY kepegawaian_status_pegawai order by count asc"
         );
         return query;
     };
