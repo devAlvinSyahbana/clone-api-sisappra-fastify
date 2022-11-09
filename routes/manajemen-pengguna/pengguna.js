@@ -1,8 +1,12 @@
 const pengguna = require("../../services/manajemen-pengguna/pengguna");
+const kepegawaian_pns = require("../../services/kepegawaian_service/kepegawaian_pns");
+const kepegawaian_non_pns = require("../../services/kepegawaian_service/kepegawaian_non_pns");
 const XLSX = require("xlsx");
 
 module.exports = async function (fastify, opts) {
     fastify.register(pengguna);
+    fastify.register(kepegawaian_pns);
+    fastify.register(kepegawaian_non_pns);
 
     // get data by id
     fastify.get(
@@ -96,41 +100,238 @@ module.exports = async function (fastify, opts) {
     );
 
     // get semua data pengguna
-    // fastify.get(
-    //     "/find",
-    //     {
-    //         schema: {
-    //             description:
-    //                 "API untuk mengambil seluruh data user pengguna",
-    //             tags: ["manajemen pengguna"],
-    //             response: {
-    //                 200: {
-    //                     description: "Succes Response",
-    //                     type: "array",
-    //                     items: {
-    //                         type: "object",
-    //                         properties: {
-    //                             id: { type: "number" },
-    //                             nama_lengkap: { type: "string" },
-    //                             id_pegawai: { type: "string" },
-    //                             no_pegawai: { type: "string" },
-    //                             email: { type: "string" },
-    //                             kata_sandi: { type: "string" },
-    //                             hak_akses: { type: "number" },
-    //                             status_pengguna: { type: "number" },
-    //                             terakhir_login: { type: "string" },
-    //                         },
-    //                     },
-    //                 },
-    //             },
-    //         },
-    //     },
-    //     async (request, reply) => {
-    //         const exec = await fastify.pengguna.find();
-    //         console.log("string", exec)
-    //         return exec;
-    //     }
-    // );
+    fastify.get(
+        "/find-example",
+        {
+            schema: {
+                description:
+                    "API untuk mengambil seluruh data user pengguna",
+                tags: ["manajemen pengguna"],
+                response: {
+                    200: {
+                        description: "Succes Response",
+                        type: "array",
+                        items: {
+                            type: "object",
+                            properties: {
+                                id: { type: "number" },
+                                nama_lengkap: { type: "string" },
+                                id_pegawai: { type: "string" },
+                                no_pegawai: { type: "string" },
+                                email: { type: "string" },
+                                kata_sandi: { type: "string" },
+                                hak_akses: { type: "number" },
+                                status_pengguna: { type: "number" },
+                                terakhir_login: { type: "string" },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        async (request, reply) => {
+            const exec = await fastify.pengguna.find();
+            console.log("string", exec)
+            return exec;
+        }
+    );
+
+    // get semua informasi data pegawai
+    fastify.get(
+        "/find-informasi-data-pegawai",
+        {
+            schema: {
+                description:
+                    "Endpoint ini digunakan untuk mengambil seluruh data kepegawaian berstatus PNS, PTT, PJLP",
+                tags: ["manajemen pengguna"],
+                querystring: {
+                    type: "object",
+                    properties: {
+                        limit: {
+                            type: "integer",
+                            default: 10,
+                        },
+                        offset: {
+                            type: "integer",
+                            default: 1,
+                        },
+                        status: {
+                            type: "string",
+                        },
+                        nama: {
+                            type: "string",
+                        },
+                        nrk: {
+                            type: "string",
+                        },
+                        nopegawai: {
+                            type: "string",
+                        },
+                    },
+                    required: ["limit", "offset"],
+                },
+                response: {
+                    200: {
+                        description: "Success Response",
+                        type: "object",
+                        properties: {
+                            message: {
+                                type: "string",
+                            },
+                            code: {
+                                type: "string",
+                            },
+                            data: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        id: {
+                                            type: "number",
+                                        },
+                                        nama: {
+                                            type: "string",
+                                        },
+                                        tempat_lahir: {
+                                            type: "string",
+                                        },
+                                        tgl_lahir: {
+                                            type: "string",
+                                        },
+                                        jenis_kelamin: {
+                                            type: "string",
+                                        },
+                                        agama: {
+                                            type: "string",
+                                        },
+                                        no_hp: {
+                                            type: "string",
+                                        },
+                                        no_pegawai: {
+                                            type: "string",
+                                        },
+                                        kepegawaian_status_pegawai: {
+                                            type: "string",
+                                        },
+                                        foto: {
+                                            type: "string",
+                                        },
+                                    },
+                                },
+                            },
+                            total_data: {
+                                type: "number",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        async (request, reply) => {
+            const { limit, offset, status, nama, nrk, nopegawai } = request.query;
+            let exec = null;
+            let totalDt = 0;
+            let qwhere = "";
+            if (status) {
+                if (status === "PNS") {
+                    if (nama || nrk || nopegawai) {
+                        if (nama) {
+                            qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
+                        }
+                        if (nrk) {
+                            qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nrk}%'`;
+                        }
+                        if (nopegawai) {
+                            qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nopegawai}%'`;
+                        }
+                        exec = await fastify.kepegawaian_pns.filter(limit, offset, qwhere);
+                        const { total } = await fastify.kepegawaian_pns.countAllFilter(
+                            qwhere
+                        );
+                        totalDt = total;
+                    } else {
+                        exec = await fastify.kepegawaian_pns.find(limit, offset);
+                        const { total } = await fastify.kepegawaian_pns.countAll();
+                        totalDt = total;
+                    }
+                } else {
+                    if (nama || nrk || nopegawai) {
+                        if (nama) {
+                            qwhere += ` AND kpnns.nama ILIKE '%${nama}%'`;
+                        }
+                        if (nrk) {
+                            qwhere += ` AND kpnns.kepegawaian_nrk ILIKE '%${nrk}%'`;
+                        }
+                        if (nopegawai) {
+                            qwhere += ` AND kpnns.kepegawaian_nptt_npjlp ILIKE '%${nopegawai}%'`;
+                        }
+                        exec = await fastify.kepegawaian_non_pns.filter(
+                            limit,
+                            offset,
+                            status,
+                            qwhere
+                        );
+                        const { total } = await fastify.kepegawaian_non_pns.countAllFilter(
+                            status,
+                            qwhere
+                        );
+                        totalDt = total;
+                    } else {
+                        exec = await fastify.kepegawaian_non_pns.find(
+                            limit,
+                            offset,
+                            status
+                        );
+                        const { total } = await fastify.kepegawaian_non_pns.countAll(
+                            status
+                        );
+                        totalDt = total;
+                    }
+                }
+            } else {
+                if (nama || nrk || nopegawai) {
+                    if (nama) {
+                        qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
+                    }
+                    if (nrk) {
+                        qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nrk}%'`;
+                    }
+                    if (nopegawai) {
+                        qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nopegawai}%'`;
+                    }
+                    exec = await fastify.kepegawaian_pns.filter(limit, offset, qwhere);
+                    const { total } = await fastify.kepegawaian_pns.countAllFilter(
+                        qwhere
+                    );
+                    totalDt = total;
+                } else {
+                    exec = await fastify.kepegawaian_pns.find(limit, offset);
+                    const { total } = await fastify.kepegawaian_pns.countAll();
+                    totalDt = total;
+                }
+            }
+            try {
+                if (exec) {
+                    reply.send({
+                        message: "success",
+                        code: 200,
+                        data: exec,
+                        total_data: totalDt,
+                    });
+                } else {
+                    reply.send({
+                        message: "success",
+                        code: 204,
+                    });
+                }
+            } catch (error) {
+                reply.send({
+                    message: error.message,
+                    code: 500,
+                });
+            }
+        }
+    );
 
     // filter data pengguna
     fastify.get(
