@@ -23,7 +23,7 @@ module.exports = async function (fastify, opts) {
                                 items: {
                                     type: "object",
                                     properties: {
-                                        kepegawaian_status_pegawai: {
+                                        status_kepegawaian: {
                                             type: "string"
                                         },
                                         count: {
