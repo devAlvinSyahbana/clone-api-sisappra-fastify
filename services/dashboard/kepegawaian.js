@@ -22,7 +22,7 @@ const kepegawaian = (db) => {
 
     const get_pendidikan_terakhir = () => {
         const query = db.any(
-            "SELECT pendidikan_terakhir, COUNT(pendidikan_terakhir) FROM dashboard_kepegawaian WHERE NOT status_kepegawaian='PPNS' GROUP BY pendidikan_terakhir;"
+            "select mp.nama as pendidikan_terakhir, sum(jumlah) as count from (SELECT kp.kepegawaian_pendidikan_pada_sk as pendidikan, COUNT(kp.kepegawaian_pendidikan_pada_sk) as jumlah FROM kepegawaian_pns kp where kp.kepegawaian_pendidikan_pada_sk IS NOT NULL and not kp.kepegawaian_pendidikan_pada_sk = 1 group by kp.kepegawaian_pendidikan_pada_sk union all SELECT knp.kepegawaian_pendidikan_pada_sk, COUNT(knp.kepegawaian_pendidikan_pada_sk) FROM kepegawaian_non_pns knp where knp.kepegawaian_pendidikan_pada_sk IS NOT NULL and not knp.kepegawaian_pendidikan_pada_sk = 1 group by knp.kepegawaian_pendidikan_pada_sk ) as z left join master_pendidikan mp on z.pendidikan = mp.id group by mp.nama, mp.urutan_tingkat_pendidikan ORDER BY mp.urutan_tingkat_pendidikan"
         );
         return query;
     };
