@@ -53,6 +53,7 @@ const modul_permission = (db) => {
         find,
         findOne,
         create,
+        // update,
         del,
 
     };
