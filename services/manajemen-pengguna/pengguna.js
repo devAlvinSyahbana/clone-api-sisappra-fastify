@@ -3,7 +3,7 @@ const fp = require("fastify-plugin");
 const pengguna = (db) => {
   const find = () => {
     const query = db.any(
-      "SELECT id, id_pegawai, no_pegawai, kata_sandi, email, hak_akses, status_pengguna, nama_lengkap, terakhir_login FROM pengguna WHERE is_deleted = 0 ORDER BY created_at DESC"
+      "SELECT id, id_pegawai, no_pegawai, kata_sandi, email, hak_akses, status_pengguna, nama_lengkap, terakhir_login FROM pengguna WHERE is_deleted = 0 ORDER BY created_at ASC"
     );
 
     return query;
@@ -20,6 +20,19 @@ const pengguna = (db) => {
   const filter = (limit, offset, qwhere) => {
     const query = db.any(
       "SELECT pgn.id, pgn.nama_lengkap, pgn.email, pgn.hak_akses, pgn.created_at as tgl_bergabung, pgn.terakhir_login, status_pengguna, id_pegawai, no_pegawai FROM pengguna pgn WHERE pgn.is_deleted = 0" +
+      qwhere +
+      " LIMIT " +
+      limit +
+      " OFFSET " +
+      (parseInt(offset) - 1)
+    );
+
+    return query;
+  };
+
+  const filterNamaPegawai = (limit, offset, qwhere) => {
+    const query = db.any(
+      "SELECT pgn.id, kpnns.nama as nama_lengkap, kpns.nama as nama_lengkap, pgn.email, pgn.hak_akses, pgn.created_at as tgl_bergabung, pgn.terakhir_login, status_pengguna, id_pegawai, no_pegawai FROM pengguna pgn LEFT JOIN kepegawaian_non_pns kpnns on kpnns.id = pgn.id LEFT JOIN kepegawaian_pns kpns on kpns.id = pgn.id WHERE pgn.is_deleted = 0" +
       qwhere +
       " LIMIT " +
       limit +
@@ -86,9 +99,10 @@ const pengguna = (db) => {
     status_pengguna,
     nama_lengkap,
     updated_by,
+    foto,
   ) => {
     db.one(
-      "UPDATE pengguna SET id_pegawai = $1, no_pegawai = $2, kata_sandi =$3, email = $4, hak_akses = $5, status_pengguna = $6, nama_lengkap = $7, updated_by = $8, updated_at = CURRENT_TIMESTAMP WHERE id = $9 RETURNING id",
+      "UPDATE pengguna SET id_pegawai = $1, no_pegawai = $2, kata_sandi =$3, email = $4, hak_akses = $5, status_pengguna = $6, nama_lengkap = $7, updated_by = $8, foto = $9, updated_at = CURRENT_TIMESTAMP WHERE id = $10 RETURNING id",
       [
         id_pegawai,
         no_pegawai,
@@ -98,6 +112,7 @@ const pengguna = (db) => {
         status_pengguna,
         nama_lengkap,
         updated_by,
+        foto,
         id,
       ]
     );
@@ -120,6 +135,12 @@ const pengguna = (db) => {
     return query;
   };
 
+  const updateFoto = (id, updated_by, values) => {
+    db.one(
+      `UPDATE pengguna SET ${values} updated_at = CURRENT_TIMESTAMP WHERE id = ${id} RETURNING id`
+    );
+  };
+
 
   return {
     find,
@@ -127,9 +148,11 @@ const pengguna = (db) => {
     countAllFilter,
     create,
     filter,
+    filterNamaPegawai,
     update,
     del,
     getDataUnduhManajemenPengguna,
+    updateFoto,
   };
 }
 
