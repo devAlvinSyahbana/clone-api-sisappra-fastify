@@ -10,7 +10,6 @@ module.exports = async function (fastify, opts) {
     fastify.register(kepegawaian_non_pns);
     fastify.register(kepegawaian_ppns);
     fastify.register(kepegawaian_rekapitulasi);
-    fastify.register(multer.contentParser);
     //------------ Define the Storage to Store files------------
     var filename = "";
     const storage = multer.diskStorage({

@@ -4,7 +4,6 @@ const XLSX = require("xlsx");
 
 module.exports = async function (fastify, opts) {
   fastify.register(kepegawaian_ppns);
-  fastify.register(multer.contentParser);
   //------------ Define the Storage to Store files------------
   var filename = "";
   const storage = multer.diskStorage({
