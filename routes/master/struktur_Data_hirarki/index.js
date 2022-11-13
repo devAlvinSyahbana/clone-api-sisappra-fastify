@@ -465,33 +465,36 @@ module.exports = async function (fastify, opts) {
                       type: "number"
                     },
                     parentid: {
-                      type: "number"
+                      type: "string"
                     },
                     name: {
                       type: "string"
                     },
-                    positionname: {
-                      type: "string"
-                    },
-                    phone: {
-                      type: "string"
-                    },
-                    email: {
+                    position_name: {
                       type: "string"
                     },
                     team: {
                       type: "string"
                     },
-                    location: {
+                    tempat_lahir: {
                       type: "string"
                     },
-                    department: {
+                    tanggal_lahir: {
                       type: "string"
                     },
-                    description: {
+                    nrk: {
                       type: "string"
                     },
-                    imageurl: {
+                    status_pegawai: {
+                      type: "string"
+                    },
+                    jenis_kelamin: {
+                      type: "string"
+                    },
+                    agama: {
+                      type: "string"
+                    },
+                    image_url: {
                       type: "string"
                     },
                   },
@@ -559,33 +562,36 @@ module.exports = async function (fastify, opts) {
                     type: "number"
                   },
                   parentid: {
-                    type: "number"
+                    type: "string"
                   },
                   name: {
                     type: "string"
                   },
-                  positionname: {
-                    type: "string"
-                  },
-                  phone: {
-                    type: "string"
-                  },
-                  email: {
+                  position_name: {
                     type: "string"
                   },
                   team: {
                     type: "string"
                   },
-                  location: {
+                  tempat_lahir: {
                     type: "string"
                   },
-                  department: {
+                  tanggal_lahir: {
                     type: "string"
                   },
-                  description: {
+                  nrk: {
                     type: "string"
                   },
-                  imageurl: {
+                  status_pegawai: {
+                    type: "string"
+                  },
+                  jenis_kelamin: {
+                    type: "string"
+                  },
+                  agama: {
+                    type: "string"
+                  },
+                  image_url: {
                     type: "string"
                   },
                 },
@@ -633,7 +639,7 @@ module.exports = async function (fastify, opts) {
           type: "object",
           properties: {
             parentid: {
-              type: "number"
+              type: "string"
             },
           },
         },
@@ -657,33 +663,36 @@ module.exports = async function (fastify, opts) {
                       type: "number"
                     },
                     parentid: {
-                      type: "number"
+                      type: "string"
                     },
                     name: {
                       type: "string"
                     },
-                    positionname: {
-                      type: "string"
-                    },
-                    phone: {
-                      type: "string"
-                    },
-                    email: {
+                    position_name: {
                       type: "string"
                     },
                     team: {
                       type: "string"
                     },
-                    location: {
+                    tempat_lahir: {
                       type: "string"
                     },
-                    department: {
+                    tanggal_lahir: {
                       type: "string"
                     },
-                    description: {
+                    nrk: {
                       type: "string"
                     },
-                    imageurl: {
+                    status_pegawai: {
+                      type: "string"
+                    },
+                    jenis_kelamin: {
+                      type: "string"
+                    },
+                    agama: {
+                      type: "string"
+                    },
+                    image_url: {
                       type: "string"
                     },
                   },
@@ -698,7 +707,7 @@ module.exports = async function (fastify, opts) {
       const {
         parentid
       } = request.params;
-      const exec = await fastify.struktur_data_hirarki1.find_by_parentId(parentid);
+      const exec = await fastify.struktur_data_hirarki1.find_by_parentid(parentid);
       console.log(exec)
       try {
         if (exec) {
@@ -732,36 +741,36 @@ module.exports = async function (fastify, opts) {
           type: "object",
           properties: {
             parentid: {
-              type: "number"
+              type: "string"
             },
             name: {
               type: "string"
             },
-            positionname: {
-              type: "string"
-            },
-            phone: {
-              type: "string"
-            },
-            email: {
+            position_name: {
               type: "string"
             },
             team: {
               type: "string"
             },
-            location: {
+            tempat_lahir: {
               type: "string"
             },
-            department: {
+            tanggal_lahir: {
               type: "string"
             },
-            description: {
+            nrk: {
               type: "string"
             },
-            imageurl: {
+            status_pegawai: {
               type: "string"
             },
-            created_by: {
+            jenis_kelamin: {
+              type: "string"
+            },
+            agama: {
+              type: "string"
+            },
+            image_url: {
               type: "string"
             },
           },
@@ -786,19 +795,20 @@ module.exports = async function (fastify, opts) {
       const {
         parentid,
         name,
-        positionName,
-        phone,
-        email,
+        position_name,
         team,
-        location,
-        department,
-        description,
-        imageurl,
+        tempat_lahir,
+        tanggal_lahir,
+        nrk,
+        status_pegawai,
+        jenis_kelamin,
+        agama,
+        image_url,
         created_by
       } = request.body;
 
       try {
-        await fastify.struktur_data_hirarki1.create(parentid, name, positionName, phone, email, team, location, department, description, imageurl, created_by);
+        await fastify.struktur_data_hirarki1.create(parentid, name, position_name, team, tempat_lahir, tanggal_lahir, nrk, status_pegawai, jenis_kelamin, agama, image_url, created_by);
         reply.send({
           message: "success",
           code: 200
@@ -834,33 +844,36 @@ module.exports = async function (fastify, opts) {
               type: "number"
             },
             parentid: {
-              type: "number"
+              type: "string"
             },
             name: {
               type: "string"
             },
-            positionname: {
-              type: "string"
-            },
-            phone: {
-              type: "string"
-            },
-            email: {
+            position_name: {
               type: "string"
             },
             team: {
               type: "string"
             },
-            location: {
+            tempat_lahir: {
               type: "string"
             },
-            department: {
+            tanggal_lahir: {
               type: "string"
             },
-            description: {
+            nrk: {
               type: "string"
             },
-            imageurl: {
+            status_pegawai: {
+              type: "string"
+            },
+            jenis_kelamin: {
+              type: "string"
+            },
+            agama: {
+              type: "string"
+            },
+            image_url: {
               type: "string"
             },
           },
@@ -888,19 +901,20 @@ module.exports = async function (fastify, opts) {
       const {
         parentid,
         name,
-        positionName,
-        phone,
-        email,
+        position_name,
         team,
-        location,
-        department,
-        description,
-        imageurl,
+        tempat_lahir,
+        tanggal_lahir,
+        nrk,
+        status_pegawai,
+        jenis_kelamin,
+        agama,
+        image_url,
         updated_by
       } = request.body;
 
       try {
-        await fastify.struktur_data_hirarki1.update(id, parentid, name, positionName, phone, email, team, location, department, description, imageurl, updated_by);
+        await fastify.struktur_data_hirarki1.update(id, parentid, name, position_name, team, tempat_lahir, tanggal_lahir, nrk, status_pegawai, jenis_kelamin, agama, image_url, updated_by);
         reply.send({
           message: "success",
           code: 200
