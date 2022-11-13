@@ -23,7 +23,6 @@ module.exports = async function (fastify, opts) {
                   properties: {
                     id: { type: "number" },
                     sumber_informasi: { type: "string" },
-                    kode: { type: "string" },
                   },
                 },
               },
@@ -33,7 +32,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const exec = await fastify.sumber_informasi.find();
+      const exec = await fastify.master_sumber_informasi.find();
 
       try {
         if (exec) {
@@ -72,7 +71,6 @@ module.exports = async function (fastify, opts) {
                 properties: {
                   id: { type: "number" },
                   sumber_informasi: { type: "string" },
-                  kode: { type: "string" },
                 },
               },
             },
@@ -82,7 +80,7 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const exec = await fastify.sumber_informasi.findone(id);
+      const exec = await fastify.master_sumber_informasi.findone(id);
 
       try {
         if (exec) {
@@ -97,13 +95,13 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/findone-by-sumber_informasi/:sumber_informasi",
+    "/findone-by-sumber-informasi/:sumber_informasi",
     {
       schema: {
         description: "This is an endpoint for fetching a master sumber informasi",
         tags: ["master sumber informasi"],
         params: {
-          description: "Find one master sumber informasi by sumber_informasi",
+          description: "Find one master sumber informasi by sumber informasi",
           type: "object",
           properties: {
             sumber_informasi: { type: "string" },
@@ -121,7 +119,6 @@ module.exports = async function (fastify, opts) {
                 properties: {
                   id: { type: "number" },
                   sumber_informasi: { type: "string" },
-                  kode: { type: "string" },
                 },
               },
             },
@@ -131,7 +128,7 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { sumber_informasi } = request.params;
-      const exec = await fastify.sumber_informasi.findone_by_sumber_informasi(sumber_informasi);
+      const exec = await fastify.master_sumber_informasi.findone_by_sumber_informasi(sumber_informasi);
 
       try {
         if (exec) {
@@ -175,7 +172,7 @@ module.exports = async function (fastify, opts) {
       const {sumber_informasi,created_by} = request.body;
 
       try {
-        await fastify.sumber_informasi.create(sumber_informasi,created_by);
+        await fastify.master_sumber_informasi.create(sumber_informasi,created_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -221,7 +218,7 @@ module.exports = async function (fastify, opts) {
       const {sumber_informasi, updated_by } = request.body;
 
       try {
-        await fastify.sumber_informasi.update(id,sumber_informasi,updated_by);
+        await fastify.master_sumber_informasi.update(id,sumber_informasi,updated_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -266,7 +263,7 @@ module.exports = async function (fastify, opts) {
       const { deleted_by } = request.body;
 
       try {
-        await fastify.sumber_informasi.del(id, deleted_by);
+        await fastify.master_sumber_informasi.del(id, deleted_by);
         reply.send({ message: "success", code: 204 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -301,7 +298,6 @@ module.exports = async function (fastify, opts) {
                   properties: {
                     id: { type: "number" },
                     sumber_informasi: { type: "string" },
-                    kode: { type: "string" },
                   },
                 },
               },
@@ -312,7 +308,7 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { q } = request.params;
-      const exec = await fastify.sumber_informasi.filter(q);
+      const exec = await fastify.master_sumber_informasi.filter(q);
 
       try {
         if (exec) {

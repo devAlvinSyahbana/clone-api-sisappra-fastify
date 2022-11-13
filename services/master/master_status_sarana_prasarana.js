@@ -4,7 +4,7 @@ const status_sarana_prasarana = (db) => {
 
   const find = () => {
     const query = db.any(
-      "SELECT id, nama as status_sarana_prasarana FROM status_sarana_prasarana WHERE is_deleted = 0 ORDER BY created_at DESC",
+      "SELECT id, status_sarana_prasarana as status_sarana_prasarana FROM status_sarana_prasarana WHERE is_deleted = 0 ORDER BY created_at DESC",
     );
 
     return query;
@@ -12,7 +12,7 @@ const status_sarana_prasarana = (db) => {
 
   const findone = (id) => {
     const query = db.one(
-      "SELECT id, nama as status_sarana_prasarana FROM status_sarana_prasarana WHERE id = $1 AND is_deleted = 0",
+      "SELECT id, status_sarana_prasarana as status_sarana_prasarana FROM status_sarana_prasarana WHERE id = $1 AND is_deleted = 0",
       [id]
     );
 
@@ -21,7 +21,7 @@ const status_sarana_prasarana = (db) => {
 
   const findone_by_status_sarana_prasarana = (status_sarana_prasarana) => {
     const query = db.one(
-      "SELECT id, nama as status_sarana_prasarana FROM status_sarana_prasarana WHERE nama ilike $1 AND is_deleted = 0",
+      "SELECT id, status_sarana_prasarana as status_sarana_prasarana FROM status_sarana_prasarana WHERE status_sarana_prasarana ilike $1 AND is_deleted = 0",
       [status_sarana_prasarana]
     );
 
@@ -30,7 +30,7 @@ const status_sarana_prasarana = (db) => {
 
   const create = async(status_sarana_prasarana, created_by) => {
     const query = db.one(
-      "INSERT INTO status_sarana_prasarana (nama, is_deleted, created_by) VALUES ($1, 0, $2) RETURNING id",
+      "INSERT INTO status_sarana_prasarana (status_sarana_prasarana, is_deleted, created_by) VALUES ($1, 0, $2) RETURNING id",
       [status_sarana_prasarana, created_by]
     );
 
@@ -40,7 +40,7 @@ const status_sarana_prasarana = (db) => {
 
   const update = (id, status_sarana_prasarana, updated_by) => {
     db.one(
-      "UPDATE status_sarana_prasarana SET nama = $1, updated_by = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING id",
+      "UPDATE status_sarana_prasarana SET status_sarana_prasarana = $1, updated_by = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING id",
       [status_sarana_prasarana, updated_by, id]
     );
   };
@@ -58,7 +58,7 @@ const status_sarana_prasarana = (db) => {
 
   const filter = (q) => {
     const query = db.any(
-      "SELECT id, nama as status_sarana_prasarana FROM status_sarana_prasarana WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
+      "SELECT id, status_sarana_prasarana as status_sarana_prasarana FROM status_sarana_prasarana WHERE is_deleted = 0 AND status_sarana_prasarana ILIKE '%"+q+"%'",
     );
 
     return query;
