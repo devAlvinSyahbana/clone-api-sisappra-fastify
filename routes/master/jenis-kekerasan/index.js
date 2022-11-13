@@ -95,7 +95,7 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/findone-by-jenis-kejadian/:jenis_kekerasan",
+    "/findone-by-jenis-kekerasan/:jenis_kekerasan",
     {
       schema: {
         description: "This is an endpoint for fetching a master jenis kekerasan",

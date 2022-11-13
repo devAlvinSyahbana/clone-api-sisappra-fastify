@@ -59,7 +59,7 @@ const master_eselon = (db) => {
 
   const filter = (q) => {
     const query = db.any(
-      "SELECT id, nama as eselon, kode FROM master_eselon WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
+      "SELECT id, nama as eselon FROM master_eselon WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
     );
 
     return query;

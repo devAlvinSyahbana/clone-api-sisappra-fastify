@@ -1,14 +1,14 @@
-const master_tempat_pelaksanaan = require("../../../services/master/master_tempat_pelaksanaan");
+const master_sumber_informasi  = require("../../../services/master/master_sumber_informasi");
 
 module.exports = async function (fastify, opts) {
-  fastify.register(master_tempat_pelaksanaan);
+  fastify.register(master_sumber_informasi);
 
   fastify.get(
     "/find",
     {
       schema: {
-        description: "This is an endpoint for fetching all master bidang wilayah",
-        tags: ["master bidang wilayah"],
+        description: "This is an endpoint for fetching all master sumber informasi",
+        tags: ["master sumber informasi"],
         response: {
           200: {
             description: "Success Response",
@@ -22,9 +22,8 @@ module.exports = async function (fastify, opts) {
                   type: "object",
                   properties: {
                     id: { type: "number" },
-                    nama: { type: "string" },
+                    sumber_informasi: { type: "string" },
                     kode: { type: "string" },
-                    kategori: { type: "string" },
                   },
                 },
               },
@@ -34,7 +33,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const exec = await fastify.master_tempat_pelaksanaan.find();
+      const exec = await fastify.sumber_informasi.find();
 
       try {
         if (exec) {
@@ -52,10 +51,10 @@ module.exports = async function (fastify, opts) {
     "/findone/:id",
     {
       schema: {
-        description: "This is an endpoint for fetching a master bidang wilayah",
-        tags: ["master bidang wilayah"],
+        description: "This is an endpoint for fetching a master sumber informasi",
+        tags: ["master sumber informasi"],
         params: {
-          description: "Find one master bidang wilayah id",
+          description: "Find one master sumber informasi id",
           type: "object",
           properties: {
             id: { type: "number" },
@@ -72,9 +71,8 @@ module.exports = async function (fastify, opts) {
                 type: "object",
                 properties: {
                   id: { type: "number" },
-                  nama: { type: "string" },
+                  sumber_informasi: { type: "string" },
                   kode: { type: "string" },
-                  kategori: { type: "string" },
                 },
               },
             },
@@ -84,7 +82,56 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const exec = await fastify.master_tempat_pelaksanaan.findone(id);
+      const exec = await fastify.sumber_informasi.findone(id);
+
+      try {
+        if (exec) {
+          reply.send({ message: "success", code: 200, data: exec });
+        } else {
+          reply.send({ message: "success", code: 204 });
+        }
+      } catch (error) {
+        reply.send({ message: error, code: 500 });
+      }
+    }
+  );
+
+  fastify.get(
+    "/findone-by-sumber_informasi/:sumber_informasi",
+    {
+      schema: {
+        description: "This is an endpoint for fetching a master sumber informasi",
+        tags: ["master sumber informasi"],
+        params: {
+          description: "Find one master sumber informasi by sumber_informasi",
+          type: "object",
+          properties: {
+            sumber_informasi: { type: "string" },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+              data: {
+                type: "object",
+                properties: {
+                  id: { type: "number" },
+                  sumber_informasi: { type: "string" },
+                  kode: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { sumber_informasi } = request.params;
+      const exec = await fastify.sumber_informasi.findone_by_sumber_informasi(sumber_informasi);
 
       try {
         if (exec) {
@@ -102,14 +149,13 @@ module.exports = async function (fastify, opts) {
     "/create",
     {
       schema: {
-        description: "This is an endpoint for creating a master bidang wilayah",
-        tags: ["master bidang wilayah"],
+        description: "This is an endpoint for creating a master sumber informasi",
+        tags: ["master sumber informasi"],
         body: {
-          description: "Payload for creating a master bidang wilayah",
+          description: "Payload for creating a master sumber informasi",
           type: "object",
           properties: {
-            nama: { type: "string" },
-            kategori: { type: "string" }, //Bidang / Wilayah
+            sumber_informasi: { type: "string" },
             created_by: { type: "number" },
           },
         },
@@ -126,10 +172,10 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { nama, kategori, created_by } = request.body;
+      const {sumber_informasi,created_by} = request.body;
 
       try {
-        await fastify.master_tempat_pelaksanaan.create(nama, kategori, created_by);
+        await fastify.sumber_informasi.create(sumber_informasi,created_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -141,22 +187,20 @@ module.exports = async function (fastify, opts) {
     "/update/:id",
     {
       schema: {
-        description:
-          "This is an endpoint for updating an existing master bidang wilayah",
-        tags: ["master bidang wilayah"],
+        description: "This is an endpoint for updating an existing master sumber informasi",
+        tags: ["master sumber informasi"],
         params: {
-          description: "update master bidang wilayah by Id",
+          description: "update master sumber informasi by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for updating a master bidang wilayah",
+          description: "Payload for updating a master sumber informasi",
           type: "object",
           properties: {
-            nama: { type: "string" },
-            kategori: { type: "string" }, //Bidang / Wilayah
+            sumber_informasi: { type: "string" },
             updated_by: { type: "number" },
           },
         },
@@ -174,10 +218,10 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const { nama, updated_by, kategori } = request.body;
+      const {sumber_informasi, updated_by } = request.body;
 
       try {
-        await fastify.master_tempat_pelaksanaan.update(id, nama, updated_by, kategori);
+        await fastify.sumber_informasi.update(id,sumber_informasi,updated_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -189,18 +233,17 @@ module.exports = async function (fastify, opts) {
     "/delete/:id",
     {
       schema: {
-        description:
-          "This is an endpoint for DELETING an existing master bidang wilayah.",
-        tags: ["master bidang wilayah"],
+        description: "This is an endpoint for DELETING an existing master sumber informasi.",
+        tags: ["master sumber informasi"],
         params: {
-          description: "master bidang wilayah by Id",
+          description: "master sumber informasi by Id",
           type: "object",
           properties: {
             id: { type: "number" },
           },
         },
         body: {
-          description: "Payload for deleted data master bidang wilayah",
+          description: "Payload for deleted data master sumber informasi",
           type: "object",
           properties: {
             deleted_by: { type: "number" },
@@ -223,7 +266,7 @@ module.exports = async function (fastify, opts) {
       const { deleted_by } = request.body;
 
       try {
-        await fastify.master_tempat_pelaksanaan.del(id, deleted_by);
+        await fastify.sumber_informasi.del(id, deleted_by);
         reply.send({ message: "success", code: 204 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -235,10 +278,10 @@ module.exports = async function (fastify, opts) {
     "/filter/:q",
     {
       schema: {
-        description: "This is an endpoint for filtering a master bidang wilayah",
-        tags: ["master bidang wilayah"],
+        description: "This is an endpoint for filtering a master sumber informasi",
+        tags: ["master sumber informasi"],
         params: {
-          description: "Filter master bidang wilayah by search",
+          description: "Filter master sumber informasi by search",
           type: "object",
           properties: {
             q: { type: "string" },
@@ -257,9 +300,8 @@ module.exports = async function (fastify, opts) {
                   type: "object",
                   properties: {
                     id: { type: "number" },
-                    nama: { type: "string" },
+                    sumber_informasi: { type: "string" },
                     kode: { type: "string" },
-                    kategori: { type: "string" },
                   },
                 },
               },
@@ -270,7 +312,7 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { q } = request.params;
-      const exec = await fastify.master_tempat_pelaksanaan.filter(q);
+      const exec = await fastify.sumber_informasi.filter(q);
 
       try {
         if (exec) {

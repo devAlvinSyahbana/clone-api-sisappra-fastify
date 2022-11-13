@@ -69,7 +69,7 @@ const master_jenis_kegiatan = (db) => {
 
   const filter = (q) => {
     const query = db.any(
-      "SELECT id, nama as jenis_kegiatan FROM master_jenis_kegiatan WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
+      "SELECT id, nama as jenis_kegiatan, kode FROM master_jenis_kegiatan WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
     );
 
     return query;
