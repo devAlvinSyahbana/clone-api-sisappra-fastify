@@ -12,15 +12,18 @@ module.exports = async function (fastify, opts) {
     destination: async (req, file, cb) => {
       let rParam = req.params;
       let rData = null;
+      let nopegawai = "";
       if (rParam.status == "PNS") {
         rData = await fastify.kepegawaian_pns.findone(rParam.id);
+        nopegawai = rData.kepegawaian_nrk;
       } else {
         rData = await fastify.kepegawaian_non_pns.findone(rParam.id);
+        nopegawai = rData.kepegawaian_nptt_npjlp;
       }
       let fileFormat = file.mimetype.split("/");
       let dateTimestamp = Date.now();
       filename =
-        rData.kepegawaian_nrk +
+        nopegawai +
         "-" +
         file.fieldname +
         "-" +
