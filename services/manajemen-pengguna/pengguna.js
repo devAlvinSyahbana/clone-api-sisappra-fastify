@@ -3,7 +3,7 @@ const fp = require("fastify-plugin");
 const pengguna = (db) => {
   const find = () => {
     const query = db.any(
-      "SELECT id, id_pegawai, no_pegawai, kata_sandi, email, hak_akses, status_pengguna, nama_lengkap, terakhir_login FROM pengguna WHERE is_deleted = 0 ORDER BY created_at ASC"
+      "SELECT pgn.id, kpnns.nama as nama_lengkap, kpns.nama as nama_lengkap, pgn.hak_akses, pgn.created_at as tgl_bergabung, pgn.terakhir_login FROM pengguna pgn LEFT JOIN kepegawaian_non_pns kpnns on kpnns.id = pgn.id LEFT JOIN kepegawaian_pns kpns on kpns.id = pgn.id WHERE pgn.is_deleted = 0 ORDER BY pgn.created_at ASC"
     );
 
     return query;
@@ -11,7 +11,7 @@ const pengguna = (db) => {
 
   const findOne = (id) => {
     const query = db.one(
-      "SELECT id, id_pegawai, nama_lengkap, no_pegawai, email, hak_akses, status_pengguna, terakhir_login, created_at as tgl_bergabung FROM pengguna WHERE id = $1 AND is_deleted = 0 ",
+      "SELECT pgn.id, kpnns.nama as nama_lengkap, kpns.nama as nama_lengkap, pgn.hak_akses, pgn.terakhir_login, pgn.created_at as tgl_bergabung FROM pengguna pgn LEFT JOIN kepegawaian_non_pns kpnns on kpnns.id = pgn.id LEFT JOIN kepegawaian_pns kpns on kpns.id = pgn.id WHERE pgn.id = $1 AND pgn.is_deleted = 0 ",
       [id]
     );
     return query;
@@ -32,7 +32,7 @@ const pengguna = (db) => {
 
   const filterNamaPegawai = (limit, offset, qwhere) => {
     const query = db.any(
-      "SELECT pgn.id, kpnns.nama as nama_lengkap, kpns.nama as nama_lengkap, pgn.email, pgn.hak_akses, pgn.created_at as tgl_bergabung, pgn.terakhir_login, status_pengguna, id_pegawai, no_pegawai FROM pengguna pgn LEFT JOIN kepegawaian_non_pns kpnns on kpnns.id = pgn.id LEFT JOIN kepegawaian_pns kpns on kpns.id = pgn.id WHERE pgn.is_deleted = 0" +
+      "SELECT pgn.id, kpnns.nama as nama_lengkap, kpns.nama as nama_lengkap, pgn.hak_akses, pgn.created_at as tgl_bergabung, pgn.terakhir_login FROM pengguna pgn LEFT JOIN kepegawaian_non_pns kpnns on kpnns.id = pgn.id LEFT JOIN kepegawaian_pns kpns on kpns.id = pgn.id WHERE pgn.is_deleted = 0" +
       qwhere +
       " LIMIT " +
       limit +
