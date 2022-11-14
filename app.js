@@ -1,14 +1,17 @@
-'use strict'
+"use strict";
 
-const path = require('path')
-const AutoLoad = require('@fastify/autoload')
+const path = require("path");
+const AutoLoad = require("@fastify/autoload");
+const multer = require("fastify-multer");
 
 module.exports = async function (fastify, opts) {
+  // register multer content parser
+  fastify.register(multer.contentParser);
   // setting prefix
-  fastify.register(require('@fastify/static'), {
-    root: path.join(__dirname, 'uploads'),
-    prefix: '/uploads/', // optional: default '/'
-  })
+  fastify.register(require("@fastify/static"), {
+    root: path.join(__dirname, "uploads"),
+    prefix: "/uploads/", // optional: default '/'
+  });
 
   // setting up cors
   fastify.register(require("@fastify/cors"), (instance) => {
@@ -36,14 +39,14 @@ module.exports = async function (fastify, opts) {
   // those should be support plugins that are reused
   // through your application
   fastify.register(AutoLoad, {
-    dir: path.join(__dirname, 'plugins'),
-    options: Object.assign({}, opts)
-  })
+    dir: path.join(__dirname, "plugins"),
+    options: Object.assign({}, opts),
+  });
 
   // This loads all plugins defined in routes
   // define your routes in one of these
   fastify.register(AutoLoad, {
-    dir: path.join(__dirname, 'routes'),
-    options: Object.assign({}, opts)
-  })
-}
+    dir: path.join(__dirname, "routes"),
+    options: Object.assign({}, opts),
+  });
+};
