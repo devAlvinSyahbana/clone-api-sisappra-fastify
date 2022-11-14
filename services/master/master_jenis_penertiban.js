@@ -29,19 +29,30 @@ const master_jenis_penertiban = (db) => {
   };
 
   const create = async(jenis_penertiban, kode, created_by) => {
+
+    const { max } = await db.one(
+      "SELECT MAX(id) FROM master_jenis_penertiban"
+    );
+
+    let a = "";
+    if (max == undefined ) {
+      a = "I";
+    } else {
+      a = romanize((parseInt(max) + 1));
+    }
     const query = await db.one(
       "INSERT INTO master_jenis_penertiban (nama, kode, is_deleted, created_by) VALUES ($1, $2, 0, $3) RETURNING id",
-      [jenis_penertiban, kode, created_by]
+      [jenis_penertiban, a, created_by]
     );
 
     return query;
   };
 
 
-  const update = (id, jenis_penertiban, kode, updated_by) => {
+  const update = (id, jenis_penertiban, updated_by) => {
     db.one(
-      "UPDATE master_jenis_penertiban SET nama = $1, kode = $2, updated_by = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $4 RETURNING id",
-      [jenis_penertiban, kode, updated_by, id]
+      "UPDATE master_jenis_penertiban SET nama = $1, updated_by = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING id",
+      [jenis_penertiban, updated_by, id]
     );
   };
 
@@ -58,7 +69,7 @@ const master_jenis_penertiban = (db) => {
 
   const filter = (q) => {
     const query = db.any(
-      "SELECT id, nama as jenis_penertiban FROM master_jenis_penertiban WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
+      "SELECT id, nama as jenis_penertiban, kode FROM master_jenis_penertiban WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
     );
 
     return query;
@@ -82,3 +93,13 @@ module.exports = fp((fastify, options, next) => {
   );
   next();
 });
+function romanize(num) {
+  if (!+num) return false;
+  var digits = String(+num).split('');
+  var key = ['','C','CC','CCC','CD','D','DC','DCC','DCCC','CM',
+             '','X','XX','XXX','XL','L','LX','LXX','LXXX','XC',
+             '','I','II','III','IV','V','VI','VII','VIII','IX'];
+  var roman = '', i = 3;
+  while (i--) roman = (key[+digits.pop() + (i * 10)] || '') + roman;
+  return Array(+digits.join('') + 1).join('M') + roman;
+}

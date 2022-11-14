@@ -6,7 +6,7 @@ const struktur_data_hirarki1 = (db) => {
 
   const find = () => {
     const query = db.any(
-      "SELECT id, parentid, name, positionName, phone, email, team, location, department, description, imageurl FROM struktur_data_hirarki1 WHERE is_deleted = 0 order by id asc",
+      "SELECT hirarki.id as id, parentid, name, mj.nama as position_name, team, tempat_lahir, to_char(hirarki.tanggal_lahir, 'dd Mon YYYY') AS tanggal_lahir, nrk, status_pegawai, jenis_kelamin, ma.nama as agama, image_url FROM hirarki left join master_jabatan mj on hirarki.position_name = mj.id left join master_agama ma on hirarki.agama = ma.id where parentid is not NULL order by hirarki.id asc",
     );
 
     return query;
@@ -14,40 +14,42 @@ const struktur_data_hirarki1 = (db) => {
 
   const findone = (id) => {
     const query = db.one(
-      "SELECT id, parentid, name, positionName, phone, email, team, location, department, description, imageurl FROM struktur_data_hirarki1 WHERE id = $1 AND is_deleted = 0",
+      "SELECT hirarki.id as id, parentid, name, mj.nama as position_name, team, tempat_lahir, to_char(hirarki.tanggal_lahir, 'dd Mon YYYY') AS tanggal_lahir, nrk, status_pegawai, jenis_kelamin, ma.nama as agama, image_url FROM hirarki left join master_jabatan mj on hirarki.position_name = mj.id left join master_agama ma on hirarki.agama = ma.id where hirarki.id = $1 AND parentid is not NULL order by hirarki.id  ",
       [id]
+      // AND is_deleted = 0 
     );
 
     return query;
   };
 
-  const find_by_parentId = (parentId) => {
+  const find_by_parentid = (parentid) => {
+    console.log("ini console", typeof parentid)
     const query = db.any(
-      "SELECT id, parentid, name, positionName, phone, email, team, location, department, description, imageurl FROM struktur_data_hirarki1 WHERE is_deleted = 0 AND parentid = " + parentid + "  order by id asc"
+      "SELECT hirarki.id as id, parentid, name, mj.nama as position_name, team, tempat_lahir, to_char(hirarki.tanggal_lahir, 'dd Mon YYYY') AS tanggal_lahir, nrk, status_pegawai, jenis_kelamin, ma.nama as agama, image_url FROM hirarki left join master_jabatan mj on hirarki.position_name = mj.id left join master_agama ma on hirarki.agama = ma.id where hirarki.parentid = '" + parentid + "'  order by hirarki.id"
     );
-
+    // WHERE is_deleted = 0 AND 
     return query;
   };
 
-  const create = async (parentid, name, positionName, phone, email, team, location, department, description, imageurl, created_by) => {
+  const create = async (parentid, name, positionName, team, tempatLahir, tanggalLahir, nrk, statusPegawai, jenisKelamin, agama, imageUrl, created_by) => {
     const query = db.one(
-      "INSERT INTO struktur_data_hirarki1 (parentid, name, positionName, phone, email, team, location, department, description, imageurl, created_by, is_deleted) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 0) RETURNING id",
-      [parentid, name, positionName, phone, email, team, location, department, description, imageurl, created_by]
+      "INSERT INTO hirarki (parentid, name, positionName, team, tempatLahir, tanggalLahir, nrk, statusPegawai, jenisKelamin, agama,imageUrl, created_by, is_deleted) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, ,$12, 0) RETURNING id",
+      [parentid, name, positionName, team, tempatLahir, tanggalLahir, nrk, statusPegawai, jenisKelamin, agama, imageUrl, created_by]
     );
 
     return query;
   };
 
-  const update = (id, parentid, name, positionName, phone, email, team, location, department, description, imageurl, updated_by) => {
+  const update = (id, parentid, name, positionName, team, tempatLahir, tanggalLahir, nrk, statusPegawai, jenisKelamin, agama, imageUrl, updated_by) => {
     db.one(
-      "UPDATE struktur_data_hirarki1 SET parentid = $1, name = $2, positionName = $3, phone = $4, email = $5, team = $6, location = $7, department = $8, description = $9, imageurl = $10, updated_by = $11, updated_at = CURRENT_TIMESTAMP WHERE id = $12 RETURNING id",
-      [parentid, name, positionName, phone, email, team, location, department, description, imageurl, updated_by, id]
+      "UPDATE hirarki SET parentid = $1, name = $2, positionName = $3, team = $4, tempatLahir = $5, tanggalLahir = $6, nrk = $7, statusPegawai = $8, jenisKelamin = $9, agama = $10, imageUrl = $11, updated_at = CURRENT_TIMESTAMP WHERE id = $12 RETURNING id",
+      [parentid, name, positionName, team, tempatLahir, tanggalLahir, nrk, statusPegawai, jenisKelamin, agama, imageUrl, updated_by, id]
     );
   };
 
   const del = async (id, deleted_by) => {
     await db.one(
-      "UPDATE struktur_data_hirarki1 SET is_deleted = 1, deleted_by = $2, deleted_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id",
+      "UPDATE hirarki SET is_deleted = 1, deleted_by = $2, deleted_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id",
       [id, deleted_by]
     );
 
@@ -59,7 +61,7 @@ const struktur_data_hirarki1 = (db) => {
   return {
     find,
     findone,
-    find_by_parentId,
+    find_by_parentid,
     create,
     update,
     del

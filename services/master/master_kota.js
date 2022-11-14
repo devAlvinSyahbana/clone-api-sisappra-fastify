@@ -70,7 +70,7 @@ const master_kota = (db) => {
 
   const filter = (q) => {
     const query = db.any(
-      "SELECT id, nama as kota FROM master_kota WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
+      "SELECT id, nama as kota, kode FROM master_kota WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
     );
 
     return query;
