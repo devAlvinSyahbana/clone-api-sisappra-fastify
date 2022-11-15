@@ -18,7 +18,7 @@ const master_tempat_pelaksanaan = (db) => {
     return query;
   };
 
-  const create = async (skpd, kategori, created_by) => {
+  const create = async (nama, kategori, created_by) => {
     const { max } = await db.one(
       "SELECT MAX(id) FROM master_tempat_pelaksanaan"
     );
@@ -32,16 +32,16 @@ const master_tempat_pelaksanaan = (db) => {
 
     const query = db.one(
       "INSERT INTO master_tempat_pelaksanaan (nama, kode, is_deleted, created_by, kategori) VALUES ($1, $2, 0, $3, $4) RETURNING id",
-      [skpd, a, created_by, kategori]
+      [nama, a, created_by, kategori]
     );
 
     return query;
   };
 
-  const update = (id, skpd, updated_by, kategori) => {
+  const update = (id, nama, updated_by, kategori) => {
     db.one(
       "UPDATE master_tempat_pelaksanaan SET nama = $1, updated_by = $2, updated_at = CURRENT_TIMESTAMP, kategori = $4 WHERE id = $3 RETURNING id",
-      [skpd, updated_by, id, kategori]
+      [nama, updated_by, id, kategori]
     );
   };
 

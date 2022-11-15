@@ -8,6 +8,7 @@ const Fastify = require('fastify')
 
 // Require library to exit fastify process, gracefully (if possible)
 const closeWithGrace = require('close-with-grace')
+const multer = require('fastify-multer');
 
 // Instantiate Fastify with some config
 const app = Fastify({
@@ -16,6 +17,7 @@ const app = Fastify({
 
 // Register your application as a normal plugin.
 const appService = require('./app.js')
+app.register(multer.contentParser);
 app.register(appService)
 
 // delay is the number of milliseconds for the graceful close to finish
