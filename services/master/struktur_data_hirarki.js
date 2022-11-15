@@ -13,11 +13,11 @@ const hirarki = (db) => {
   const findposition = (position_name) => {
     const query = db.any(
       `select z.* from (
-        select knp.id, knp.nama, mj.nama as position_name, knp.kepegawaian_jabatan, '' as team, knp.tempat_lahir, 
+        select knp.id, knp.nama as name, mj.nama as position_name, knp.kepegawaian_jabatan, '' as team, knp.tempat_lahir, 
       to_char(knp.tgl_lahir, 'dd Mon YYYY') AS tanggal_lahir, knp.kepegawaian_nptt_npjlp as no_pegawai, knp.kepegawaian_status_pegawai as status_pegawai, 
      knp.jenis_kelamin, ma.nama as agama, knp.foto as image_url, knp.is_deleted from public.kepegawaian_non_pns knp inner join public.master_jabatan mj on mj.id = knp.kepegawaian_jabatan inner join public.master_agama ma on ma.id = knp.agama
      union all 
-         select kp.id, kp.nama, mj.nama as position_name, kp.kepegawaian_jabatan, '' as team, kp.tempat_lahir, 
+         select kp.id, kp.nama as name, mj.nama as position_name, kp.kepegawaian_jabatan, '' as team, kp.tempat_lahir, 
       to_char(kp.tgl_lahir, 'dd Mon YYYY') AS tanggal_lahir, kp.kepegawaian_nrk as no_pegawai, kp.kepegawaian_status_pegawai as status_pegawai, 
      kp.jenis_kelamin, ma.nama as agama, kp.foto as image_url, kp.is_deleted from public.kepegawaian_pns kp inner join public.master_jabatan mj on mj.id = kp.kepegawaian_jabatan inner join public.master_agama ma on ma.id = kp.agama
     ) z where z.kepegawaian_jabatan = ${position_name} AND z.is_deleted = 0`,
