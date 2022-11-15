@@ -1,36 +1,26 @@
 const pengguna = require("../../services/manajemen-pengguna/pengguna");
-const kepegawaian_pns = require("../../services/kepegawaian_service/kepegawaian_pns");
-const kepegawaian_non_pns = require("../../services/kepegawaian_service/kepegawaian_non_pns");
 const multer = require("fastify-multer");
 const XLSX = require("xlsx");
 
 module.exports = async function (fastify, opts) {
     fastify.register(pengguna);
-    fastify.register(kepegawaian_pns);
-    fastify.register(kepegawaian_non_pns);
     //------------ Define the Storage to Store files------------
     var filename = "";
     const storage = multer.diskStorage({
         destination: async (req, file, cb) => {
             let rParam = req.params;
             let rData = null;
-            if (rParam.status == "PNS") {
-                rData = await fastify.kepegawaian_pns.findone(rParam.id);
-            } else {
-                rData = await fastify.kepegawaian_non_pns.findone(rParam.id);
-            }
             let fileFormat = file.mimetype.split("/");
             let dateTimestamp = Date.now();
             filename =
-                rData.kepegawaian_nrk +
-                "-" +
+                
                 file.fieldname +
                 "-" +
                 dateTimestamp +
                 "." +
                 fileFormat[fileFormat.length - 1];
 
-            return cb(null, "uploads/kepegawaian");
+            return cb(null, "uploads/pengguna");
         },
         filename: (req, file, cb) => {
             cb(null, filename);
@@ -66,6 +56,7 @@ module.exports = async function (fastify, opts) {
                                 hak_akses: { type: "number" },
                                 terakhir_login: { type: "string" },
                                 tgl_bergabung: { type: "string" },
+                                foto: { type: "string" },
                             },
                         },
                     },
@@ -125,6 +116,9 @@ module.exports = async function (fastify, opts) {
                                     type: "string"
                                 },
                                 terakhir_login: {
+                                    type: "string"
+                                },
+                                foto: {
                                     type: "string"
                                 },
                             },
@@ -220,6 +214,9 @@ module.exports = async function (fastify, opts) {
                                         type: "string"
                                     },
                                     tgl_bergabung: {
+                                        type: "string"
+                                    },
+                                    foto: {
                                         type: "string"
                                     },
                                 },
@@ -585,21 +582,21 @@ module.exports = async function (fastify, opts) {
             },
             preHandler: upload.fields([
                 {
-                    name: "image",
+                    name: "image_file",
                     maxCount: 1,
                 },
             ]),
         },
         async (request, reply) => {
             const { id } = request.params;
-            const image = request.files["image"]
-                ? await truePath(request.files["image"][0].path)
+            const image = request.files["image_file"]
+                ? await truePath(request.files["image_file"][0].path)
                 : "";
             try {
                 await fastify.pengguna.updateFoto(
                     id,
                     "",
-                    `image = '${image}',`
+                    `foto = '${image}',`
                 );
                 reply.send({ message: "success", code: 200 });
             } catch (error) {

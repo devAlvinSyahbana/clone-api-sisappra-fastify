@@ -3,7 +3,7 @@ const fp = require("fastify-plugin");
 const pengguna = (db) => {
   const find = () => {
     const query = db.any(
-      "SELECT pgn.id, kpnns.nama as nama_lengkap, kpns.nama as nama_lengkap, pgn.hak_akses, pgn.created_at as tgl_bergabung, pgn.terakhir_login, knp.kepegawaian_nptt_npjlp as nrk, kp.kepegawaian_nrk as nrk FROM pengguna pgn LEFT JOIN kepegawaian_non_pns kpnns on kpnns.id = pgn.id LEFT JOIN kepegawaian_non_pns knp on knp.id = pgn.id LEFT JOIN kepegawaian_pns kpns on kpns.id = pgn.id LEFT JOIN kepegawaian_pns kp on kp.id = pgn.id WHERE pgn.is_deleted = 0 ORDER BY pgn.created_at ASC"
+      "SELECT pgn.id, kpnns.nama as nama_lengkap, kpns.nama as nama_lengkap, pgn.hak_akses, pgn.created_at as tgl_bergabung, pgn.terakhir_login, knp.kepegawaian_nptt_npjlp as nrk, kp.kepegawaian_nrk as nrk, pgn.foto FROM pengguna pgn LEFT JOIN kepegawaian_non_pns kpnns on kpnns.id = pgn.id LEFT JOIN kepegawaian_non_pns knp on knp.id = pgn.id LEFT JOIN kepegawaian_pns kpns on kpns.id = pgn.id LEFT JOIN kepegawaian_pns kp on kp.id = pgn.id WHERE pgn.is_deleted = 0 ORDER BY pgn.created_at ASC"
     );
 
     return query;
@@ -11,7 +11,7 @@ const pengguna = (db) => {
 
   const findOne = (id) => {
     const query = db.one(
-      "SELECT pgn.id, kpnns.nama as nama_lengkap, kpns.nama as nama_lengkap, pgn.hak_akses, pgn.created_at as tgl_bergabung, pgn.terakhir_login, knp.kepegawaian_nptt_npjlp as nrk, kp.kepegawaian_nrk as nrk FROM pengguna pgn LEFT JOIN kepegawaian_non_pns kpnns on kpnns.id = pgn.id LEFT JOIN kepegawaian_non_pns knp on knp.id = pgn.id LEFT JOIN kepegawaian_pns kpns on kpns.id = pgn.id LEFT JOIN kepegawaian_pns kp on kp.id = pgn.id WHERE pgn.id = $1 AND pgn.is_deleted = 0 ",
+      "SELECT pgn.id, kpnns.nama as nama_lengkap, kpns.nama as nama_lengkap, pgn.hak_akses, pgn.created_at as tgl_bergabung, pgn.terakhir_login, knp.kepegawaian_nptt_npjlp as nrk, kp.kepegawaian_nrk as nrk, pgn.foto FROM pengguna pgn LEFT JOIN kepegawaian_non_pns kpnns on kpnns.id = pgn.id LEFT JOIN kepegawaian_non_pns knp on knp.id = pgn.id LEFT JOIN kepegawaian_pns kpns on kpns.id = pgn.id LEFT JOIN kepegawaian_pns kp on kp.id = pgn.id WHERE pgn.id = $1 AND pgn.is_deleted = 0 ",
       [id]
     );
     return query;
@@ -32,7 +32,7 @@ const pengguna = (db) => {
 
   const filterNamaPegawai = (limit, offset, qwhere) => {
     const query = db.any(
-      "SELECT pgn.id, kpnns.nama as nama_lengkap, kpns.nama as nama_lengkap, pgn.hak_akses, pgn.created_at as tgl_bergabung, pgn.terakhir_login, knp.kepegawaian_nptt_npjlp as nrk, kp.kepegawaian_nrk as nrk FROM pengguna pgn LEFT JOIN kepegawaian_non_pns kpnns on kpnns.id = pgn.id LEFT JOIN kepegawaian_non_pns knp on knp.id = pgn.id LEFT JOIN kepegawaian_pns kpns on kpns.id = pgn.id LEFT JOIN kepegawaian_pns kp on kp.id = pgn.id WHERE pgn.is_deleted = 0" +
+      "SELECT pgn.id, kpnns.nama as nama_lengkap, kpns.nama as nama_lengkap, pgn.hak_akses, pgn.created_at as tgl_bergabung, pgn.terakhir_login, knp.kepegawaian_nptt_npjlp as nrk, kp.kepegawaian_nrk as nrk, pgn.foto FROM pengguna pgn LEFT JOIN kepegawaian_non_pns kpnns on kpnns.id = pgn.id LEFT JOIN kepegawaian_non_pns knp on knp.id = pgn.id LEFT JOIN kepegawaian_pns kpns on kpns.id = pgn.id LEFT JOIN kepegawaian_pns kp on kp.id = pgn.id WHERE pgn.is_deleted = 0" +
       qwhere +
       " LIMIT " +
       limit +
@@ -136,7 +136,7 @@ const pengguna = (db) => {
   };
 
   const updateFoto = (id, updated_by, values) => {
-    db.one(
+    return db.one(
       `UPDATE pengguna SET ${values} updated_at = CURRENT_TIMESTAMP WHERE id = ${id} RETURNING id`
     );
   };
