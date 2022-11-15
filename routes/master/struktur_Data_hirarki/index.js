@@ -4,7 +4,7 @@ module.exports = async function (fastify, opts) {
   fastify.register(hirarki);
 
   fastify.get(
-    "/find-id", {
+    "/find-bagan", {
       schema: {
         description: "This is an endpoint for fetching all struktur data hirarki",
         tags: ["hirarki"],
@@ -28,13 +28,13 @@ module.exports = async function (fastify, opts) {
                       type: "number"
                     },
                     parentid: {
-                      type: "number"
+                      type: "string"
                     },
                     position_name: {
                       type: "string"
                     },
                     team: {
-                      type: "number"
+                      type: "string"
                     },
                   },
                 },
