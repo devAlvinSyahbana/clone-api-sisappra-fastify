@@ -1,36 +1,30 @@
 const pengguna = require("../../services/manajemen-pengguna/pengguna");
-const kepegawaian_pns = require("../../services/kepegawaian_service/kepegawaian_pns");
-const kepegawaian_non_pns = require("../../services/kepegawaian_service/kepegawaian_non_pns");
 const multer = require("fastify-multer");
 const XLSX = require("xlsx");
+const bcrypt = require("fastify-bcrypt");
 
 module.exports = async function (fastify, opts) {
+    fastify.register(bcrypt, {
+        saltWorkFactor: 10,
+    });
     fastify.register(pengguna);
-    fastify.register(kepegawaian_pns);
-    fastify.register(kepegawaian_non_pns);
     //------------ Define the Storage to Store files------------
     var filename = "";
     const storage = multer.diskStorage({
         destination: async (req, file, cb) => {
             let rParam = req.params;
             let rData = null;
-            if (rParam.status == "PNS") {
-                rData = await fastify.kepegawaian_pns.findone(rParam.id);
-            } else {
-                rData = await fastify.kepegawaian_non_pns.findone(rParam.id);
-            }
             let fileFormat = file.mimetype.split("/");
             let dateTimestamp = Date.now();
             filename =
-                rData.kepegawaian_nrk +
-                "-" +
+
                 file.fieldname +
                 "-" +
                 dateTimestamp +
                 "." +
                 fileFormat[fileFormat.length - 1];
 
-            return cb(null, "uploads/kepegawaian");
+            return cb(null, "uploads/pengguna");
         },
         filename: (req, file, cb) => {
             cb(null, filename);
@@ -44,6 +38,41 @@ module.exports = async function (fastify, opts) {
     function truePath(path) {
         return path.replace(/\\/g, "/");
     }
+
+    // get semua data pengguna
+    fastify.get(
+        "/find",
+        {
+            schema: {
+                description:
+                    "API untuk mengambil seluruh data user pengguna",
+                tags: ["manajemen pengguna"],
+                response: {
+                    200: {
+                        description: "Succes Response",
+                        type: "array",
+                        items: {
+                            type: "object",
+                            properties: {
+                                id: { type: "number" },
+                                nrk: { type: "number" },
+                                nama_lengkap: { type: "string" },
+                                hak_akses: { type: "number" },
+                                terakhir_login: { type: "string" },
+                                tgl_bergabung: { type: "string" },
+                                foto: { type: "string" },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        async (request, reply) => {
+            const exec = await fastify.pengguna.find();
+            console.log("string", exec)
+            return exec;
+        }
+    );
 
     // get data by id
     fastify.get(
@@ -77,28 +106,19 @@ module.exports = async function (fastify, opts) {
                                 id: {
                                     type: "number"
                                 },
-                                id_pegawai: {
-                                    type: "string"
-                                },
                                 nama_lengkap: {
                                     type: "string"
                                 },
-                                no_pegawai: {
-                                    type: "string"
-                                },
-                                email: {
-                                    type: "string"
-                                },
                                 hak_akses: {
-                                    type: "number"
-                                },
-                                status_pengguna: {
                                     type: "number"
                                 },
                                 tgl_bergabung: {
                                     type: "string"
                                 },
                                 terakhir_login: {
+                                    type: "string"
+                                },
+                                foto: {
                                     type: "string"
                                 },
                             },
@@ -135,44 +155,6 @@ module.exports = async function (fastify, opts) {
             }
         }
     );
-
-    // get semua data pengguna
-    // fastify.get(
-    //     "/find-example",
-    //     {
-    //         schema: {
-    //             description:
-    //                 "API untuk mengambil seluruh data user pengguna",
-    //             tags: ["manajemen pengguna"],
-    //             response: {
-    //                 200: {
-    //                     description: "Succes Response",
-    //                     type: "array",
-    //                     items: {
-    //                         type: "object",
-    //                         properties: {
-    //                             id: { type: "number" },
-    //                             nama_lengkap: { type: "string" },
-    //                             id_pegawai: { type: "string" },
-    //                             no_pegawai: { type: "string" },
-    //                             email: { type: "string" },
-    //                             kata_sandi: { type: "string" },
-    //                             hak_akses: { type: "number" },
-    //                             status_pengguna: { type: "number" },
-    //                             terakhir_login: { type: "string" },
-    //                             tgl_bergabung: { type: "string" },
-    //                         },
-    //                     },
-    //                 },
-    //             },
-    //         },
-    //     },
-    //     async (request, reply) => {
-    //         const exec = await fastify.pengguna.find();
-    //         console.log("string", exec)
-    //         return exec;
-    //     }
-    // );
 
     // filter data pengguna
     fastify.get(
@@ -219,6 +201,9 @@ module.exports = async function (fastify, opts) {
                                     id: {
                                         type: "number"
                                     },
+                                    nrk: {
+                                        type: "number"
+                                    },
                                     nama_lengkap: {
                                         type: "string"
                                     },
@@ -229,6 +214,9 @@ module.exports = async function (fastify, opts) {
                                         type: "string"
                                     },
                                     tgl_bergabung: {
+                                        type: "string"
+                                    },
+                                    foto: {
                                         type: "string"
                                     },
                                 },
@@ -309,7 +297,6 @@ module.exports = async function (fastify, opts) {
                     type: "object",
                     properties: {
                         nama_lengkap: { type: "string" },
-                        id_pegawai: { type: "string" },
                         no_pegawai: { type: "string" },
                         kata_sandi: { type: "string" },
                         email: { type: "string" },
@@ -325,13 +312,7 @@ module.exports = async function (fastify, opts) {
                         properties: {
                             id: { type: "number" },
                             nama_lengkap: { type: "string" },
-                            id_pegawai: { type: "string" },
-                            no_pegawai: { type: "string" },
-                            kata_sandi: { type: "string" },
-                            email: { type: "string" },
                             hak_akses: { type: "number" },
-                            status_pengguna: { type: "number" },
-                            created_by: { type: "number" },
                         },
                     },
                 },
@@ -339,7 +320,6 @@ module.exports = async function (fastify, opts) {
         },
         async (request, reply) => {
             const {
-                id_pegawai,
                 no_pegawai,
                 kata_sandi,
                 email,
@@ -347,17 +327,21 @@ module.exports = async function (fastify, opts) {
                 status_pengguna,
                 nama_lengkap,
                 created_by } = request.body;
-            const exec = await fastify.pengguna.create(
-                id_pegawai,
-                no_pegawai,
-                kata_sandi,
-                email,
-                hak_akses,
-                status_pengguna,
-                nama_lengkap,
-                created_by,
-            );
-            reply.code(201).send(exec);
+            try {
+                const bycript_pass = await fastify.bcrypt.hash(kata_sandi);
+                const exec = await fastify.pengguna.create(
+                    no_pegawai,
+                    bycript_pass,
+                    email,
+                    hak_akses,
+                    status_pengguna,
+                    nama_lengkap,
+                    created_by,
+                );
+                reply.code(201).send(exec);
+            } catch (error) {
+                reply.send({ message: error.message, code: 500 });
+            }
         }
     );
 
@@ -383,13 +367,13 @@ module.exports = async function (fastify, opts) {
                     type: "object",
                     properties: {
                         nama_lengkap: { type: "string" },
-                        id_pegawai: { type: "string" },
                         no_pegawai: { type: "string" },
                         kata_sandi: { type: "string" },
                         email: { type: "string" },
                         hak_akses: { type: "number" },
                         status_pengguna: { type: "number" },
                         updated_by: { type: "number" },
+
                     },
                 },
                 response: {
@@ -397,8 +381,9 @@ module.exports = async function (fastify, opts) {
                         description: "Success Response",
                         type: "object",
                         properties: {
-                            message: { type: "string" },
-                            code: { type: "string" },
+                            id: { type: "number" },
+                            nama_lengkap: { type: "string" },
+                            hak_akses: { type: "number" },
                         },
                     },
                 },
@@ -407,7 +392,6 @@ module.exports = async function (fastify, opts) {
         async (request, reply) => {
             const { id } = request.params;
             const {
-                id_pegawai,
                 no_pegawai,
                 kata_sandi,
                 email,
@@ -416,13 +400,13 @@ module.exports = async function (fastify, opts) {
                 nama_lengkap,
                 updated_by,
             } = request.body;
-
             try {
-                await fastify.pengguna.update(
+                
+                const bycript_pass = await fastify.bcrypt.hash(kata_sandi);
+                const exec = await fastify.pengguna.update(
                     id,
-                    id_pegawai,
                     no_pegawai,
-                    kata_sandi,
+                    bycript_pass,
                     email,
                     hak_akses,
                     status_pengguna,
@@ -430,7 +414,7 @@ module.exports = async function (fastify, opts) {
                     updated_by
                 );
 
-                reply.send({ message: "success", code: 200 });
+                reply.code(201).send(exec);
             } catch (error) {
                 reply.send({ message: error.message, code: 500 });
             }
@@ -595,21 +579,21 @@ module.exports = async function (fastify, opts) {
             },
             preHandler: upload.fields([
                 {
-                    name: "image",
+                    name: "image_file",
                     maxCount: 1,
                 },
             ]),
         },
         async (request, reply) => {
             const { id } = request.params;
-            const image = request.files["image"]
-                ? await truePath(request.files["image"][0].path)
+            const image = request.files["image_file"]
+                ? await truePath(request.files["image_file"][0].path)
                 : "";
             try {
                 await fastify.pengguna.updateFoto(
                     id,
                     "",
-                    `image = '${image}',`
+                    `foto = '${image}',`
                 );
                 reply.send({ message: "success", code: 200 });
             } catch (error) {
