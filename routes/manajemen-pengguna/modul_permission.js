@@ -27,7 +27,7 @@ module.exports = async function (fastify, opts) {
                                         akses_kontrol: { type: "number" },
                                         nama_permission: { type: "string" },
                                         status: { type: "number" },
-
+                                        akses_kontrol_name : { type: "string" },
                                     },
                                 },
                             },
