@@ -56,7 +56,7 @@ module.exports = async function (fastify, opts) {
     fastify.get(
         "/akses-kontrol/findone/:id", {
         schema: {
-            description: "Endpoint ini digunakan untuk mengambil data akses kontrol",
+            description: "Endpoint ini digunakan untuk mengambil data akses kontrol by id",
             tags: ["akses kontrol"],
             params: {
                 description: "Parameter yang digunakan",
@@ -455,6 +455,67 @@ module.exports = async function (fastify, opts) {
                 await fastify.akses_kontrol.del(id, "");
 
                 reply.send({ message: "success", code: 204 });
+            } catch (error) {
+                reply.send({ message: error.message, code: 500 });
+            }
+        }
+    );
+
+    fastify.get(
+        "/akses-kontrol/find-modul-permission/:id",
+        {
+            schema: {
+                description:
+                    "API untuk mengambil seluruh data modul permission",
+                tags: ["akses kontrol"],
+                params: {
+                    description: "Parameter yang digunakan untuk mengambil data modul permission by id akses kontrol",
+                    type: "object",
+                    properties: {
+                        id: {
+                            type: "number"
+                        },
+                    },
+                },
+                response: {
+                    200: {
+                        description: "Success Response",
+                        type: "object",
+                        properties: {
+                            message: { type: "string" },
+                            code: { type: "string" },
+                            data: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        id: { type: "number" },
+                                        akses_modul: { type: "number" },
+                                        nama_permission: { type: "string" },
+                                        urutan: { type: "string" },
+
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        async (request, reply) => {
+            const { id } = request.params;
+            let qwhere = ""
+            if (id) {
+                qwhere += ` AND akses_kontrol = ${id}`;
+              }
+            const exec = await fastify.akses_kontrol.filterModulPermission(qwhere);
+            console.log("string", exec)
+            try {
+                if (exec) {
+                    reply.send({ message: "success", code: 200, data: exec });
+                } else {
+                    reply.send({ message: "success", code: 204 });
+                }
             } catch (error) {
                 reply.send({ message: error.message, code: 500 });
             }

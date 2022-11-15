@@ -58,7 +58,7 @@ const master_jenis_pertolongan = (db) => {
 
   const filter = (q) => {
     const query = db.any(
-      "SELECT id, nama as skpd, kode FROM master_skpd WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
+      "SELECT id, nama as jenis_pertolongan FROM master_jenis_pertolongan WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
     );
 
     return query;

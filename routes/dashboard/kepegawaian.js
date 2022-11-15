@@ -278,8 +278,10 @@ module.exports = async function (fastify, opts) {
             },
         },
         async (request, reply) => {
-            const exec = await fastify.kepegawaian.get_usia();
-
+            let exec = null;
+            let qwhere = "";
+            qwhere = ` age(tgl_lahir) as usia`;
+            exec = await fastify.kepegawaian_pns.filterPensiun(limit, offset, qwhere);
             try {
                 if (exec) {
                     reply.send({

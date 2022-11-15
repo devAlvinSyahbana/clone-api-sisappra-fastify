@@ -301,6 +301,7 @@ module.exports = async function (fastify, opts) {
                   properties: {
                     id: { type: "number" },
                     jenis_kegiatan: { type: "string" },
+                    kode: { type: "string" },
                   },
                 },
               },
