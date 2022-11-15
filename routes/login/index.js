@@ -236,10 +236,10 @@ module.exports = async function (fastify, opts) {
       } = request.body;
       const bycript_pass = await fastify.bcrypt.hash(kata_sandi);
       const { jmlh } = await fastify.login.findone_no_pegawai(no_pegawai);
-    
+
       try {
         if (parseInt(jmlh) == 0) {
-          const value  = await fastify.login.findone_pegawai(no_pegawai);
+          const value = await fastify.login.findone_pegawai(no_pegawai);
 
           await fastify.login.create(
             value.id,
@@ -262,16 +262,16 @@ module.exports = async function (fastify, opts) {
           };
 
           if (await fastify.bcrypt.compare(kata_sandi, exec.kata_sandi)) {
-         
-              let token = fastify.jwt.sign({ foo: "bar" });
-              await fastify.login.create_token(exec.id, token);
-  
-              reply.send({
-                message: "success",
-                code: 200,
-                data: objres,
-                api_token: token,
-              });
+
+            let token = fastify.jwt.sign({ foo: "bar" });
+            await fastify.login.create_token(exec.id, token);
+
+            reply.send({
+              message: "success",
+              code: 200,
+              data: objres,
+              api_token: token,
+            });
           } else {
             reply.send({ message: "not allowed", code: 204 });
           }
@@ -314,7 +314,6 @@ module.exports = async function (fastify, opts) {
                     type: "object",
                     properties: {
                       id: { type: "number" },
-                      id_pegawai: { type: "string" },
                       no_pegawai: { type: "string" },
                       email: { type: "string" },
                       hak_akses: { type: "number" },
@@ -374,7 +373,6 @@ module.exports = async function (fastify, opts) {
         token: exec.token,
         data_user: {
           id: getDataPengguna.id,
-          id_pegawai: getDataPengguna.id_pegawai,
           no_pegawai: getDataPengguna.no_pegawai,
           email: getDataPengguna.email,
           hak_akses: getDataPengguna.hak_akses,

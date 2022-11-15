@@ -381,4 +381,72 @@ module.exports = async function (fastify, opts) {
       }
     }
   );
+
+  // get count data by id
+  fastify.get(
+    "/hak-akses/count-total-data", {
+    schema: {
+      description: "Endpoint ini digunakan untuk mengambil jumlah total data hak akses",
+      tags: ["hak akses"],
+      querystring: {
+        type: "object",
+        properties: {
+          id_hak_akses: {
+            type: "number",
+          },
+        },
+      },
+      response: {
+        200: {
+          description: "Success Response",
+          type: "object",
+          properties: {
+            message: {
+              type: "string"
+            },
+            code: {
+              type: "string"
+            },
+            data: {
+              type: "object",
+              properties: {
+                total_data: {
+                  type: "number"
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+    async (request, reply) => {
+      const {
+        id_hak_akses
+      } = request.query;
+      let qwhere = "";
+      if (id_hak_akses) {
+        qwhere += ` AND hak_akses = ${id_hak_akses}`;
+      }
+      const {
+        total
+      } = await fastify.hak_akses.countAllPenggunaByFilter(
+        qwhere
+      );
+
+      try {
+        reply.send({
+          message: "success",
+          code: 200,
+          data: { total_data: total },
+        });
+      } catch (error) {
+        reply.send({
+          message: error.message,
+          code: 500
+        });
+      }
+    }
+  )
+
 };

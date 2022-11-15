@@ -3,7 +3,7 @@ const fp = require("fastify-plugin");
 const akses_kontrol = (db) => {
   const find = () => {
     const query = db.any(
-      "SELECT id, modul, kode, level, created_at as tanggal_buat FROM akses_kontrol WHERE is_deleted = 0 ORDER BY created_at DESC"
+      "SELECT id, modul, kode, level, created_at as tanggal_buat FROM akses_kontrol WHERE is_deleted = 0 ORDER BY level ASC"
     );
 
     return query;
@@ -67,9 +67,11 @@ const akses_kontrol = (db) => {
 
     let a = "";
     if (max == undefined) {
-      a = "AK";
+      a = "AK1";
+      level = a
     } else {
       a = "AK" + (parseInt(max) + 1);
+      if (level == "") { level = a }
     }
 
 
@@ -106,6 +108,15 @@ const akses_kontrol = (db) => {
     return { id };
   };
 
+  const filterModulPermission = (qwhere) => {
+    const query = db.any(
+      "SELECT * FROM modul_permission WHERE is_deleted = 0 AND status = 0" +
+      qwhere + "ORDER BY urutan ASC"
+    );
+
+    return query;
+  };
+
 
   return {
     find,
@@ -116,7 +127,7 @@ const akses_kontrol = (db) => {
     filter,
     update,
     del,
-    // getDataUnduhAksesKontrol,
+    filterModulPermission,
   };
 }
 
