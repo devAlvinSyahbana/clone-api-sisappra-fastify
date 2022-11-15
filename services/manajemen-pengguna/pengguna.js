@@ -32,7 +32,7 @@ const pengguna = (db) => {
 
   const filterNamaPegawai = (limit, offset, qwhere) => {
     const query = db.any(
-      "ELECT pgn.id, kpnns.nama as nama_lengkap, kpns.nama as nama_lengkap, pgn.hak_akses, pgn.created_at as tgl_bergabung, pgn.terakhir_login, knp.kepegawaian_nptt_npjlp as nrk, kp.kepegawaian_nrk as nrk FROM pengguna pgn LEFT JOIN kepegawaian_non_pns kpnns on kpnns.id = pgn.id LEFT JOIN kepegawaian_non_pns knp on knp.id = pgn.id LEFT JOIN kepegawaian_pns kpns on kpns.id = pgn.id LEFT JOIN kepegawaian_pns kp on kp.id = pgn.id WHERE pgn.is_deleted = 0" +
+      "SELECT pgn.id, kpnns.nama as nama_lengkap, kpns.nama as nama_lengkap, pgn.hak_akses, pgn.created_at as tgl_bergabung, pgn.terakhir_login, knp.kepegawaian_nptt_npjlp as nrk, kp.kepegawaian_nrk as nrk FROM pengguna pgn LEFT JOIN kepegawaian_non_pns kpnns on kpnns.id = pgn.id LEFT JOIN kepegawaian_non_pns knp on knp.id = pgn.id LEFT JOIN kepegawaian_pns kpns on kpns.id = pgn.id LEFT JOIN kepegawaian_pns kp on kp.id = pgn.id WHERE pgn.is_deleted = 0" +
       qwhere +
       " LIMIT " +
       limit +
