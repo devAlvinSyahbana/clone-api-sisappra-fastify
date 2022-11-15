@@ -1,8 +1,12 @@
 const pengguna = require("../../services/manajemen-pengguna/pengguna");
 const multer = require("fastify-multer");
 const XLSX = require("xlsx");
+const bcrypt = require("fastify-bcrypt");
 
 module.exports = async function (fastify, opts) {
+    fastify.register(bcrypt, {
+        saltWorkFactor: 10,
+    });
     fastify.register(pengguna);
     //------------ Define the Storage to Store files------------
     var filename = "";
@@ -13,7 +17,7 @@ module.exports = async function (fastify, opts) {
             let fileFormat = file.mimetype.split("/");
             let dateTimestamp = Date.now();
             filename =
-                
+
                 file.fieldname +
                 "-" +
                 dateTimestamp +
@@ -102,16 +106,12 @@ module.exports = async function (fastify, opts) {
                                 id: {
                                     type: "number"
                                 },
-                                nrk: {
-                                    type: "number"
-                                },
                                 nama_lengkap: {
                                     type: "string"
                                 },
                                 hak_akses: {
                                     type: "number"
                                 },
-
                                 tgl_bergabung: {
                                     type: "string"
                                 },
@@ -297,7 +297,6 @@ module.exports = async function (fastify, opts) {
                     type: "object",
                     properties: {
                         nama_lengkap: { type: "string" },
-                        id_pegawai: { type: "string" },
                         no_pegawai: { type: "string" },
                         kata_sandi: { type: "string" },
                         email: { type: "string" },
@@ -321,7 +320,6 @@ module.exports = async function (fastify, opts) {
         },
         async (request, reply) => {
             const {
-                id_pegawai,
                 no_pegawai,
                 kata_sandi,
                 email,
@@ -330,10 +328,10 @@ module.exports = async function (fastify, opts) {
                 nama_lengkap,
                 created_by } = request.body;
             try {
+                const bycript_pass = await fastify.bcrypt.hash(kata_sandi);
                 const exec = await fastify.pengguna.create(
-                    id_pegawai,
                     no_pegawai,
-                    kata_sandi,
+                    bycript_pass,
                     email,
                     hak_akses,
                     status_pengguna,
@@ -369,7 +367,6 @@ module.exports = async function (fastify, opts) {
                     type: "object",
                     properties: {
                         nama_lengkap: { type: "string" },
-                        id_pegawai: { type: "string" },
                         no_pegawai: { type: "string" },
                         kata_sandi: { type: "string" },
                         email: { type: "string" },
@@ -395,7 +392,6 @@ module.exports = async function (fastify, opts) {
         async (request, reply) => {
             const { id } = request.params;
             const {
-                id_pegawai,
                 no_pegawai,
                 kata_sandi,
                 email,
@@ -405,11 +401,12 @@ module.exports = async function (fastify, opts) {
                 updated_by,
             } = request.body;
             try {
-                await fastify.pengguna.update(
+                
+                const bycript_pass = await fastify.bcrypt.hash(kata_sandi);
+                const exec = await fastify.pengguna.update(
                     id,
-                    id_pegawai,
                     no_pegawai,
-                    kata_sandi,
+                    bycript_pass,
                     email,
                     hak_akses,
                     status_pengguna,

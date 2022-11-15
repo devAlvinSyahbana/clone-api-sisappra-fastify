@@ -3,7 +3,7 @@ const fp = require("fastify-plugin");
 const pengguna = (db) => {
   const find = () => {
     const query = db.any(
-      "SELECT pgn.id, kpnns.nama as nama_lengkap, kpns.nama as nama_lengkap, pgn.hak_akses, pgn.created_at as tgl_bergabung, pgn.terakhir_login, knp.kepegawaian_nptt_npjlp as nrk, kp.kepegawaian_nrk as nrk, pgn.foto FROM pengguna pgn LEFT JOIN kepegawaian_non_pns kpnns on kpnns.id = pgn.id LEFT JOIN kepegawaian_non_pns knp on knp.id = pgn.id LEFT JOIN kepegawaian_pns kpns on kpns.id = pgn.id LEFT JOIN kepegawaian_pns kp on kp.id = pgn.id WHERE pgn.is_deleted = 0 ORDER BY pgn.created_at ASC"
+      `select pgn.id, (CASE WHEN (pgw.nama IS NOT NULL OR pgw.nama != '') THEN pgw.nama ELSE pgn.nama_lengkap END) as nama_lengkap, pgn.hak_akses, pgn.created_at as tgl_bergabung, pgn.terakhir_login, (CASE WHEN (pgw.foto IS NOT NULL OR pgw.foto != '') THEN pgw.foto ELSE pgn.foto END) as foto from pengguna pgn left join ( select knp.id, knp.nama, knp.kepegawaian_nptt_npjlp as no_pegawai, knp.kepegawaian_status_pegawai as status_pegawai, knp.foto from kepegawaian_non_pns knp left join master_jabatan mj on mj.id = knp.kepegawaian_jabatan left join master_agama ma on ma.id = knp.agama union all select kp.id, kp.nama, kp.kepegawaian_nrk as no_pegawai, kp.kepegawaian_status_pegawai as status_pegawai, kp.foto from kepegawaian_pns kp left join master_jabatan mj on mj.id = kp.kepegawaian_jabatan left join master_agama ma on ma.id = kp.agama ) pgw on pgw.no_pegawai = pgn.no_pegawai WHERE pgn.is_deleted = 0 ORDER BY pgn.created_at DESC`
     );
 
     return query;
@@ -14,19 +14,6 @@ const pengguna = (db) => {
       "SELECT pgn.id, kpnns.nama as nama_lengkap, kpns.nama as nama_lengkap, pgn.hak_akses, pgn.created_at as tgl_bergabung, pgn.terakhir_login, knp.kepegawaian_nptt_npjlp as nrk, kp.kepegawaian_nrk as nrk, pgn.foto FROM pengguna pgn LEFT JOIN kepegawaian_non_pns kpnns on kpnns.id = pgn.id LEFT JOIN kepegawaian_non_pns knp on knp.id = pgn.id LEFT JOIN kepegawaian_pns kpns on kpns.id = pgn.id LEFT JOIN kepegawaian_pns kp on kp.id = pgn.id WHERE pgn.id = $1 AND pgn.is_deleted = 0 ",
       [id]
     );
-    return query;
-  };
-
-  const filter = (limit, offset, qwhere) => {
-    const query = db.any(
-      "SELECT pgn.id, pgn.nama_lengkap, pgn.email, pgn.hak_akses, pgn.created_at as tgl_bergabung, pgn.terakhir_login, status_pengguna, id_pegawai, no_pegawai FROM pengguna pgn WHERE pgn.is_deleted = 0" +
-      qwhere +
-      " LIMIT " +
-      limit +
-      " OFFSET " +
-      (parseInt(offset) - 1)
-    );
-
     return query;
   };
 
@@ -53,7 +40,6 @@ const pengguna = (db) => {
   };
 
   const create = async (
-    id_pegawai,
     no_pegawai,
     kata_sandi,
     email,
@@ -64,9 +50,8 @@ const pengguna = (db) => {
   ) => {
 
     const { id } = await db.one(
-      "INSERT INTO pengguna (id_pegawai, no_pegawai, kata_sandi, email, hak_akses, status_pengguna, nama_lengkap, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id",
+      "INSERT INTO pengguna (no_pegawai, kata_sandi, email, hak_akses, status_pengguna, nama_lengkap, created_by) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id",
       [
-        id_pegawai,
         no_pegawai,
         kata_sandi,
         email,
@@ -78,7 +63,7 @@ const pengguna = (db) => {
     );
 
     return {
-      id_pegawai,
+      id,
       no_pegawai,
       kata_sandi,
       email,
@@ -91,7 +76,6 @@ const pengguna = (db) => {
 
   const update = (
     id,
-    id_pegawai,
     no_pegawai,
     kata_sandi,
     email,
@@ -99,12 +83,10 @@ const pengguna = (db) => {
     status_pengguna,
     nama_lengkap,
     updated_by,
-    foto,
   ) => {
     db.one(
-      "UPDATE pengguna SET id_pegawai = $1, no_pegawai = $2, kata_sandi =$3, email = $4, hak_akses = $5, status_pengguna = $6, nama_lengkap = $7, updated_by = $8, foto = $9, updated_at = CURRENT_TIMESTAMP WHERE id = $10 RETURNING id",
+      "UPDATE pengguna SET no_pegawai = $1, kata_sandi =$2, email = $3, hak_akses = $4, status_pengguna = $5, nama_lengkap = $6, updated_by = $7, updated_at = CURRENT_TIMESTAMP WHERE id = $8 RETURNING id",
       [
-        id_pegawai,
         no_pegawai,
         kata_sandi,
         email,
@@ -112,7 +94,6 @@ const pengguna = (db) => {
         status_pengguna,
         nama_lengkap,
         updated_by,
-        foto,
         id,
       ]
     );
@@ -147,7 +128,6 @@ const pengguna = (db) => {
     findOne,
     countAllFilter,
     create,
-    filter,
     filterNamaPegawai,
     update,
     del,
