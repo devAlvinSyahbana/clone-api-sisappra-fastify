@@ -55,7 +55,7 @@ module.exports = async function (fastify, opts) {
                             type: "object",
                             properties: {
                                 id: { type: "number" },
-                                nrk: { type: "number" },
+                                no_pegawai: { type: "string" },
                                 nama_lengkap: { type: "string" },
                                 email: { type: "string" },
                                 hak_akses: { type: "number" },
@@ -106,6 +106,9 @@ module.exports = async function (fastify, opts) {
                             properties: {
                                 id: {
                                     type: "number"
+                                },
+                                no_pegawai: {
+                                    type: "string"
                                 },
                                 nama_lengkap: {
                                     type: "string"
@@ -205,8 +208,8 @@ module.exports = async function (fastify, opts) {
                                     id: {
                                         type: "number"
                                     },
-                                    nrk: {
-                                        type: "number"
+                                    no_pegawai: {
+                                        type: "string"
                                     },
                                     nama_lengkap: {
                                         type: "string"
