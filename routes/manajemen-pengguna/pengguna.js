@@ -57,6 +57,7 @@ module.exports = async function (fastify, opts) {
                                 id: { type: "number" },
                                 nrk: { type: "number" },
                                 nama_lengkap: { type: "string" },
+                                email: { type: "string" },
                                 hak_akses: { type: "number" },
                                 terakhir_login: { type: "string" },
                                 tgl_bergabung: { type: "string" },
@@ -107,6 +108,9 @@ module.exports = async function (fastify, opts) {
                                     type: "number"
                                 },
                                 nama_lengkap: {
+                                    type: "string"
+                                },
+                                email: {
                                     type: "string"
                                 },
                                 hak_akses: {
@@ -205,6 +209,9 @@ module.exports = async function (fastify, opts) {
                                         type: "number"
                                     },
                                     nama_lengkap: {
+                                        type: "string"
+                                    },
+                                    email: {
                                         type: "string"
                                     },
                                     hak_akses: {
