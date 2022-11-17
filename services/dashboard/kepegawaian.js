@@ -17,16 +17,17 @@ const kepegawaian = (db) => {
         return query;
     };
 
+
     const get_golongan = () => {
         const query = db.any(
-            "SELECT golongan, COUNT( golongan) FROM dashboard_kepegawaian WHERE NOT status_kepegawaian='PPNS' GROUP BY golongan;"
+            "SELECT z.* from (SELECT kepegawaian_golongan as golongan, COUNT(*) FROM public.kepegawaian_pns GROUP BY kepegawaian_golongan union SELECT kepegawaian_golongan, COUNT(*) FROM public.kepegawaian_non_pns GROUP BY kepegawaian_golongan order by golongan asc) as z where z.golongan is not null"
         );
         return query;
     };
 
     const get_eselon = () => {
         const query = db.any(
-            "SELECT eselon, COUNT( eselon) FROM dashboard_kepegawaian WHERE NOT status_kepegawaian='PPNS' GROUP BY eselon;"
+            "SELECT z.* from (SELECT kepegawaian_eselon as eselon, COUNT(*) FROM public.kepegawaian_pns GROUP BY kepegawaian_eselon union SELECT kepegawaian_eselon, COUNT(*) FROM public.kepegawaian_non_pns GROUP BY kepegawaian_eselon order by eselon asc) as z where z.eselon is not null"
         );
         return query;
     };
