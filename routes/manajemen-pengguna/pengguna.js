@@ -41,11 +41,9 @@ module.exports = async function (fastify, opts) {
 
     // get semua data pengguna
     fastify.get(
-        "/find",
-        {
+        "/find", {
             schema: {
-                description:
-                    "API untuk mengambil seluruh data user pengguna",
+                description: "API untuk mengambil seluruh data user pengguna",
                 tags: ["manajemen pengguna"],
                 response: {
                     200: {
@@ -54,13 +52,27 @@ module.exports = async function (fastify, opts) {
                         items: {
                             type: "object",
                             properties: {
-                                id: { type: "number" },
-                                nrk: { type: "number" },
-                                nama_lengkap: { type: "string" },
-                                hak_akses: { type: "number" },
-                                terakhir_login: { type: "string" },
-                                tgl_bergabung: { type: "string" },
-                                foto: { type: "string" },
+                                id: {
+                                    type: "number"
+                                },
+                                nrk: {
+                                    type: "number"
+                                },
+                                nama_lengkap: {
+                                    type: "string"
+                                },
+                                hak_akses: {
+                                    type: "number"
+                                },
+                                terakhir_login: {
+                                    type: "string"
+                                },
+                                tgl_bergabung: {
+                                    type: "string"
+                                },
+                                foto: {
+                                    type: "string"
+                                },
                             },
                         },
                     },
@@ -77,49 +89,50 @@ module.exports = async function (fastify, opts) {
     // get data by id
     fastify.get(
         "/find/:id", {
-        schema: {
-            description: "Endpoint ini digunakan untuk mengambil seluruh data manajemen pengguna",
-            tags: ["manajemen pengguna"],
-            params: {
-                description: "Parameter yang digunakan",
-                type: "object",
-                properties: {
-                    id: {
-                        type: "number"
-                    },
-                },
-            },
-            response: {
-                200: {
-                    description: "Success Response",
+            schema: {
+                description: "Endpoint ini digunakan untuk mengambil seluruh data manajemen pengguna",
+                tags: ["manajemen pengguna"],
+                params: {
+                    description: "Parameter yang digunakan",
                     type: "object",
                     properties: {
-                        message: {
-                            type: "string"
+                        id: {
+                            type: "number"
                         },
-                        code: {
-                            type: "string"
-                        },
-                        data: {
-                            type: "object",
-                            properties: {
-                                id: {
-                                    type: "number"
-                                },
-                                nama_lengkap: {
-                                    type: "string"
-                                },
-                                hak_akses: {
-                                    type: "number"
-                                },
-                                tgl_bergabung: {
-                                    type: "string"
-                                },
-                                terakhir_login: {
-                                    type: "string"
-                                },
-                                foto: {
-                                    type: "string"
+                    },
+                },
+                response: {
+                    200: {
+                        description: "Success Response",
+                        type: "object",
+                        properties: {
+                            message: {
+                                type: "string"
+                            },
+                            code: {
+                                type: "string"
+                            },
+                            data: {
+                                type: "object",
+                                properties: {
+                                    id: {
+                                        type: "number"
+                                    },
+                                    nama_lengkap: {
+                                        type: "string"
+                                    },
+                                    hak_akses: {
+                                        type: "number"
+                                    },
+                                    tgl_bergabung: {
+                                        type: "string"
+                                    },
+                                    terakhir_login: {
+                                        type: "string"
+                                    },
+                                    foto: {
+                                        type: "string"
+                                    },
                                 },
                             },
                         },
@@ -127,7 +140,6 @@ module.exports = async function (fastify, opts) {
                 },
             },
         },
-    },
         async (request, reply) => {
             const {
                 id
@@ -159,77 +171,80 @@ module.exports = async function (fastify, opts) {
     // filter data pengguna
     fastify.get(
         "/filter-data-pengguna", {
-        schema: {
-            description: "Endpoint ini digunakan untuk memfilter data pengguna",
-            tags: ["manajemen pengguna"],
-            querystring: {
-                type: "object",
-                properties: {
-                    limit: {
-                        type: "integer",
-                        default: 10,
-                    },
-                    offset: {
-                        type: "integer",
-                        default: 1,
-                    },
-                    nama_lengkap: {
-                        type: "string",
-                    },
-                    hak_akses: {
-                        type: "number",
-                    },
-                },
-                required: ["limit", "offset"],
-            },
-            response: {
-                200: {
-                    description: "Success Response",
+            schema: {
+                description: "Endpoint ini digunakan untuk memfilter data pengguna",
+                tags: ["manajemen pengguna"],
+                querystring: {
                     type: "object",
                     properties: {
-                        message: {
-                            type: "string"
+                        limit: {
+                            type: "integer",
+                            default: 10,
                         },
-                        code: {
-                            type: "string"
+                        offset: {
+                            type: "integer",
+                            default: 1,
                         },
-                        data: {
-                            type: "array",
-                            items: {
-                                type: "object",
-                                properties: {
-                                    id: {
-                                        type: "number"
-                                    },
-                                    nrk: {
-                                        type: "number"
-                                    },
-                                    nama_lengkap: {
-                                        type: "string"
-                                    },
-                                    hak_akses: {
-                                        type: "number"
-                                    },
-                                    terakhir_login: {
-                                        type: "string"
-                                    },
-                                    tgl_bergabung: {
-                                        type: "string"
-                                    },
-                                    foto: {
-                                        type: "string"
+                        nama_lengkap: {
+                            type: "string",
+                        },
+                        hak_akses: {
+                            type: "number",
+                        },
+                    },
+                    required: ["limit", "offset"],
+                },
+                response: {
+                    200: {
+                        description: "Success Response",
+                        type: "object",
+                        properties: {
+                            message: {
+                                type: "string"
+                            },
+                            code: {
+                                type: "string"
+                            },
+                            data: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        id: {
+                                            type: "number"
+                                        },
+                                        nrk: {
+                                            type: "number"
+                                        },
+                                        nama_lengkap: {
+                                            type: "string"
+                                        },
+                                        hak_akses: {
+                                            type: "number"
+                                        },
+                                        terakhir_login: {
+                                            type: "string"
+                                        },
+                                        tgl_bergabung: {
+                                            type: "string"
+                                        },
+                                        foto: {
+                                            type: "string"
+                                        },
+                                        kata_sandi: {
+                                            type: "string"
+                                        },
                                     },
                                 },
                             },
-                        },
-                        total_data: {
-                            type: "number"
+                            total_data: {
+                                type: "number"
+                            },
                         },
                     },
                 },
             },
         },
-    },
         async (request, reply) => {
             const {
                 limit,
@@ -286,23 +301,35 @@ module.exports = async function (fastify, opts) {
 
     // create data pengguna
     fastify.post(
-        "/create",
-        {
+        "/create", {
             schema: {
-                description:
-                    "This is an endpoint for creating data pengguna",
+                description: "This is an endpoint for creating data pengguna",
                 tags: ["manajemen pengguna"],
                 body: {
                     description: "Payload for creating a pengguna",
                     type: "object",
                     properties: {
-                        nama_lengkap: { type: "string" },
-                        no_pegawai: { type: "string" },
-                        kata_sandi: { type: "string" },
-                        email: { type: "string" },
-                        hak_akses: { type: "number" },
-                        status_pengguna: { type: "number" },
-                        created_by: { type: "number" },
+                        nama_lengkap: {
+                            type: "string"
+                        },
+                        no_pegawai: {
+                            type: "string"
+                        },
+                        kata_sandi: {
+                            type: "string"
+                        },
+                        email: {
+                            type: "string"
+                        },
+                        hak_akses: {
+                            type: "number"
+                        },
+                        status_pengguna: {
+                            type: "number"
+                        },
+                        created_by: {
+                            type: "number"
+                        },
                     },
                 },
                 response: {
@@ -310,9 +337,15 @@ module.exports = async function (fastify, opts) {
                         description: "Success Response",
                         type: "object",
                         properties: {
-                            id: { type: "number" },
-                            nama_lengkap: { type: "string" },
-                            hak_akses: { type: "number" },
+                            id: {
+                                type: "number"
+                            },
+                            nama_lengkap: {
+                                type: "string"
+                            },
+                            hak_akses: {
+                                type: "number"
+                            },
                         },
                     },
                 },
@@ -326,7 +359,8 @@ module.exports = async function (fastify, opts) {
                 hak_akses,
                 status_pengguna,
                 nama_lengkap,
-                created_by } = request.body;
+                created_by
+            } = request.body;
             try {
                 const bycript_pass = await fastify.bcrypt.hash(kata_sandi);
                 const exec = await fastify.pengguna.create(
@@ -340,18 +374,19 @@ module.exports = async function (fastify, opts) {
                 );
                 reply.code(201).send(exec);
             } catch (error) {
-                reply.send({ message: error.message, code: 500 });
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
             }
         }
     );
 
     // update data pengguna 
     fastify.put(
-        "/update/:id",
-        {
+        "/update/:id", {
             schema: {
-                description:
-                    "This is an endpoint for updating data pengguna",
+                description: "This is an endpoint for updating data pengguna",
                 tags: ["manajemen pengguna"],
                 params: {
                     description: "update data pengguna by Id",
@@ -366,13 +401,27 @@ module.exports = async function (fastify, opts) {
                     description: "Payload for updating a data pengguna",
                     type: "object",
                     properties: {
-                        nama_lengkap: { type: "string" },
-                        no_pegawai: { type: "string" },
-                        kata_sandi: { type: "string" },
-                        email: { type: "string" },
-                        hak_akses: { type: "number" },
-                        status_pengguna: { type: "number" },
-                        updated_by: { type: "number" },
+                        nama_lengkap: {
+                            type: "string"
+                        },
+                        no_pegawai: {
+                            type: "string"
+                        },
+                        kata_sandi: {
+                            type: "string"
+                        },
+                        email: {
+                            type: "string"
+                        },
+                        hak_akses: {
+                            type: "number"
+                        },
+                        status_pengguna: {
+                            type: "number"
+                        },
+                        updated_by: {
+                            type: "number"
+                        },
 
                     },
                 },
@@ -381,16 +430,24 @@ module.exports = async function (fastify, opts) {
                         description: "Success Response",
                         type: "object",
                         properties: {
-                            id: { type: "number" },
-                            nama_lengkap: { type: "string" },
-                            hak_akses: { type: "number" },
+                            id: {
+                                type: "number"
+                            },
+                            nama_lengkap: {
+                                type: "string"
+                            },
+                            hak_akses: {
+                                type: "number"
+                            },
                         },
                     },
                 },
             },
         },
         async (request, reply) => {
-            const { id } = request.params;
+            const {
+                id
+            } = request.params;
             const {
                 no_pegawai,
                 kata_sandi,
@@ -401,7 +458,7 @@ module.exports = async function (fastify, opts) {
                 updated_by,
             } = request.body;
             try {
-                
+
                 const bycript_pass = await fastify.bcrypt.hash(kata_sandi);
                 const exec = await fastify.pengguna.update(
                     id,
@@ -416,24 +473,27 @@ module.exports = async function (fastify, opts) {
 
                 reply.code(201).send(exec);
             } catch (error) {
-                reply.send({ message: error.message, code: 500 });
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
             }
         }
     );
 
     // delete data pengguna
     fastify.delete(
-        "/delete/:id",
-        {
+        "/delete/:id", {
             schema: {
-                description:
-                    "This is an endpoint for deleting data pengguna",
+                description: "This is an endpoint for deleting data pengguna",
                 tags: ["manajemen pengguna"],
                 params: {
                     description: "deleting data pengguna by Id",
                     type: "object",
                     properties: {
-                        id: { type: "number" },
+                        id: {
+                            type: "number"
+                        },
                     },
                 },
                 response: {
@@ -441,21 +501,33 @@ module.exports = async function (fastify, opts) {
                         description: "Success Response",
                         type: "object",
                         properties: {
-                            message: { type: "string" },
-                            code: { type: "string" },
+                            message: {
+                                type: "string"
+                            },
+                            code: {
+                                type: "string"
+                            },
                         },
                     },
                 },
             },
         },
         async (request, reply) => {
-            const { id } = request.params;
+            const {
+                id
+            } = request.params;
             try {
                 await fastify.pengguna.del(id, "");
 
-                reply.send({ message: "success", code: 204 });
+                reply.send({
+                    message: "success",
+                    code: 204
+                });
             } catch (error) {
-                reply.send({ message: error.message, code: 500 });
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
             }
         }
     );
@@ -463,31 +535,31 @@ module.exports = async function (fastify, opts) {
     // unduh data pengguna
     fastify.get(
         "/unduh-data-pengguna", {
-        schema: {
-            description: "Endpoint ini digunakan untuk mengunduh data daftar pengguna",
-            tags: ["manajemen pengguna"],
-            querystring: {
-                type: "object",
-                properties: {
-                    nama_lengkap: {
-                        type: "string",
-                    },
-                    email: {
-                        type: "string",
-                    },
-                    hak_akses: {
-                        type: "number",
+            schema: {
+                description: "Endpoint ini digunakan untuk mengunduh data daftar pengguna",
+                tags: ["manajemen pengguna"],
+                querystring: {
+                    type: "object",
+                    properties: {
+                        nama_lengkap: {
+                            type: "string",
+                        },
+                        email: {
+                            type: "string",
+                        },
+                        hak_akses: {
+                            type: "number",
+                        },
                     },
                 },
-            },
-            response: {
-                200: {
-                    description: "Success Response",
-                    type: "string",
+                response: {
+                    200: {
+                        description: "Success Response",
+                        type: "string",
+                    },
                 },
             },
         },
-    },
         async (request, reply) => {
             const {
                 nama_lengkap,
@@ -572,32 +644,37 @@ module.exports = async function (fastify, opts) {
 
     // upload file foto
     fastify.post(
-        "/update-image/:id",
-        {
+        "/update-image/:id", {
             schema: {
                 tags: ["manajemen pengguna"],
             },
-            preHandler: upload.fields([
-                {
-                    name: "image_file",
-                    maxCount: 1,
-                },
-            ]),
+            preHandler: upload.fields([{
+                name: "image_file",
+                maxCount: 1,
+            }, ]),
         },
         async (request, reply) => {
-            const { id } = request.params;
-            const image = request.files["image_file"]
-                ? await truePath(request.files["image_file"][0].path)
-                : "";
+            const {
+                id
+            } = request.params;
+            const image = request.files["image_file"] ?
+                await truePath(request.files["image_file"][0].path) :
+                "";
             try {
                 await fastify.pengguna.updateFoto(
                     id,
                     "",
                     `foto = '${image}',`
                 );
-                reply.send({ message: "success", code: 200 });
+                reply.send({
+                    message: "success",
+                    code: 200
+                });
             } catch (error) {
-                reply.send({ message: error.message, code: 500 });
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
             }
         }
     );
