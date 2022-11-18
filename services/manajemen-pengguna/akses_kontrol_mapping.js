@@ -43,16 +43,42 @@ const akses_kontrol_mapping = (db) => {
         };
     };
 
+    const update = (
+        id,
+        id_hak_akses,
+        id_akses_kontrol,
+        id_permission,
+        value_permission,
+
+    ) => {
+        db.one(
+            "UPDATE akses_kontrol_mapping SET id_hak_akses = $1, id_akses_kontrol = $2, id_permission = $3, value_permission = $4, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING id",
+            [
+                id_hak_akses,
+                id_akses_kontrol,
+                id_permission,
+                value_permission,
+                id,
+            ]
+        );
+    };
+
+    const del = async (id) => {
+        await db.one(
+            "UPDATE akses_kontrol_mapping SET is_deleted = 1, deleted_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id",
+            [id]
+        );
+
+        return { id };
+    };
+
+
     return {
         find,
         findOne,
-
         create,
-        // filterNamaPegawai,
-        // update,
-        // del,
-        // getDataUnduhManajemenPengguna,
-        // updateFoto,
+        update,
+        del,
     };
 }
 

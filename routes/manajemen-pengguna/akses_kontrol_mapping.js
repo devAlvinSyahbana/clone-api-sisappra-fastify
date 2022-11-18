@@ -195,4 +195,107 @@ module.exports = async function (fastify, opts) {
         }
     );
 
+    // update data akses kontrol mapping
+    fastify.put(
+        "akses-kontrol-mapping/update/:id",
+        {
+            schema: {
+                description:
+                    "This is an endpoint for updating data akses kontrol mapping",
+                tags: ["akses kontrol"],
+                params: {
+                    description: "update data akses kontrol mapping by Id",
+                    type: "object",
+                    properties: {
+                        id: {
+                            type: "number",
+                        },
+                    },
+                },
+                body: {
+                    description: "Payload for updating a data akses kontrol",
+                    type: "object",
+                    properties: {
+                        id_hak_akses: { type: "number" },
+                        id_akses_kontrol: { type: "number" },
+                        id_permission: { type: "number" },
+                        value_permission: { type: "boolean" },
+                    },
+                },
+                response: {
+                    200: {
+                        description: "Success Response",
+                        type: "object",
+                        properties: {
+                            message: { type: "string" },
+                            code: { type: "string" },
+                        },
+                    },
+                },
+            },
+        },
+        async (request, reply) => {
+            const { id } = request.params;
+            const {
+                id_hak_akses,
+                id_akses_kontrol,
+                id_permission,
+                value_permission,
+            } = request.body;
+
+            try {
+                await fastify.akses_kontrol_mapping.update(
+                    id,
+                    id_hak_akses,
+                    id_akses_kontrol,
+                    id_permission,
+                    value_permission,
+                );
+
+                reply.send({ message: "success", code: 200 });
+            } catch (error) {
+                reply.send({ message: error.message, code: 500 });
+            }
+        }
+    );
+
+    // delete data akses kontrol mapping
+    fastify.delete(
+        "/akses-kontrol-mapping/delete/:id",
+        {
+            schema: {
+                description:
+                    "This is an endpoint for deleting data akses kontrol mapping",
+                tags: ["akses kontrol mapping"],
+                params: {
+                    description: "deleting data akses kontrol mapping by Id",
+                    type: "object",
+                    properties: {
+                        id: { type: "number" },
+                    },
+                },
+                response: {
+                    204: {
+                        description: "Success Response",
+                        type: "object",
+                        properties: {
+                            message: { type: "string" },
+                            code: { type: "string" },
+                        },
+                    },
+                },
+            },
+        },
+        async (request, reply) => {
+            const { id } = request.params;
+            try {
+                await fastify.akses_kontrol.del(id, "");
+
+                reply.send({ message: "success", code: 204 });
+            } catch (error) {
+                reply.send({ message: error.message, code: 500 });
+            }
+        }
+    );
+
 }
