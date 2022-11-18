@@ -73,9 +73,6 @@ module.exports = async function (fastify, opts) {
                                 foto: {
                                     type: "string"
                                 },
-                                kata_sandi: {
-                                    type: "string"
-                                },
                             },
                         },
                     },
@@ -134,6 +131,9 @@ module.exports = async function (fastify, opts) {
                                         type: "string"
                                     },
                                     foto: {
+                                        type: "string"
+                                    },
+                                    kata_sandi: {
                                         type: "string"
                                     },
                                 },
