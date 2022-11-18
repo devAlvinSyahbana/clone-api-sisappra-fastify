@@ -73,6 +73,9 @@ module.exports = async function (fastify, opts) {
                                 foto: {
                                     type: "string"
                                 },
+                                kata_sandi: {
+                                    type: "string"
+                                },
                             },
                         },
                     },
