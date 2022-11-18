@@ -184,10 +184,12 @@ module.exports = async function (fastify, opts) {
         },
         async (request, reply) => {
             const {
-                modul,
-                level } = request.body;
+                id_hak_akses,
+                id_akses_kontrol,
+                id_permission,
+                value_permission } = request.body;
             try {
-                await fastify.akses_kontrol_mapping.create(modul, level);
+                await fastify.akses_kontrol_mapping.create(id_hak_akses, id_akses_kontrol, id_permission, value_permission);
                 reply.send({ message: "success", code: 200 });
             } catch (error) {
                 reply.send({ message: error.message, code: 500 });

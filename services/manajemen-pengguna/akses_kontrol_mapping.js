@@ -52,7 +52,7 @@ const akses_kontrol_mapping = (db) => {
 
     ) => {
         db.one(
-            "UPDATE akses_kontrol_mapping SET id_hak_akses = $1, id_akses_kontrol = $2, id_permission = $3, value_permission = $4, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING id",
+            "UPDATE akses_kontrol_mapping SET id_hak_akses = $1, id_akses_kontrol = $2, id_permission = $3, value_permission = $4, updated_at = CURRENT_TIMESTAMP WHERE id = $5 RETURNING id",
             [
                 id_hak_akses,
                 id_akses_kontrol,
