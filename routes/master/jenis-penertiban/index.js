@@ -202,7 +202,6 @@ module.exports = async function (fastify, opts) {
           type: "object",
           properties: {
             jenis_penertiban: { type: "string" },
-            kode: { type: "string" },
             updated_by: { type: "number" },
           },
         },
@@ -302,6 +301,7 @@ module.exports = async function (fastify, opts) {
                   properties: {
                     id: { type: "number" },
                     jenis_penertiban: { type: "string" },
+                    kode: { type: "string" },
                   },
                 },
               },

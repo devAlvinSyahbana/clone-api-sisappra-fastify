@@ -273,6 +273,7 @@ module.exports = async function (fastify, opts) {
       }
     }
   );
+  
   fastify.get(
     "/filter/:q",
     {
@@ -300,6 +301,7 @@ module.exports = async function (fastify, opts) {
                   properties: {
                     id: { type: "number" },
                     jenis_kegiatan: { type: "string" },
+                    kode: { type: "string" },
                   },
                 },
               },

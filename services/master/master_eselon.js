@@ -57,6 +57,14 @@ const master_eselon = (db) => {
     };
   };
 
+  const filter = (q) => {
+    const query = db.any(
+      "SELECT id, nama as eselon FROM master_eselon WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
+    );
+
+    return query;
+  };
+
   return {
     find,
     findone,
@@ -64,6 +72,7 @@ const master_eselon = (db) => {
     create,
     update,
     del,
+    filter,
   };
 };
 

@@ -108,7 +108,7 @@ module.exports = async function (fastify, opts) {
           description: "Payload for creating a master bidang wilayah",
           type: "object",
           properties: {
-            name: { type: "string" },
+            nama: { type: "string" },
             kategori: { type: "string" }, //Bidang / Wilayah
             created_by: { type: "number" },
           },
@@ -126,10 +126,10 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { name, kategori, created_by } = request.body;
+      const { nama, kategori, created_by } = request.body;
 
       try {
-        await fastify.master_tempat_pelaksanaan.create(name, kategori, created_by);
+        await fastify.master_tempat_pelaksanaan.create(nama, kategori, created_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -155,7 +155,7 @@ module.exports = async function (fastify, opts) {
           description: "Payload for updating a master bidang wilayah",
           type: "object",
           properties: {
-            name: { type: "string" },
+            nama: { type: "string" },
             kategori: { type: "string" }, //Bidang / Wilayah
             updated_by: { type: "number" },
           },
@@ -174,10 +174,10 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const { name, updated_by, kategori } = request.body;
+      const { nama, updated_by, kategori } = request.body;
 
       try {
-        await fastify.master_tempat_pelaksanaan.update(id, name, updated_by, kategori);
+        await fastify.master_tempat_pelaksanaan.update(id, nama, updated_by, kategori);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -259,6 +259,7 @@ module.exports = async function (fastify, opts) {
                     id: { type: "number" },
                     nama: { type: "string" },
                     kode: { type: "string" },
+                    kategori: { type: "string" },
                   },
                 },
               },
