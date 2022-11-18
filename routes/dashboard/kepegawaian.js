@@ -325,7 +325,7 @@ module.exports = async function (fastify, opts) {
                                 items: {
                                     type: "object",
                                     properties: {
-                                        status_ppns: {
+                                        skpd: {
                                             type: "string"
                                         },
                                         count: {

@@ -41,7 +41,7 @@ const kepegawaian = (db) => {
 
     const get_status_ppns = () => {
         const query = db.any(
-            "SELECT status_ppns, COUNT( status_ppns) FROM dashboard_kepegawaian WHERE status_kepegawaian='PPNS'  GROUP BY status_ppns"
+            "SELECT s.nama as skpd, COUNT(*) FROM public.kepegawaian_ppns k left join master_skpd s on k.skpd= s.id GROUP BY k.skpd, s.nama ORDER BY count desc"
         );
         return query;
     };
