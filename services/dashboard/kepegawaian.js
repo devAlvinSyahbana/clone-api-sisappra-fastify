@@ -3,16 +3,6 @@ const fp = require("fastify-plugin");
 
 const kepegawaian = (db) => {
 
-    const create = (id_pegawai, status_kepegawaian, pendidikan_terakhir, golongan, eselon, jenis_kediklatan, usia, usia_pensiun, status_ppns) => {
-        const query = db.one(
-            "INSERT INTO kepegawaian (id_pegawai, status_kepegawaian, pendidikan_terakhir, golongan, eselon, jenis_kediklatan, usia, usia_pensiun, status_ppns) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id_pegawai",
-            [id_pegawai, status_kepegawaian, pendidikan_terakhir, golongan, eselon, jenis_kediklatan, usia, usia_pensiun, status_ppns]
-        );
-
-        return query;
-    };
-
-
     const get_status_kepegawaian = () => {
         const query = db.any(
             "SELECT kepegawaian_status_pegawai as status_kepegawaian, COUNT(*) FROM public.kepegawaian_pns  GROUP BY kepegawaian_status_pegawai union SELECT kepegawaian_status_pegawai, COUNT(*) FROM public.kepegawaian_non_pns GROUP BY kepegawaian_status_pegawai order by count asc"
@@ -29,34 +19,33 @@ const kepegawaian = (db) => {
 
     const get_golongan = () => {
         const query = db.any(
-            "SELECT golongan, COUNT( golongan) FROM dashboard_kepegawaian WHERE NOT status_kepegawaian='PPNS' GROUP BY golongan;"
+            "SELECT g.nama as golongan, z.count from (SELECT kepegawaian_golongan as golongan, COUNT(*) FROM public.kepegawaian_pns GROUP BY kepegawaian_golongan union SELECT kepegawaian_golongan, COUNT(*) FROM public.kepegawaian_non_pns GROUP BY kepegawaian_golongan ) as z left join master_golongan g on z.golongan = g.id  where z.golongan is not null order by g.urutan_tingkat_golongan desc"
         );
         return query;
     };
 
     const get_eselon = () => {
         const query = db.any(
-            "SELECT eselon, COUNT( eselon) FROM dashboard_kepegawaian WHERE NOT status_kepegawaian='PPNS' GROUP BY eselon;"
+            "select e.nama as eselon, sum(t.count) as count from (SELECT kepegawaian_eselon as eselon, COUNT(*) FROM public.kepegawaian_pns GROUP BY kepegawaian_eselon union SELECT kepegawaian_eselon, COUNT(*) FROM public.kepegawaian_non_pns GROUP BY kepegawaian_eselon order by eselon asc) t left join master_eselon e on t.eselon = e.id group by e.nama, urutan_tingkat_eselon order by e.urutan_tingkat_eselon"
         );
         return query;
     };
 
     const get_usia = () => {
         const query = db.any(
-            "SELECT CASE WHEN usia BETWEEN 0 and 20 THEN '0 - 20'  WHEN usia BETWEEN 21 and 25 THEN '21 - 25'  WHEN usia BETWEEN 26 and 30 THEN '26 - 30' WHEN usia BETWEEN 31 and 35 THEN '31 - 35' WHEN usia BETWEEN 36 and 40 THEN '36 - 40' WHEN usia BETWEEN 41 and 45 THEN '41 - 45' WHEN usia BETWEEN 46 and 50 THEN '46 - 50' WHEN usia BETWEEN 51 and 55 THEN '51 - 55' WHEN usia BETWEEN 56 and 60 THEN '56 - 60' END as range_umur,  COUNT(*) AS jumlah FROM dashboard_kepegawaian WHERE NOT status_kepegawaian='PPNS' GROUP BY range_umur"
+            "SELECT CASE WHEN z.usia BETWEEN 0 and 20 THEN '0 - 20' WHEN usia BETWEEN 21 and 25 THEN '21 - 25' WHEN usia BETWEEN 26 and 30 THEN '26 - 30' WHEN usia BETWEEN 31 and 35 THEN '31 - 35' WHEN usia BETWEEN 36 and 40 THEN '36 - 40' WHEN usia BETWEEN 41 and 45 THEN '41 - 45' WHEN usia BETWEEN 46 and 50 THEN '46 - 50' WHEN usia BETWEEN 51 and 55 THEN '51 - 55' WHEN usia BETWEEN 56 and 60 THEN '56 - 60' END as range_umur, COUNT(*) AS jumlah FROM (SELECT EXTRACT(YEAR FROM age(cast(tgl_lahir as date))) as usia from kepegawaian_pns  UNION ALL SELECT EXTRACT(YEAR FROM age(cast(tgl_lahir as date))) from kepegawaian_non_pns) as z GROUP BY range_umur order by range_umur"
         );
         return query;
     };
 
     const get_status_ppns = () => {
         const query = db.any(
-            "SELECT status_ppns, COUNT( status_ppns) FROM dashboard_kepegawaian WHERE status_kepegawaian='PPNS'  GROUP BY status_ppns"
+            "SELECT s.nama as skpd, COUNT(*) FROM public.kepegawaian_ppns k left join master_skpd s on k.skpd= s.id GROUP BY k.skpd, s.nama ORDER BY count desc"
         );
         return query;
     };
 
     return {
-        create,
         get_status_kepegawaian,
         get_pendidikan_terakhir,
         get_golongan,

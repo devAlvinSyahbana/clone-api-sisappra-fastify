@@ -102,7 +102,7 @@ module.exports = async function (fastify, opts) {
                     id: {
                       type: "number"
                     },
-                    nama: {
+                    name: {
                       type: "string"
                     },
                     position_name: {

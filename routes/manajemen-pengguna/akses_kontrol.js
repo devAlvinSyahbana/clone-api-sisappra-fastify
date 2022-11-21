@@ -461,6 +461,7 @@ module.exports = async function (fastify, opts) {
         }
     );
 
+    // get modul permission by id
     fastify.get(
         "/akses-kontrol/find-modul-permission/:id",
         {
