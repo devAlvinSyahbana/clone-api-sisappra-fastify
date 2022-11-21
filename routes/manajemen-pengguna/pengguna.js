@@ -55,10 +55,13 @@ module.exports = async function (fastify, opts) {
                             id: {
                                 type: "number"
                             },
-                            nrk: {
-                                type: "number"
+                            no_pegawai: {
+                                type: "string"
                             },
                             nama_lengkap: {
+                                type: "string"
+                            },
+                            email: {
                                 type: "string"
                             },
                             hak_akses: {
@@ -118,7 +121,13 @@ module.exports = async function (fastify, opts) {
                                 id: {
                                     type: "number"
                                 },
+                                no_pegawai: {
+                                    type: "string"
+                                },
                                 nama_lengkap: {
+                                    type: "string"
+                                },
+                                email: {
                                     type: "string"
                                 },
                                 hak_akses: {
@@ -216,10 +225,16 @@ module.exports = async function (fastify, opts) {
                                     id: {
                                         type: "number"
                                     },
-                                    nrk: {
+                                    no_: {
                                         type: "number"
                                     },
+                                    no_pegawai: {
+                                        type: "string"
+                                    },
                                     nama_lengkap: {
+                                        type: "string"
+                                    },
+                                    email: {
                                         type: "string"
                                     },
                                     hak_akses: {
