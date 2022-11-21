@@ -5,38 +5,39 @@ module.exports = async function (fastify, opts) {
 
     // get semua data akses kontrol mapping
     fastify.get(
-        "/akses-kontrol-mapping/find", {
-        schema: {
-            description: "Endpoint ini digunakan untuk mengambil data akses kontrol mapping",
-            tags: ["akses kontrol mapping"],
-            response: {
-                200: {
-                    description: "Success Response",
-                    type: "object",
-                    properties: {
-                        message: {
-                            type: "string"
-                        },
-                        code: {
-                            type: "string"
-                        },
-                        data: {
-                            type: "object",
-                            properties: {
-                                id: {
-                                    type: "number"
-                                },
-                                id_hak_akses: {
-                                    type: "number"
-                                },
-                                id_akses_kontrol: {
-                                    type: "number"
-                                },
-                                id_permission: {
-                                    type: "number"
-                                },
-                                value_permission: {
-                                    type: "boolean"
+        "/akses-kontrol-mapping/find",
+        {
+            schema: {
+                description: "This is an endpoint for fetching all akses kontrol mapping",
+                tags: ["akses kontrol mapping"],
+                response: {
+                    200: {
+                        description: "Success Response",
+                        type: "object",
+                        properties: {
+                            message: { type: "string" },
+                            code: { type: "string" },
+                            data: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        id: {
+                                            type: "number"
+                                        },
+                                        id_hak_akses: {
+                                            type: "number"
+                                        },
+                                        id_akses_kontrol: {
+                                            type: "number"
+                                        },
+                                        id_permission: {
+                                            type: "number"
+                                        },
+                                        value_permission: {
+                                            type: "boolean"
+                                        },
+                                    },
                                 },
                             },
                         },
@@ -44,28 +45,16 @@ module.exports = async function (fastify, opts) {
                 },
             },
         },
-    },
         async (request, reply) => {
             const exec = await fastify.akses_kontrol_mapping.find();
             try {
                 if (exec) {
-                    reply.send({
-                        message: "success",
-                        code: 200,
-                        data: exec
-                    });
+                    reply.send({ message: "success", code: 200, data: exec });
                 } else {
-                    reply.send({
-                        message: "success",
-                        code: 204
-                    });
+                    reply.send({ message: "success", code: 204 });
                 }
-
             } catch (error) {
-                reply.send({
-                    message: error.message,
-                    code: 500
-                });
+                reply.send({ message: error.message, code: 500 });
             }
         }
     );
@@ -291,7 +280,7 @@ module.exports = async function (fastify, opts) {
         async (request, reply) => {
             const { id } = request.params;
             try {
-                await fastify.akses_kontrol.del(id, "");
+                await fastify.akses_kontrol_mapping.del(id, "");
 
                 reply.send({ message: "success", code: 204 });
             } catch (error) {
