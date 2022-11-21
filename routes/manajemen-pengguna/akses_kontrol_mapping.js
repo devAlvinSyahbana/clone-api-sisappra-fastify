@@ -204,7 +204,7 @@ module.exports = async function (fastify, opts) {
             schema: {
                 description:
                     "This is an endpoint for updating data akses kontrol mapping",
-                tags: ["akses kontrol"],
+                tags: ["akses kontrol mapping"],
                 params: {
                     description: "update data akses kontrol mapping by Id",
                     type: "object",
