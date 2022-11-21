@@ -4,7 +4,7 @@ const kepegawaian_pns = (db) => {
   const autocompliteFill = (qwhere) => {
     const query = db.any(
       "SELECT kpns.id, kpns.nama, kpns.kepegawaian_nrk as no_pegawai FROM kepegawaian_pns kpns WHERE kpns.is_deleted = 0" +
-      qwhere
+        qwhere
     );
 
     return query;
@@ -20,7 +20,9 @@ const kepegawaian_pns = (db) => {
 
   const getDataUnduhPejabatStruktural = (qwhere) => {
     const query = db.any(
-      "SELECT kpns.id, kpns.nama, kpns.kepegawaian_nip, kpns.kepegawaian_nrk, mj.nama as kepegawaian_jabatan, kpns.kepegawaian_tempat_tugas FROM kepegawaian_pns kpns LEFT JOIN master_jabatan mj ON mj.id = kpns.kepegawaian_jabatan WHERE kpns.is_deleted = 0" + qwhere
+      "select kp.id, kp.nama, kp.kepegawaian_nip, kp.kepegawaian_nrk, mj.nama as kepegawaian_jabatan, mtp.nama as kepegawaian_tempat_tugas from hirarki h inner join kepegawaian_pns kp on kp.kepegawaian_jabatan = h.position_name left join master_jabatan mj on mj.id = kp.kepegawaian_jabatan left join master_tempat_pelaksanaan mtp on mtp.id = kp.kepegawaian_tempat_tugas where kp.is_deleted = 0" +
+        qwhere +
+        " order by h.parentid asc"
     );
 
     return query;
@@ -29,7 +31,7 @@ const kepegawaian_pns = (db) => {
   const countKeluarga = (id) => {
     const query = db.one(
       "SELECT COUNT(id) as total FROM kepegawaian_pns_keluarga WHERE id_pegawai = " +
-      id
+        id
     );
 
     return query;
@@ -38,8 +40,8 @@ const kepegawaian_pns = (db) => {
   const findPendidikanTerakhir = (id) => {
     const query = db.any(
       "SELECT mpend.nama as jenis_pendidikan FROM kepegawaian_pns_pendidikan kpns_pend LEFT JOIN master_pendidikan mpend ON mpend.id = kpns_pend.jenis_pendidikan WHERE kpns_pend.id_pegawai = " +
-      id +
-      " ORDER BY kpns_pend.tgl_ijazah DESC"
+        id +
+        " ORDER BY kpns_pend.tgl_ijazah DESC"
     );
 
     if (query) {
@@ -51,7 +53,7 @@ const kepegawaian_pns = (db) => {
   const findPendidikan = (id) => {
     const query = db.any(
       "SELECT mpen.nama as jenis_pendidikan, kpen.nama_sekolah, kpen.nomor_ijazah, kpen.tgl_ijazah, kpen.jurusan, kpen.fakultas, kpen.file_ijazah FROM kepegawaian_pns_pendidikan kpen LEFT JOIN master_pendidikan mpen ON mpen.id = kpen.jenis_pendidikan WHERE kpen.id_pegawai = " +
-      id
+        id
     );
 
     return query;
@@ -60,7 +62,7 @@ const kepegawaian_pns = (db) => {
   const findKeluarga = (id) => {
     const query = db.any(
       "SELECT klgr.hubungan, klgr.nama, klgr.tempat_lahir, klgr.tgl_lahir, CASE WHEN klgr.jenis_kelamin = 'L' THEN 'Laki-laki' ELSE 'Perempuan' END AS jenis_kelamin FROM kepegawaian_pns_keluarga klgr WHERE klgr.id_pegawai = " +
-      id
+        id
     );
 
     return query;
@@ -70,9 +72,9 @@ const kepegawaian_pns = (db) => {
   const find = (limit, offset) => {
     const query = db.any(
       "SELECT kpns.id, kpns.nama, kpns.tempat_lahir, to_char(kpns.tgl_lahir, 'dd Mon YYYY') AS tgl_lahir, CASE WHEN kpns.jenis_kelamin = 'L' THEN 'Laki-laki' ELSE 'Perempuan' END AS jenis_kelamin, ma.nama as agama, kpns.no_hp, kpns.kepegawaian_nrk, kpns.kepegawaian_status_pegawai, kpns.foto FROM kepegawaian_pns kpns LEFT JOIN master_agama ma ON ma.id = CAST (kpns.agama AS INTEGER) WHERE kpns.is_deleted = 0 ORDER BY kpns.created_at DESC LIMIT " +
-      limit +
-      " OFFSET " +
-      offset
+        limit +
+        " OFFSET " +
+        offset
     );
 
     return query;
@@ -82,11 +84,11 @@ const kepegawaian_pns = (db) => {
   const filter = (limit, offset, qwhere) => {
     const query = db.any(
       "SELECT kpns.id, kpns.nama, kpns.tempat_lahir, to_char(kpns.tgl_lahir, 'dd Mon YYYY') AS tgl_lahir, CASE WHEN kpns.jenis_kelamin = 'L' THEN 'Laki-laki' ELSE 'Perempuan' END AS jenis_kelamin, ma.nama as agama, kpns.no_hp, kpns.kepegawaian_nrk, kpns.kepegawaian_status_pegawai, kpns.foto FROM kepegawaian_pns kpns LEFT JOIN master_agama ma ON ma.id = CAST (kpns.agama AS INTEGER) WHERE kpns.is_deleted = 0" +
-      qwhere +
-      " LIMIT " +
-      limit +
-      " OFFSET " +
-      (parseInt(offset) - 1)
+        qwhere +
+        " LIMIT " +
+        limit +
+        " OFFSET " +
+        (parseInt(offset) - 1)
     );
 
     return query;
@@ -103,7 +105,16 @@ const kepegawaian_pns = (db) => {
   const countAllFilter = (qwhere) => {
     const query = db.one(
       "SELECT COUNT(kpns.id) as total FROM kepegawaian_pns kpns WHERE kpns.is_deleted = 0" +
-      qwhere
+        qwhere
+    );
+
+    return query;
+  };
+
+  const countAllFilterPejabatStruktural = (qwhere) => {
+    const query = db.one(
+      "select COUNT(kp.id) as total from hirarki h inner join kepegawaian_pns kp on kp.kepegawaian_jabatan = h.position_name where kp.is_deleted = 0" +
+        qwhere
     );
 
     return query;
@@ -337,12 +348,12 @@ const kepegawaian_pns = (db) => {
 
   const filterRekapitulasiPejabatStruktural = (limit, offset, qwhere) => {
     const query = db.any(
-      "SELECT kpns.id, kpns.nama, kpns.kepegawaian_nip, kpns.kepegawaian_nrk, kpns.kepegawaian_jabatan, kpns.kepegawaian_tempat_tugas FROM kepegawaian_pns kpns WHERE kpns.is_deleted = 0" +
-      qwhere +
-      " LIMIT " +
-      limit +
-      " OFFSET " +
-      (parseInt(offset) - 1)
+      "select row_number() over (order by h.id asc) as row_number, kp.id, kp.nama, kp.kepegawaian_nip, kp.kepegawaian_nrk, kp.kepegawaian_jabatan, kp.kepegawaian_tempat_tugas from hirarki h inner join kepegawaian_pns kp on kp.kepegawaian_jabatan = h.position_name where kp.is_deleted = 0" +
+        qwhere +
+        " order by h.parentid asc limit " +
+        limit +
+        " offset " +
+        (parseInt(offset) - 1)
     );
 
     return query;
@@ -353,9 +364,9 @@ const kepegawaian_pns = (db) => {
   const findDuk = (limit, offset) => {
     const query = db.any(
       "SELECT kpns.id, kpns.nama, kpns.tempat_lahir, to_char(kpns.tgl_lahir, 'dd Mon YYYY') AS tgl_lahir, CASE WHEN kpns.jenis_kelamin = 'L' THEN 'Laki-laki' ELSE 'Perempuan' END AS jenis_kelamin, ma.nama as agama, kpns.nik, kpns.no_kk, kpns.status_perkawinan, kpns.no_hp, kpns.sesuai_ktp_alamat, kpns.sesuai_ktp_rtrw, kpns.sesuai_ktp_provinsi, kpns.sesuai_ktp_kabkota, kpns.sesuai_ktp_kecamatan, kpns.sesuai_ktp_kelurahan, kpns.domisili_alamat, kpns.domisili_rtrw, kpns.domisili_provinsi, kpns.domisili_kabkota, kpns.domisili_kecamatan, kpns.domisili_kelurahan, kpns.kepegawaian_nrk, kpns.kepegawaian_nip, mpang.nama as kepegawaian_pangkat, mg.nama as kepegawaian_golongan, kpns.kepegawaian_tmtpangkat, mp.nama as kepegawaian_pendidikan_pada_sk, mj.nama as kepegawaian_jabatan, mes.nama as kepegawaian_eselon, kpns.kepegawaian_tempat_tugas, kpns.kepegawaian_subbag_seksi_kecamatan, kpns.kepegawaian_kelurahan, kpns.kepegawaian_status_pegawai, kpns.kepegawaian_no_rekening, kpns.kepegawaian_no_karpeg, kpns.kepegawaian_no_kasirkasur, kpns.kepegawaian_no_taspen, kpns.kepegawaian_npwp, kpns.kepegawaian_no_bpjs_askes, kpns.kepegawaian_tmt_cpns, kpns.kepegawaian_tmt_pns, kpns.kepegawaian_tgl_sk_pns, kpns.kepegawaian_no_sk_pangkat_terakhir, kpns.kepegawaian_tgl_sk_pangkat_terakhir, kpns.kepegawaian_sk_pangkat_terakhir, kpns.kepegawaian_diklat_pol_pp_dasar, kpns.kepegawaian_diklat_pol_pp_dasar_no_sertifikat, kpns.kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat, kpns.kepegawaian_diklat_pol_pp_strutural, kpns.kepegawaian_diklat_pol_pp_strutural_no_sertifikat, kpns.kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat, kpns.kepegawaian_diklat_pol_pp_ppns, kpns.kepegawaian_diklat_pol_pp_ppns_no_sertifikat, kpns.kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat, kpns.kepegawaian_diklat_fungsional_pol_pp, kpns.kepegawaian_diklat_fungsional_pol_pp_no_sertifikat, kpns.kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat FROM kepegawaian_pns kpns LEFT JOIN master_agama ma ON ma.id = CAST (kpns.agama AS INTEGER) LEFT JOIN master_golongan mg ON mg.id = CAST (kpns.kepegawaian_golongan AS INTEGER) LEFT JOIN master_pendidikan mp ON mp.id = CAST (kpns.kepegawaian_pendidikan_pada_sk AS INTEGER) LEFT JOIN master_jabatan mj ON mj.id = CAST (kpns.kepegawaian_jabatan AS INTEGER) LEFT JOIN master_eselon mes ON mes.id = kpns.kepegawaian_eselon LEFT JOIN master_pangkat mpang ON mpang.id = CAST (kpns.kepegawaian_pangkat AS INTEGER) WHERE kpns.is_deleted = 0 ORDER BY mj.id ASC LIMIT " +
-      limit +
-      " OFFSET " +
-      offset
+        limit +
+        " OFFSET " +
+        offset
     );
 
     return query;
@@ -365,11 +376,11 @@ const kepegawaian_pns = (db) => {
   const filterDuk = (limit, offset, qwhere) => {
     const query = db.any(
       "SELECT kpns.id, kpns.nama, kpns.tempat_lahir, to_char(kpns.tgl_lahir, 'dd Mon YYYY') AS tgl_lahir, CASE WHEN kpns.jenis_kelamin = 'L' THEN 'Laki-laki' ELSE 'Perempuan' END AS jenis_kelamin, ma.nama as agama, kpns.nik, kpns.no_kk, kpns.status_perkawinan, kpns.no_hp, kpns.sesuai_ktp_alamat, kpns.sesuai_ktp_rtrw, kpns.sesuai_ktp_provinsi, kpns.sesuai_ktp_kabkota, kpns.sesuai_ktp_kecamatan, kpns.sesuai_ktp_kelurahan, kpns.domisili_alamat, kpns.domisili_rtrw, kpns.domisili_provinsi, kpns.domisili_kabkota, kpns.domisili_kecamatan, kpns.domisili_kelurahan, kpns.kepegawaian_nrk, kpns.kepegawaian_nip, mpang.nama as kepegawaian_pangkat, mg.nama as kepegawaian_golongan, kpns.kepegawaian_tmtpangkat, mp.nama as kepegawaian_pendidikan_pada_sk, mj.nama as kepegawaian_jabatan, mes.nama as kepegawaian_eselon, kpns.kepegawaian_tempat_tugas, kpns.kepegawaian_subbag_seksi_kecamatan, kpns.kepegawaian_kelurahan, kpns.kepegawaian_status_pegawai, kpns.kepegawaian_no_rekening, kpns.kepegawaian_no_karpeg, kpns.kepegawaian_no_kasirkasur, kpns.kepegawaian_no_taspen, kpns.kepegawaian_npwp, kpns.kepegawaian_no_bpjs_askes, kpns.kepegawaian_tmt_cpns, kpns.kepegawaian_tmt_pns, kpns.kepegawaian_tgl_sk_pns, kpns.kepegawaian_no_sk_pangkat_terakhir, kpns.kepegawaian_tgl_sk_pangkat_terakhir, kpns.kepegawaian_sk_pangkat_terakhir, kpns.kepegawaian_diklat_pol_pp_dasar, kpns.kepegawaian_diklat_pol_pp_dasar_no_sertifikat, kpns.kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat, kpns.kepegawaian_diklat_pol_pp_strutural, kpns.kepegawaian_diklat_pol_pp_strutural_no_sertifikat, kpns.kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat, kpns.kepegawaian_diklat_pol_pp_ppns, kpns.kepegawaian_diklat_pol_pp_ppns_no_sertifikat, kpns.kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat, kpns.kepegawaian_diklat_fungsional_pol_pp, kpns.kepegawaian_diklat_fungsional_pol_pp_no_sertifikat, kpns.kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat FROM kepegawaian_pns kpns LEFT JOIN master_agama ma ON ma.id = CAST (kpns.agama AS INTEGER) LEFT JOIN master_golongan mg ON mg.id = CAST (kpns.kepegawaian_golongan AS INTEGER) LEFT JOIN master_pendidikan mp ON mp.id = CAST (kpns.kepegawaian_pendidikan_pada_sk AS INTEGER) LEFT JOIN master_jabatan mj ON mj.id = CAST (kpns.kepegawaian_jabatan AS INTEGER) LEFT JOIN master_eselon mes ON mes.id = kpns.kepegawaian_eselon LEFT JOIN master_pangkat mpang ON mpang.id = CAST (kpns.kepegawaian_pangkat AS INTEGER) WHERE kpns.is_deleted = 0" +
-      qwhere +
-      " ORDER BY mj.id ASC LIMIT " +
-      limit +
-      " OFFSET " +
-      (parseInt(offset) - 1)
+        qwhere +
+        " ORDER BY mj.id ASC LIMIT " +
+        limit +
+        " OFFSET " +
+        (parseInt(offset) - 1)
     );
 
     return query;
@@ -380,9 +391,9 @@ const kepegawaian_pns = (db) => {
   const findNaikPangkat = (limit, offset) => {
     const query = db.any(
       "SELECT nama, kepegawaian_nip, kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, kepegawaian_pangkat, kepegawaian_golongan, kepegawaian_tmtpangkat, kepegawaian_eselon, status_kenaikan FROM kepegawaian_pns WHERE is_deleted = 0 ORDER BY created_at DESC LIMIT " +
-      limit +
-      " OFFSET " +
-      offset
+        limit +
+        " OFFSET " +
+        offset
     );
 
     return query;
@@ -391,11 +402,11 @@ const kepegawaian_pns = (db) => {
   const filterNaikPangkat = (limit, offset, qwhere) => {
     const query = db.any(
       "SELECT nama, kepegawaian_nip, kepegawaian_nrk, kepegawaian_jabatan, kepegawaian_tempat_tugas, kepegawaian_subbag_seksi_kecamatan, kepegawaian_pangkat, kepegawaian_golongan, kepegawaian_tmtpangkat, kepegawaian_eselon, status_kenaikan FROM kepegawaian_pns WHERE is_deleted = 0" +
-      qwhere +
-      " LIMIT " +
-      limit +
-      " OFFSET " +
-      (parseInt(offset) - 1)
+        qwhere +
+        " LIMIT " +
+        limit +
+        " OFFSET " +
+        (parseInt(offset) - 1)
     );
 
     return query;
@@ -411,20 +422,21 @@ const kepegawaian_pns = (db) => {
   ) => {
     const query = db.one(
       "INSERT INTO kepegawaian_pns_keluarga (hubungan, nama, tempat_lahir, tgl_lahir, jenis_kelamin, id_pegawai) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
-      [
-        hubungan,
-        nama,
-        tempat_lahir,
-        tgl_lahir,
-        jenis_kelamin,
-        id_pegawai,
-      ]
+      [hubungan, nama, tempat_lahir, tgl_lahir, jenis_kelamin, id_pegawai]
     );
 
     return query;
   };
 
-  const updateKeluargaPNS = (id, hubungan, nama, tempat_lahir, tgl_lahir, jenis_kelamin, id_pegawai) => {
+  const updateKeluargaPNS = (
+    id,
+    hubungan,
+    nama,
+    tempat_lahir,
+    tgl_lahir,
+    jenis_kelamin,
+    id_pegawai
+  ) => {
     db.one(
       "UPDATE kepegawaian_pns_keluarga SET hubungan = $1, nama = $2, tempat_lahir = $3, tgl_lahir = $4, jenis_kelamin = $5, id_pegawai = $6, updated_at = CURRENT_TIMESTAMP WHERE id = $7 RETURNING id",
       [hubungan, nama, tempat_lahir, tgl_lahir, jenis_kelamin, id_pegawai, id]
@@ -438,7 +450,7 @@ const kepegawaian_pns = (db) => {
     );
 
     return {
-      id
+      id,
     };
   };
 
@@ -451,18 +463,19 @@ const kepegawaian_pns = (db) => {
     jurusan,
     fakultas,
     file_ijazah,
-    id_pegawai) => {
-
+    id_pegawai
+  ) => {
     const query = await db.one(
       "INSERT INTO kepegawaian_pns_pendidikan (jenis_pendidikan, nama_sekolah, nomor_ijazah, tgl_ijazah, jurusan, fakultas, file_ijazah, id_pegawai) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id",
-      [jenis_pendidikan,
+      [
+        jenis_pendidikan,
         nama_sekolah,
         nomor_ijazah,
         tgl_ijazah,
         jurusan,
         fakultas,
         file_ijazah,
-        id_pegawai
+        id_pegawai,
       ]
     );
 
@@ -479,10 +492,21 @@ const kepegawaian_pns = (db) => {
     jurusan,
     fakultas,
     file_ijazah,
-    id_pegawai) => {
+    id_pegawai
+  ) => {
     db.one(
       "UPDATE kepegawaian_pns_pendidikan SET jenis_pendidikan = $1, nama_sekolah = $2, nomor_ijazah = $3, tgl_ijazah = $4, jurusan = $5, fakultas = $6, file_ijazah = $7, id_pegawai = $8, updated_at = CURRENT_TIMESTAMP WHERE id = $9 RETURNING id",
-      [jenis_pendidikan, nama_sekolah, nomor_ijazah, tgl_ijazah, jurusan, fakultas, file_ijazah, id_pegawai, id]
+      [
+        jenis_pendidikan,
+        nama_sekolah,
+        nomor_ijazah,
+        tgl_ijazah,
+        jurusan,
+        fakultas,
+        file_ijazah,
+        id_pegawai,
+        id,
+      ]
     );
   };
 
@@ -494,10 +518,9 @@ const kepegawaian_pns = (db) => {
     );
 
     return {
-      id
+      id,
     };
   };
-
 
   return {
     cekByNoPegawai,
@@ -509,7 +532,9 @@ const kepegawaian_pns = (db) => {
     findPendidikan,
     findKeluarga,
     filter,
+    countAll,
     countAllFilter,
+    countAllFilterPejabatStruktural,
     find,
     findone,
     update,
