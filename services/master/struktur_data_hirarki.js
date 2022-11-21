@@ -4,7 +4,7 @@ const hirarki = (db) => {
 
   const find = () => {
     const query = db.any(
-      "SELECT h.id, parentid, j.nama as position_name, '' as team FROM public.hirarki h left join master_jabatan j on h.position_name = j.id order by h.parentid",
+      "SELECT h.id, parentid, j.nama as position_name, h.team FROM public.hirarki h left join master_jabatan j on h.position_name = j.id order by h.parentid",
     );
 
     return query;
