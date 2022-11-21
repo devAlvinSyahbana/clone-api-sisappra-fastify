@@ -55,13 +55,10 @@ module.exports = async function (fastify, opts) {
                                 id: {
                                     type: "number"
                                 },
-                                no_pegawai: {
-                                    type: "string"
+                                nrk: {
+                                    type: "number"
                                 },
                                 nama_lengkap: {
-                                    type: "string"
-                                },
-                                email: {
                                     type: "string"
                                 },
                                 hak_akses: {
@@ -121,13 +118,7 @@ module.exports = async function (fastify, opts) {
                                     id: {
                                         type: "number"
                                     },
-                                    no_pegawai: {
-                                        type: "string"
-                                    },
                                     nama_lengkap: {
-                                        type: "string"
-                                    },
-                                    email: {
                                         type: "string"
                                     },
                                     hak_akses: {
@@ -140,6 +131,9 @@ module.exports = async function (fastify, opts) {
                                         type: "string"
                                     },
                                     foto: {
+                                        type: "string"
+                                    },
+                                    kata_sandi: {
                                         type: "string"
                                     },
                                 },
@@ -222,13 +216,10 @@ module.exports = async function (fastify, opts) {
                                         id: {
                                             type: "number"
                                         },
-                                        no_pegawai: {
-                                            type: "string"
+                                        nrk: {
+                                            type: "number"
                                         },
                                         nama_lengkap: {
-                                            type: "string"
-                                        },
-                                        email: {
                                             type: "string"
                                         },
                                         hak_akses: {
@@ -241,9 +232,6 @@ module.exports = async function (fastify, opts) {
                                             type: "string"
                                         },
                                         foto: {
-                                            type: "string"
-                                        },
-                                        kata_sandi: {
                                             type: "string"
                                         },
                                     },

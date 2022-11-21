@@ -34,14 +34,14 @@ const kepegawaian = (db) => {
 
     const get_usia = () => {
         const query = db.any(
-            "SELECT CASE WHEN usia BETWEEN 0 and 20 THEN '0 - 20'  WHEN usia BETWEEN 21 and 25 THEN '21 - 25'  WHEN usia BETWEEN 26 and 30 THEN '26 - 30' WHEN usia BETWEEN 31 and 35 THEN '31 - 35' WHEN usia BETWEEN 36 and 40 THEN '36 - 40' WHEN usia BETWEEN 41 and 45 THEN '41 - 45' WHEN usia BETWEEN 46 and 50 THEN '46 - 50' WHEN usia BETWEEN 51 and 55 THEN '51 - 55' WHEN usia BETWEEN 56 and 60 THEN '56 - 60' END as range_umur,  COUNT(*) AS jumlah FROM dashboard_kepegawaian WHERE NOT status_kepegawaian='PPNS' GROUP BY range_umur"
+            "SELECT CASE WHEN z.usia BETWEEN 0 and 20 THEN '0 - 20' WHEN usia BETWEEN 21 and 25 THEN '21 - 25' WHEN usia BETWEEN 26 and 30 THEN '26 - 30' WHEN usia BETWEEN 31 and 35 THEN '31 - 35' WHEN usia BETWEEN 36 and 40 THEN '36 - 40' WHEN usia BETWEEN 41 and 45 THEN '41 - 45' WHEN usia BETWEEN 46 and 50 THEN '46 - 50' WHEN usia BETWEEN 51 and 55 THEN '51 - 55' WHEN usia BETWEEN 56 and 60 THEN '56 - 60' END as range_umur, COUNT(*) AS jumlah FROM (SELECT EXTRACT(YEAR FROM age(cast(tgl_lahir as date))) as usia from kepegawaian_pns  UNION ALL SELECT EXTRACT(YEAR FROM age(cast(tgl_lahir as date))) from kepegawaian_non_pns) as z GROUP BY range_umur order by range_umur"
         );
         return query;
     };
 
     const get_status_ppns = () => {
         const query = db.any(
-            "SELECT status_ppns, COUNT( status_ppns) FROM dashboard_kepegawaian WHERE status_kepegawaian='PPNS'  GROUP BY status_ppns"
+            "SELECT s.nama as skpd, COUNT(*) FROM public.kepegawaian_ppns k left join master_skpd s on k.skpd= s.id GROUP BY k.skpd, s.nama ORDER BY count desc"
         );
         return query;
     };
