@@ -3,16 +3,6 @@ const fp = require("fastify-plugin");
 
 const kepegawaian = (db) => {
 
-    const create = (id_pegawai, status_kepegawaian, pendidikan_terakhir, golongan, eselon, jenis_kediklatan, usia, usia_pensiun, status_ppns) => {
-        const query = db.one(
-            "INSERT INTO kepegawaian (id_pegawai, status_kepegawaian, pendidikan_terakhir, golongan, eselon, jenis_kediklatan, usia, usia_pensiun, status_ppns) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id_pegawai",
-            [id_pegawai, status_kepegawaian, pendidikan_terakhir, golongan, eselon, jenis_kediklatan, usia, usia_pensiun, status_ppns]
-        );
-
-        return query;
-    };
-
-
     const get_status_kepegawaian = () => {
         const query = db.any(
             "SELECT kepegawaian_status_pegawai as status_kepegawaian, COUNT(*) FROM public.kepegawaian_pns  GROUP BY kepegawaian_status_pegawai union SELECT kepegawaian_status_pegawai, COUNT(*) FROM public.kepegawaian_non_pns GROUP BY kepegawaian_status_pegawai order by count asc"
@@ -27,16 +17,17 @@ const kepegawaian = (db) => {
         return query;
     };
 
+
     const get_golongan = () => {
         const query = db.any(
-            "SELECT golongan, COUNT( golongan) FROM dashboard_kepegawaian WHERE NOT status_kepegawaian='PPNS' GROUP BY golongan;"
+            "SELECT z.* from (SELECT kepegawaian_golongan as golongan, COUNT(*) FROM public.kepegawaian_pns GROUP BY kepegawaian_golongan union SELECT kepegawaian_golongan, COUNT(*) FROM public.kepegawaian_non_pns GROUP BY kepegawaian_golongan order by golongan asc) as z where z.golongan is not null"
         );
         return query;
     };
 
     const get_eselon = () => {
         const query = db.any(
-            "SELECT eselon, COUNT( eselon) FROM dashboard_kepegawaian WHERE NOT status_kepegawaian='PPNS' GROUP BY eselon;"
+            "SELECT z.* from (SELECT kepegawaian_eselon as eselon, COUNT(*) FROM public.kepegawaian_pns GROUP BY kepegawaian_eselon union SELECT kepegawaian_eselon, COUNT(*) FROM public.kepegawaian_non_pns GROUP BY kepegawaian_eselon order by eselon asc) as z where z.eselon is not null"
         );
         return query;
     };
@@ -56,7 +47,6 @@ const kepegawaian = (db) => {
     };
 
     return {
-        create,
         get_status_kepegawaian,
         get_pendidikan_terakhir,
         get_golongan,
