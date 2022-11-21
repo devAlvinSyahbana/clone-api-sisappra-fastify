@@ -416,11 +416,9 @@ module.exports = async function (fastify, opts) {
                 description: "Payload for updating a data pengguna",
                 type: "object",
                 properties: {
-
                     kata_sandi: {
                         type: "string"
                     },
-
                     hak_akses: {
                         type: "number"
                     },
@@ -430,7 +428,9 @@ module.exports = async function (fastify, opts) {
                     updated_by: {
                         type: "number"
                     },
-
+                    foto: {
+                        type: "string"
+                    },
                 },
             },
             response: {
@@ -447,6 +447,9 @@ module.exports = async function (fastify, opts) {
                         hak_akses: {
                             type: "number"
                         },
+                        foto: {
+                            type: "string"
+                        },
                     },
                 },
             },
@@ -457,25 +460,21 @@ module.exports = async function (fastify, opts) {
                 id
             } = request.params;
             const {
-
                 kata_sandi,
-
                 hak_akses,
                 status_pengguna,
-
                 updated_by,
+                foto,
             } = request.body;
             try {
                 const bycript_pass = await fastify.bcrypt.hash(kata_sandi);
                 const exec = await fastify.pengguna.update(
                     id,
-
                     bycript_pass,
-
                     hak_akses,
                     status_pengguna,
-
-                    updated_by
+                    updated_by,
+                    foto
                 );
                 reply.code(201).send(exec);
             } catch (error) {
