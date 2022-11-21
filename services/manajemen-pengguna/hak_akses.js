@@ -37,13 +37,14 @@ const hak_akses = (db) => {
     return query;
   };
 
-  const create = async(nama_hak_akses, modul_permission,  created_by) => {
+
+  const create = async (nama_hak_akses, modul_permission, created_by) => {
     const { max } = await db.one(
       "SELECT MAX(id) FROM hak_akses"
     );
 
     let kode = "";
-    if (max == undefined ) {
+    if (max == undefined) {
       kode = "HAKS1";
     } else {
       kode = "HAKS" + (parseInt(max) + 1);
@@ -78,7 +79,15 @@ const hak_akses = (db) => {
 
   const filter = (q) => {
     const query = db.any(
-      "SELECT ha.id, ha.nama as nama_hak_akses, ha.kode, mp.nama_permission FROM hak_akses ha left join modul_permission mp on ha.modul_permission = mp.id WHERE ha.nama ILIKE '%"+q+"%' AND ha.is_deleted = 0",
+      "SELECT ha.id, ha.nama as nama_hak_akses, ha.kode, mp.nama_permission FROM hak_akses ha left join modul_permission mp on ha.modul_permission = mp.id WHERE ha.nama ILIKE '%" + q + "%' AND ha.is_deleted = 0",
+    );
+
+    return query;
+  };
+
+  const countAllPenggunaByFilter = (qwhere) => {
+    const query = db.one(
+      `select count(id) as total from pengguna where is_deleted = 0${qwhere}`
     );
 
     return query;
@@ -92,7 +101,8 @@ const hak_akses = (db) => {
     create,
     update,
     del,
-    filter
+    filter,
+    countAllPenggunaByFilter
   };
 };
 

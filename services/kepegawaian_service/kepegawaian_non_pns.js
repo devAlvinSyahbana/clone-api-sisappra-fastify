@@ -415,7 +415,7 @@ const kepegawaian_non_pns = (db) => {
 
   const updateFile = (id, updated_by, values, status) => {
     db.one(
-      `UPDATE kepegawaian_non_pns SET ${values} updated_at = CURRENT_TIMESTAMP WHERE id = ${id} AND kepegawaian_status = '${status}' RETURNING id`
+      `UPDATE kepegawaian_non_pns SET ${values} updated_at = CURRENT_TIMESTAMP WHERE id = ${id} AND kepegawaian_status_pegawai = '${status}' RETURNING id`
     );
   };
 

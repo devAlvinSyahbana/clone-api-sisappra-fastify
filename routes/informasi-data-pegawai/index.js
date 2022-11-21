@@ -6,22 +6,24 @@ const XLSX = require("xlsx");
 module.exports = async function (fastify, opts) {
   fastify.register(kepegawaian_pns);
   fastify.register(kepegawaian_non_pns);
-  fastify.register(multer.contentParser);
   //------------ Define the Storage to Store files------------
   var filename = "";
   const storage = multer.diskStorage({
     destination: async (req, file, cb) => {
       let rParam = req.params;
       let rData = null;
+      let nopegawai = "";
       if (rParam.status == "PNS") {
         rData = await fastify.kepegawaian_pns.findone(rParam.id);
+        nopegawai = rData.kepegawaian_nrk;
       } else {
         rData = await fastify.kepegawaian_non_pns.findone(rParam.id);
+        nopegawai = rData.kepegawaian_nptt_npjlp;
       }
       let fileFormat = file.mimetype.split("/");
       let dateTimestamp = Date.now();
       filename =
-        rData.kepegawaian_nrk +
+        nopegawai +
         "-" +
         file.fieldname +
         "-" +
