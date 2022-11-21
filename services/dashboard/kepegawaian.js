@@ -26,7 +26,7 @@ const kepegawaian = (db) => {
 
     const get_eselon = () => {
         const query = db.any(
-            "SELECT e.nama as eselon, z.count from (SELECT kepegawaian_eselon as eselon, COUNT(*) FROM public.kepegawaian_pns GROUP BY kepegawaian_eselon union SELECT kepegawaian_eselon, COUNT(*) FROM public.kepegawaian_non_pns GROUP BY kepegawaian_eselon order by eselon asc) as z left join master_eselon e on z.eselon = e.id group by e.nama, z.count, e.urutan_tingkat_eselon, eselon order by e.urutan_tingkat_eselon desc"
+            "select e.nama as eselon, sum(t.count) as count from (SELECT kepegawaian_eselon as eselon, COUNT(*) FROM public.kepegawaian_pns GROUP BY kepegawaian_eselon union SELECT kepegawaian_eselon, COUNT(*) FROM public.kepegawaian_non_pns GROUP BY kepegawaian_eselon order by eselon asc) t left join master_eselon e on t.eselon = e.id group by e.nama, urutan_tingkat_eselon order by e.urutan_tingkat_eselon"
         );
         return query;
     };
