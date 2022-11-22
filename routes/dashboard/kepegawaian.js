@@ -3,12 +3,72 @@ const kepegawaian = require("../../services/dashboard/kepegawaian");
 module.exports = async function (fastify, opts) {
     fastify.register(kepegawaian);
 
+    // ^  pegawai per wilayah
+    fastify.get(
+        "/sum-pegawai-wilayah", {
+            schema: {
+                description: "This is an endpoint for fetching all kepegawaian per wilayah kepegawaian",
+                tags: ["dashboard kepegawaian"],
+                response: {
+                    200: {
+                        properties: {
+                            message: {
+                                type: "string"
+                            },
+                            code: {
+                                type: "string"
+                            },
+                            data: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        wilayah: {
+                                            type: "string"
+                                        },
+                                        count: {
+                                            type: "number"
+                                        }
+                                    },
+                                }
+                            }
+                        },
+                    },
+                },
+            },
+        },
+        async (request, reply) => {
+            const exec = await fastify.kepegawaian.get_wilayah_kepegawaian();
+
+            try {
+                if (exec) {
+                    reply.send({
+                        message: "success",
+                        code: 200,
+                        data: exec
+                    });
+                } else {
+                    reply.send({
+                        message: "success",
+                        code: 204
+                    });
+                }
+
+            } catch (error) {
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
+            }
+        }
+    );
+
     // ^  status kepegawaian
     fastify.get(
         "/sum-status-kepegawaian", {
             schema: {
                 description: "This is an endpoint for fetching all kepegawaian per status kepegawaian",
-                tags: ["kepegawaian"],
+                tags: ["dashboard kepegawaian"],
                 response: {
                     200: {
                         properties: {
@@ -68,7 +128,7 @@ module.exports = async function (fastify, opts) {
         "/sum-pendidikan-terakhir", {
             schema: {
                 description: "This is an endpoint for fetching all kepegawaian per pendidikan terakhir",
-                tags: ["kepegawaian"],
+                tags: ["dashboard kepegawaian"],
                 response: {
                     200: {
                         properties: {
@@ -128,7 +188,7 @@ module.exports = async function (fastify, opts) {
         "/sum-golongan", {
             schema: {
                 description: "This is an endpoint for fetching all kepegawaian per golongan",
-                tags: ["kepegawaian"],
+                tags: ["dashboard kepegawaian"],
                 response: {
                     200: {
                         properties: {
@@ -188,7 +248,7 @@ module.exports = async function (fastify, opts) {
         "/sum-eselon", {
             schema: {
                 description: "This is an endpoint for fetching all kepegawaian per eselon",
-                tags: ["kepegawaian"],
+                tags: ["dashboard kepegawaian"],
                 response: {
                     200: {
                         properties: {
@@ -248,7 +308,7 @@ module.exports = async function (fastify, opts) {
         "/sum-usia", {
             schema: {
                 description: "This is an endpoint for fetching all kepegawaian per usia",
-                tags: ["kepegawaian"],
+                tags: ["dashboard kepegawaian"],
                 response: {
                     200: {
                         properties: {
@@ -308,7 +368,7 @@ module.exports = async function (fastify, opts) {
         "/sum-status-ppns", {
             schema: {
                 description: "This is an endpoint for fetching all kepegawaian per status ppns",
-                tags: ["kepegawaian"],
+                tags: ["dashboard kepegawaian"],
                 response: {
                     200: {
                         properties: {
