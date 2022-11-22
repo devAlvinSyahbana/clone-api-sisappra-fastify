@@ -156,12 +156,12 @@ module.exports = async function (fastify, opts) {
       const { no_pegawai, kata_sandi } = request.body;
 
       try {
-        const { jmlh } = await fastify.login.findone_no_pegawai(no_pegawai);
-        
-        if (parseInt(jmlh) != 0) {
-          const value = await fastify.login.findone_pegawai(no_pegawai);
+        // const { jmlh } = await fastify.login.findone_no_pegawai(no_pegawai);
+        // if (parseInt(jmlh) != 0) {
+          
           const exec = await fastify.login.findone_sign_in(no_pegawai);
-  
+          const value = await fastify.login.findone_pegawai(no_pegawai);
+
           const objres = {
             id: value.id,
             id_pegawai: exec.id_pegawai,
@@ -189,9 +189,9 @@ module.exports = async function (fastify, opts) {
           } else {
             reply.send({ message: "kata sandi salah!", code: 204 });
           }
-        } else{
-          reply.send({ message: "pegawai tidak terdaftar!", code: 204 });       
-        }
+        // } else{
+        //   reply.send({ message: "pegawai tidak terdaftar!", code: 204 });       
+        // }
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
       }
@@ -347,13 +347,16 @@ module.exports = async function (fastify, opts) {
     async (request, reply) => {
       const { api_token } = request.body;
       const exec = await fastify.login.find_token(api_token);
+
       let getDataPengguna = null;
       let getDataPegawai = null;
       if (exec && exec.id_pengguna) {
         getDataPengguna = await fastify.login.findone(
           parseInt(exec.id_pengguna)
+        
         );
       }
+ 
       if (getDataPengguna && getDataPengguna.no_pegawai) {
         const cekisPNS = await fastify.kepegawaian_pns.cekByNoPegawai(
           getDataPengguna.no_pegawai
@@ -361,13 +364,16 @@ module.exports = async function (fastify, opts) {
         const cekisNonPNS = await fastify.kepegawaian_non_pns.cekByNoPegawai(
           getDataPengguna.no_pegawai
         );
+
         if (parseInt(cekisPNS.total) > 0) {
+          const value = await fastify.login.findone_pegawai(getDataPengguna.no_pegawai);
           getDataPegawai = await fastify.kepegawaian_pns.findone(
-            getDataPengguna.id_pegawai
+            value.id
           );
         } else if (parseInt(cekisNonPNS.total) > 0) {
+          const value = await fastify.login.findone_pegawai(no_pegawai);
           getDataPegawai = await fastify.kepegawaian_non_pns.findone(
-            getDataPengguna.id_pegawai
+            value.id
           );
         } else {
           getDataPegawai = {
@@ -393,8 +399,10 @@ module.exports = async function (fastify, opts) {
           no_pegawai: getDataPengguna.no_pegawai,
         },
       };
+
+ 
       try {
-        if (exec) {
+        if (getDataPengguna) {
           reply.send({ message: "success", code: 200, data: resdata });
         } else {
           reply.send({ message: "success", code: 204 });
