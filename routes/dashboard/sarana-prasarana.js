@@ -67,13 +67,12 @@ module.exports = async function (fastify, opts) {
     );
 
     fastify.post(
-        "/by-kab-kota", {
+        "/by-wilayah", {
             schema: {
                 description: "This is an endpoint for fetching all sarana prasarana per kab/kota",
                 tags: ["jenis_sarana_prasarana"],
                 body : {
-                    kab_kota: { type: "string" },
-                    tahun: { type: "string" },
+                    wilayah: { type: "string" },
                 },
                 response: {
                     200: {
