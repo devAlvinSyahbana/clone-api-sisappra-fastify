@@ -154,24 +154,30 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { no_pegawai, kata_sandi } = request.body;
-
+      const exec = await fastify.login.findone_sign_in(no_pegawai);
       try {
-        // const { jmlh } = await fastify.login.findone_no_pegawai(no_pegawai);
-        // if (parseInt(jmlh) != 0) {
-          
-          const exec = await fastify.login.findone_sign_in(no_pegawai);
-          const value = await fastify.login.findone_pegawai(no_pegawai);
-
-          const objres = {
-            id: value.id,
-            id_pegawai: exec.id_pegawai,
-            no_pegawai: exec.no_pegawai,
-            email: exec.email,
-            hak_akses: exec.hak_akses,
-            status_pengguna: exec.status_pengguna,
-          };
-
           if (await fastify.bcrypt.compare(kata_sandi, exec.kata_sandi)) {
+
+            let id_pegawai = null
+
+            const cekisPNS = await fastify.kepegawaian_pns.cekByNoPegawai(no_pegawai);
+            const cekisNonPNS = await fastify.kepegawaian_non_pns.cekByNoPegawai(no_pegawai);
+
+            if (parseInt(cekisPNS.total) != 0 || parseInt(cekisNonPNS.total) != 0) {
+              const value = await fastify.login.findone_pegawai(no_pegawai);
+              id_pegawai = value.id
+            }
+
+            const objres = {
+              id: id_pegawai,
+              id_pegawai: exec.id_pegawai,
+              no_pegawai: exec.no_pegawai,
+              email: exec.email,
+              hak_akses: exec.hak_akses,
+              status_pengguna: exec.status_pengguna,
+            };
+            
+
             try {
               let token = fastify.jwt.sign({ foo: "bar" });
               await fastify.login.create_token(exec.id, token);
@@ -189,9 +195,6 @@ module.exports = async function (fastify, opts) {
           } else {
             reply.send({ message: "kata sandi salah!", code: 204 });
           }
-        // } else{
-        //   reply.send({ message: "pegawai tidak terdaftar!", code: 204 });       
-        // }
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
       }

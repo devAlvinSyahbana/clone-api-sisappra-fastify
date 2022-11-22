@@ -13,7 +13,7 @@ const login = (db) => {
 
   const find = () => {
     const query = db.any(
-      "SELECT id, id_pegawai, no_pegawai, email, hak_akses, status_pengguna FROM pengguna WHERE is_deleted = 0 ORDER BY created_at DESC"
+      "SELECT id, no_pegawai, email, hak_akses, status_pengguna FROM pengguna WHERE is_deleted = 0 ORDER BY created_at DESC"
     );
 
     return query;
