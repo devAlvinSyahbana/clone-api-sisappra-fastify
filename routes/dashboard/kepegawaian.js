@@ -279,9 +279,7 @@ module.exports = async function (fastify, opts) {
         },
         async (request, reply) => {
             let exec = null;
-            let qwhere = "";
-            qwhere = ` age(tgl_lahir) as usia`;
-            exec = await fastify.kepegawaian_pns.filterPensiun(limit, offset, qwhere);
+            exec = await fastify.kepegawaian.get_usia();
             try {
                 if (exec) {
                     reply.send({
@@ -325,7 +323,7 @@ module.exports = async function (fastify, opts) {
                                 items: {
                                     type: "object",
                                     properties: {
-                                        status_ppns: {
+                                        skpd: {
                                             type: "string"
                                         },
                                         count: {

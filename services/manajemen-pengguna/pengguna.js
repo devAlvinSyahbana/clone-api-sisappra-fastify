@@ -11,7 +11,7 @@ const pengguna = (db) => {
 
   const findOne = (id) => {
     const query = db.one(
-      "select pgn.id, (CASE WHEN (pgw.nama IS NOT NULL OR pgw.nama != '') THEN pgw.nama ELSE pgn.nama_lengkap END) as nama_lengkap, pgn.hak_akses, pgn.email, pgn.no_pegawai, pgn.created_at as tgl_bergabung, pgn.terakhir_login, (CASE WHEN (pgw.foto IS NOT NULL OR pgw.foto != '') THEN pgw.foto ELSE pgn.foto END) as foto from pengguna pgn left join ( select knp.id, knp.nama, knp.kepegawaian_nptt_npjlp as no_pegawai, knp.kepegawaian_status_pegawai as status_pegawai, knp.foto from kepegawaian_non_pns knp left join master_jabatan mj on mj.id = knp.kepegawaian_jabatan left join master_agama ma on ma.id = knp.agama union all select kp.id, kp.nama, kp.kepegawaian_nrk as no_pegawai, kp.kepegawaian_status_pegawai as status_pegawai, kp.foto from kepegawaian_pns kp left join master_jabatan mj on mj.id = kp.kepegawaian_jabatan left join master_agama ma on ma.id = kp.agama ) pgw on pgw.no_pegawai = pgn.no_pegawai WHERE pgn.id = $1 AND pgn.is_deleted = 0 ",
+      "select pgn.id, (CASE WHEN (pgw.nama IS NOT NULL OR pgw.nama != '') THEN pgw.nama ELSE pgn.nama_lengkap END) as nama_lengkap, pgn.hak_akses, pgn.email, pgn.no_pegawai, pgn.created_at as tgl_bergabung, pgn.terakhir_login, (CASE WHEN (pgw.foto IS NOT NULL OR pgw.foto != '') THEN pgw.foto ELSE pgn.foto END) as foto, kata_sandi from pengguna pgn left join ( select knp.id, knp.nama, knp.kepegawaian_nptt_npjlp as no_pegawai, knp.kepegawaian_status_pegawai as status_pegawai, knp.foto from kepegawaian_non_pns knp left join master_jabatan mj on mj.id = knp.kepegawaian_jabatan left join master_agama ma on ma.id = knp.agama union all select kp.id, kp.nama, kp.kepegawaian_nrk as no_pegawai, kp.kepegawaian_status_pegawai as status_pegawai, kp.foto from kepegawaian_pns kp left join master_jabatan mj on mj.id = kp.kepegawaian_jabatan left join master_agama ma on ma.id = kp.agama ) pgw on pgw.no_pegawai = pgn.no_pegawai WHERE pgn.id = $1 AND pgn.is_deleted = 0 ",
       [id]
     );
     if (query) {
@@ -81,24 +81,20 @@ const pengguna = (db) => {
 
   const update = (
     id,
-    no_pegawai,
     kata_sandi,
-    email,
     hak_akses,
     status_pengguna,
-    nama_lengkap,
     updated_by,
+    foto,
   ) => {
     db.one(
-      "UPDATE pengguna SET no_pegawai = $1, kata_sandi =$2, email = $3, hak_akses = $4, status_pengguna = $5, nama_lengkap = $6, updated_by = $7, updated_at = CURRENT_TIMESTAMP WHERE id = $8 RETURNING id",
+      "UPDATE pengguna SET kata_sandi =$1, hak_akses = $2, status_pengguna = $3, updated_by = $4, foto = $5, updated_at = CURRENT_TIMESTAMP WHERE id = $6 RETURNING id",
       [
-        no_pegawai,
         kata_sandi,
-        email,
         hak_akses,
         status_pengguna,
-        nama_lengkap,
         updated_by,
+        foto,
         id,
       ]
     );
