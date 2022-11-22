@@ -1,11 +1,13 @@
 const kepegawaian_pns = require("../../services/kepegawaian_service/kepegawaian_pns");
 const kepegawaian_non_pns = require("../../services/kepegawaian_service/kepegawaian_non_pns");
+const kepegawaian_foto_full_body = require("../../services/kepegawaian_service/kepegawaian_foto_full_body");
 const multer = require("fastify-multer");
 const XLSX = require("xlsx");
 
 module.exports = async function (fastify, opts) {
   fastify.register(kepegawaian_pns);
   fastify.register(kepegawaian_non_pns);
+  fastify.register(kepegawaian_foto_full_body);
   //------------ Define the Storage to Store files------------
   var filename = "";
   const storage = multer.diskStorage({
@@ -454,6 +456,9 @@ module.exports = async function (fastify, opts) {
                   foto: {
                     type: "string",
                   },
+                  foto_full_body: {
+                    type: "string",
+                  },
                   kepegawaian_pangkat: {
                     type: "number",
                   },
@@ -481,6 +486,17 @@ module.exports = async function (fastify, opts) {
 
       try {
         if (exec) {
+          const cek_foto_full_body =
+            await fastify.kepegawaian_foto_full_body.countAllFilter(
+              ` AND kflb.id_pegawai = ${id} AND kflb.status_pegawai = '${status}'`
+            );
+          if (cek_foto_full_body?.total > 0) {
+            const get_full_body_photo =
+              await fastify.kepegawaian_foto_full_body.findone(
+                ` AND kflb.id_pegawai = ${id} AND kflb.status_pegawai = '${status}'`
+              );
+            exec.foto_full_body = get_full_body_photo.path_foto;
+          }
           reply.send({
             message: "success",
             code: 200,
@@ -1374,62 +1390,121 @@ module.exports = async function (fastify, opts) {
         kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat,
       } = request.body;
       try {
-        await fastify.kepegawaian_pns.update(
-          id,
-          nama,
-          tempat_lahir,
-          tgl_lahir,
-          jenis_kelamin,
-          agama,
-          nik,
-          no_kk,
-          status_perkawinan,
-          no_hp,
-          sesuai_ktp_alamat,
-          sesuai_ktp_rtrw,
-          sesuai_ktp_provinsi,
-          sesuai_ktp_kabkota,
-          sesuai_ktp_kecamatan,
-          sesuai_ktp_kelurahan,
-          domisili_alamat,
-          domisili_rtrw,
-          domisili_provinsi,
-          domisili_kabkota,
-          domisili_kecamatan,
-          domisili_kelurahan,
-          kepegawaian_nrk,
-          kepegawaian_nip,
-          kepegawaian_pangkat,
-          kepegawaian_golongan,
-          kepegawaian_tmtpangkat,
-          kepegawaian_pendidikan_pada_sk,
-          kepegawaian_jabatan,
-          kepegawaian_eselon,
-          kepegawaian_tempat_tugas,
-          kepegawaian_subbag_seksi_kecamatan,
-          kepegawaian_kelurahan,
-          kepegawaian_status_pegawai,
-          kepegawaian_no_rekening,
-          kepegawaian_no_karpeg,
-          kepegawaian_no_kasirkasur,
-          kepegawaian_no_taspen,
-          kepegawaian_npwp,
-          kepegawaian_no_bpjs_askes,
-          kepegawaian_tmt_cpns,
-          kepegawaian_tmt_pns,
-          kepegawaian_tgl_sk_pns,
-          kepegawaian_no_sk_pangkat_terakhir,
-          kepegawaian_tgl_sk_pangkat_terakhir,
-          kepegawaian_diklat_pol_pp_dasar_no_sertifikat,
-          kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat,
-          kepegawaian_diklat_pol_pp_strutural_no_sertifikat,
-          kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat,
-          kepegawaian_diklat_pol_pp_ppns_no_sertifikat,
-          kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat,
-          kepegawaian_diklat_fungsional_pol_pp_no_sertifikat,
-          kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat,
-          ""
-        );
+        if (status == "PNS") {
+          await fastify.kepegawaian_pns.update(
+            id,
+            nama,
+            tempat_lahir,
+            tgl_lahir,
+            jenis_kelamin,
+            agama,
+            nik,
+            no_kk,
+            status_perkawinan,
+            no_hp,
+            sesuai_ktp_alamat,
+            sesuai_ktp_rtrw,
+            sesuai_ktp_provinsi,
+            sesuai_ktp_kabkota,
+            sesuai_ktp_kecamatan,
+            sesuai_ktp_kelurahan,
+            domisili_alamat,
+            domisili_rtrw,
+            domisili_provinsi,
+            domisili_kabkota,
+            domisili_kecamatan,
+            domisili_kelurahan,
+            kepegawaian_nrk,
+            kepegawaian_nip,
+            kepegawaian_pangkat,
+            kepegawaian_golongan,
+            kepegawaian_tmtpangkat,
+            kepegawaian_pendidikan_pada_sk,
+            kepegawaian_jabatan,
+            kepegawaian_eselon,
+            kepegawaian_tempat_tugas,
+            kepegawaian_subbag_seksi_kecamatan,
+            kepegawaian_kelurahan,
+            kepegawaian_status_pegawai,
+            kepegawaian_no_rekening,
+            kepegawaian_no_karpeg,
+            kepegawaian_no_kasirkasur,
+            kepegawaian_no_taspen,
+            kepegawaian_npwp,
+            kepegawaian_no_bpjs_askes,
+            kepegawaian_tmt_cpns,
+            kepegawaian_tmt_pns,
+            kepegawaian_tgl_sk_pns,
+            kepegawaian_no_sk_pangkat_terakhir,
+            kepegawaian_tgl_sk_pangkat_terakhir,
+            kepegawaian_diklat_pol_pp_dasar_no_sertifikat,
+            kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat,
+            kepegawaian_diklat_pol_pp_strutural_no_sertifikat,
+            kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat,
+            kepegawaian_diklat_pol_pp_ppns_no_sertifikat,
+            kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat,
+            kepegawaian_diklat_fungsional_pol_pp_no_sertifikat,
+            kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat,
+            ""
+          );
+        } else {
+          await fastify.kepegawaian_non_pns.update(
+            id,
+            nama,
+            tempat_lahir,
+            tgl_lahir,
+            jenis_kelamin,
+            agama,
+            nik,
+            no_kk,
+            status_perkawinan,
+            no_hp,
+            sesuai_ktp_alamat,
+            sesuai_ktp_rtrw,
+            sesuai_ktp_provinsi,
+            sesuai_ktp_kabkota,
+            sesuai_ktp_kecamatan,
+            sesuai_ktp_kelurahan,
+            domisili_alamat,
+            domisili_rtrw,
+            domisili_provinsi,
+            domisili_kabkota,
+            domisili_kecamatan,
+            domisili_kelurahan,
+            kepegawaian_nrk,
+            kepegawaian_nip,
+            kepegawaian_pangkat,
+            kepegawaian_golongan,
+            kepegawaian_tmtpangkat,
+            kepegawaian_pendidikan_pada_sk,
+            kepegawaian_jabatan,
+            kepegawaian_eselon,
+            kepegawaian_tempat_tugas,
+            kepegawaian_subbag_seksi_kecamatan,
+            kepegawaian_kelurahan,
+            kepegawaian_status_pegawai,
+            kepegawaian_no_rekening,
+            kepegawaian_no_karpeg,
+            kepegawaian_no_kasirkasur,
+            kepegawaian_no_taspen,
+            kepegawaian_npwp,
+            kepegawaian_no_bpjs_askes,
+            kepegawaian_tmt_cpns,
+            kepegawaian_tmt_pns,
+            kepegawaian_tgl_sk_pns,
+            kepegawaian_no_sk_pangkat_terakhir,
+            kepegawaian_tgl_sk_pangkat_terakhir,
+            kepegawaian_diklat_pol_pp_dasar_no_sertifikat,
+            kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat,
+            kepegawaian_diklat_pol_pp_strutural_no_sertifikat,
+            kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat,
+            kepegawaian_diklat_pol_pp_ppns_no_sertifikat,
+            kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat,
+            kepegawaian_diklat_fungsional_pol_pp_no_sertifikat,
+            kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat,
+            ""
+          );
+        }
 
         reply.send({
           message: "success",
@@ -1454,6 +1529,10 @@ module.exports = async function (fastify, opts) {
       preHandler: upload.fields([
         {
           name: "foto",
+          maxCount: 1,
+        },
+        {
+          name: "foto_full_body",
           maxCount: 1,
         },
         {
@@ -1540,6 +1619,9 @@ module.exports = async function (fastify, opts) {
         const foto = request.files["foto"]
           ? await truePath(request.files["foto"][0].path)
           : "";
+        const foto_full_body = request.files["foto_full_body"]
+          ? await truePath(request.files["foto_full_body"][0].path)
+          : "";
 
         (await kepegawaian_sk_pangkat_terakhir) !== ""
           ? (vals += `kepegawaian_sk_pangkat_terakhir = '${kepegawaian_sk_pangkat_terakhir}', `)
@@ -1574,6 +1656,34 @@ module.exports = async function (fastify, opts) {
             message: "success",
             code: 200,
           });
+        } else {
+          if (foto_full_body !== "") {
+            const cek_data =
+              await fastify.kepegawaian_foto_full_body.countAllFilter(
+                ` AND kflb.id_pegawai = ${id} AND kflb.status_pegawai = '${status}'`
+              );
+            if (cek_data.total < 1) {
+              await fastify.kepegawaian_foto_full_body.createFile(
+                id,
+                status,
+                foto_full_body
+              );
+            } else {
+              const current_data =
+                await fastify.kepegawaian_foto_full_body.findone(
+                  ` AND kflb.id_pegawai = ${id} AND kflb.status_pegawai = '${status}'`
+                );
+              await fastify.kepegawaian_foto_full_body.updateFile(
+                current_data.id,
+                "",
+                `path_foto = '${foto_full_body}', `
+              );
+            }
+            reply.send({
+              message: "success",
+              code: 200,
+            });
+          }
         }
       } catch (error) {
         reply.send({
