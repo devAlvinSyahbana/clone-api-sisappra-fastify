@@ -242,7 +242,6 @@ module.exports = async function (fastify, opts) {
           const value = await fastify.login.findone_pegawai(no_pegawai);
 
           await fastify.login.create(
-            value.id,
             value.nrk_nptt_npjlp,
             bycript_pass,
             email,
