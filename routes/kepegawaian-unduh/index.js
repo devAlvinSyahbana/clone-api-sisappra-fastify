@@ -9,9 +9,11 @@ module.exports = async function (fastify, opts) {
   fastify.register(kepegawaian_non_pns);
 
   fastify.get(
-    "/unduh-pegawai", {
+    "/unduh-pegawai",
+    {
       schema: {
-        description: "Endpoint ini digunakan untuk mengunduh seluruh data kepegawaian berstatus PNS, PTT, PJLP",
+        description:
+          "Endpoint ini digunakan untuk mengunduh seluruh data kepegawaian berstatus PNS, PTT, PJLP",
         tags: ["endpoint kepegawaian"],
         querystring: {
           type: "object",
@@ -31,9 +33,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        status
-      } = request.query;
+      const { status } = request.query;
       let headerKepegawaian = [];
       let dataKepegawaian = [];
       let headerKeluarga = [];
@@ -131,7 +131,7 @@ module.exports = async function (fastify, opts) {
           const employeDataKeluarga = await getData.filter((item) => {
             return {
               id: item.id,
-              nama: item.nama
+              nama: item.nama,
             };
           });
           if (employeDataKeluarga) {
@@ -171,7 +171,7 @@ module.exports = async function (fastify, opts) {
           const employeDataPendidikan = await getData.filter((item) => {
             return {
               id: item.id,
-              nama: item.nama
+              nama: item.nama,
             };
           });
 
@@ -300,7 +300,9 @@ module.exports = async function (fastify, opts) {
             "Fakultas",
           ];
 
-          const getData = await fastify.kepegawaian_non_pns.getDataUnduh(status);
+          const getData = await fastify.kepegawaian_non_pns.getDataUnduh(
+            status
+          );
           const convertData = await getData.map(function (item) {
             return Object.values(item);
           });
@@ -309,7 +311,7 @@ module.exports = async function (fastify, opts) {
           const employeDataKeluarga = await getData.filter((item) => {
             return {
               id: item.id,
-              nama: item.nama
+              nama: item.nama,
             };
           });
           if (employeDataKeluarga) {
@@ -349,7 +351,7 @@ module.exports = async function (fastify, opts) {
           const employeDataPendidikan = await getData.filter((item) => {
             return {
               id: item.id,
-              nama: item.nama
+              nama: item.nama,
             };
           });
 
@@ -478,7 +480,9 @@ module.exports = async function (fastify, opts) {
             "Fakultas",
           ];
 
-          const getData = await fastify.kepegawaian_non_pns.getDataUnduh(status);
+          const getData = await fastify.kepegawaian_non_pns.getDataUnduh(
+            status
+          );
           const convertData = await getData.map(function (item) {
             return Object.values(item);
           });
@@ -487,7 +491,7 @@ module.exports = async function (fastify, opts) {
           const employeDataKeluarga = await getData.filter((item) => {
             return {
               id: item.id,
-              nama: item.nama
+              nama: item.nama,
             };
           });
           if (employeDataKeluarga) {
@@ -527,7 +531,7 @@ module.exports = async function (fastify, opts) {
           const employeDataPendidikan = await getData.filter((item) => {
             return {
               id: item.id,
-              nama: item.nama
+              nama: item.nama,
             };
           });
 
@@ -605,7 +609,7 @@ module.exports = async function (fastify, opts) {
         const wopts = {
           bookType: "xlsx",
           bookSST: false,
-          type: "buffer"
+          type: "buffer",
         };
         const wBuffer = XLSX.write(wb, wopts);
 
@@ -621,16 +625,18 @@ module.exports = async function (fastify, opts) {
       } catch (error) {
         reply.send({
           message: error.message,
-          code: 500
+          code: 500,
         });
       }
     }
   );
 
   fastify.get(
-    "/unduh-data-pegawai-struktural", {
+    "/unduh-data-pegawai-struktural",
+    {
       schema: {
-        description: "Endpoint ini digunakan untuk mengunduh data pegawai pejabat struktural",
+        description:
+          "Endpoint ini digunakan untuk mengunduh data pegawai pejabat struktural",
         tags: ["endpoint rekapitulasi pegawai pejabat"],
         querystring: {
           type: "object",
@@ -644,14 +650,14 @@ module.exports = async function (fastify, opts) {
             nrk: {
               type: "string",
             },
-            kecamatan_seksi: {
-              type: "string",
+            bidang_wilayah: {
+              type: "number",
+            },
+            pelaksana: {
+              type: "number",
             },
             jabatan: {
-              type: "string",
-            },
-            kelurahan: {
-              type: "string",
+              type: "number",
             },
           },
         },
@@ -664,14 +670,8 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        nama,
-        nrk,
-        kecamatan_seksi,
-        jabatan,
-        kelurahan,
-        nip
-      } = request.query;
+      const { nama, nrk, bidang_wilayah, pelaksana, jabatan, nip } =
+        request.query;
       let headerKepegawaian = [];
       let dataKepegawaian = [];
       try {
@@ -689,35 +689,35 @@ module.exports = async function (fastify, opts) {
 
         let qwhere = "";
         if (nama) {
-          qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
+          qwhere += ` AND kp.nama ILIKE '%${nama}%'`;
         }
         if (nrk) {
-          qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nrk}%'`;
+          qwhere += ` AND kp.kepegawaian_nrk ILIKE '%${nrk}%'`;
         }
         if (nip) {
-          qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nip}%'`;
+          qwhere += ` AND kp.kepegawaian_nip ILIKE '%${nip}%'`;
         }
-        if (kecamatan_seksi) {
-          qwhere += ` AND kpns.kepegawaian_subbag_seksi_kecamatan ILIKE '%${kecamatan_seksi}%'`;
+        if (bidang_wilayah) {
+          qwhere += ` AND kp.kepegawaian_tempat_tugas = ${bidang_wilayah}`;
         }
         if (jabatan) {
-          qwhere += ` AND kpns.kepegawaian_jabatan ILIKE '%${jabatan}%'`;
+          qwhere += ` AND kp.kepegawaian_jabatan = ${jabatan}`;
         }
-        if (kelurahan) {
-          qwhere += ` AND kpns.kepegawaian_kelurahan ILIKE '%${kelurahan}%'`;
+        if (pelaksana) {
+          qwhere += ` AND kp.kepegawaian_subbag_seksi_kecamatan = ${pelaksana}`;
         }
 
-        const getData = await fastify.kepegawaian_pns.getDataUnduhPejabatStruktural(qwhere);
+        const getData =
+          await fastify.kepegawaian_pns.getDataUnduhPejabatStruktural(qwhere);
 
         const convertData = await getData.map(function (item) {
           return Object.values(item);
         });
         dataKepegawaian = convertData;
 
-
         // Definisikan rows untuk ditulis ke dalam spreadsheet
         const wsDataKepegawaian = [headerKepegawaian, ...dataKepegawaian];
-        console.log(wsDataKepegawaian)
+        console.log(wsDataKepegawaian);
 
         // Buat Workbook
         const fileName = "DATA PEGAWAIAN PEJABAT STRUKTURAL";
@@ -735,11 +735,10 @@ module.exports = async function (fastify, opts) {
         // const ws = XLSX.utils.aoa_to_sheet(wsData);
         wb.Sheets["DATA PEJABAT STRUKTURAL"] = ws_kepegawaian;
 
-
         const wopts = {
           bookType: "xlsx",
           bookSST: false,
-          type: "buffer"
+          type: "buffer",
         };
         const wBuffer = XLSX.write(wb, wopts);
 
@@ -755,10 +754,9 @@ module.exports = async function (fastify, opts) {
       } catch (error) {
         reply.send({
           message: error.message,
-          code: 500
+          code: 500,
         });
       }
     }
   );
-
 };
