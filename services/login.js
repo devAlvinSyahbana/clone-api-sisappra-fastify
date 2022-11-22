@@ -13,7 +13,7 @@ const login = (db) => {
 
   const find = () => {
     const query = db.any(
-      "SELECT id, id_pegawai, no_pegawai, email, hak_akses, status_pengguna FROM pengguna WHERE is_deleted = 0 ORDER BY created_at DESC"
+      "SELECT id, no_pegawai, email, hak_akses, status_pengguna FROM pengguna WHERE is_deleted = 0 ORDER BY created_at DESC"
     );
 
     return query;
@@ -55,10 +55,10 @@ const login = (db) => {
     return query;
   };
 
-  const create = (id_pegawai, no_pegawai, kata_sandi, email, nama_pegawai, created_by) => {
+  const create = (no_pegawai, kata_sandi, email, nama_pegawai, created_by) => {
     const query = db.one(
-      "INSERT INTO pengguna (id_pegawai, no_pegawai, kata_sandi, email, hak_akses, nama_lengkap, status_pengguna, is_deleted, created_by) VALUES ($1, $2, $3, $4, 1,  $5, 0, 0, $6) RETURNING id",
-      [id_pegawai, no_pegawai, kata_sandi, email, nama_pegawai, created_by]
+      "INSERT INTO pengguna (no_pegawai, kata_sandi, email, hak_akses, nama_lengkap, status_pengguna, is_deleted, created_by) VALUES ($1, $2, $3, 1,  $4, 0, 0, $5) RETURNING id",
+      [no_pegawai, kata_sandi, email, nama_pegawai, created_by]
     );
 
     return query;
