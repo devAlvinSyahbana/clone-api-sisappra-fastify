@@ -81,24 +81,20 @@ const pengguna = (db) => {
 
   const update = (
     id,
-    no_pegawai,
     kata_sandi,
-    email,
     hak_akses,
     status_pengguna,
-    nama_lengkap,
     updated_by,
+    foto,
   ) => {
     db.one(
-      "UPDATE pengguna SET no_pegawai = $1, kata_sandi =$2, email = $3, hak_akses = $4, status_pengguna = $5, nama_lengkap = $6, updated_by = $7, updated_at = CURRENT_TIMESTAMP WHERE id = $8 RETURNING id",
+      "UPDATE pengguna SET kata_sandi =$1, hak_akses = $2, status_pengguna = $3, updated_by = $4, foto = $5, updated_at = CURRENT_TIMESTAMP WHERE id = $6 RETURNING id",
       [
-        no_pegawai,
         kata_sandi,
-        email,
         hak_akses,
         status_pengguna,
-        nama_lengkap,
         updated_by,
+        foto,
         id,
       ]
     );
