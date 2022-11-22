@@ -50,9 +50,11 @@ module.exports = async function (fastify, opts) {
   // ~ jangan dihapus commentnya
   // ^ find
   fastify.get(
-    "/find", {
+    "/find",
+    {
       schema: {
-        description: "Endpoint ini digunakan untuk mengambil seluruh data kepegawaian berstatus PNS, PTT, PJLP",
+        description:
+          "Endpoint ini digunakan untuk mengambil seluruh data kepegawaian berstatus PNS, PTT, PJLP",
         tags: ["endpoint kepegawaian"],
         querystring: {
           type: "object",
@@ -138,14 +140,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        limit,
-        offset,
-        status,
-        nama,
-        nrk,
-        nopegawai
-      } = request.query;
+      const { limit, offset, status, nama, nrk, nopegawai } = request.query;
       let exec = null;
       let totalDt = 0;
       let qwhere = "";
@@ -162,17 +157,13 @@ module.exports = async function (fastify, opts) {
               qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nopegawai}%'`;
             }
             exec = await fastify.kepegawaian_pns.filter(limit, offset, qwhere);
-            const {
-              total
-            } = await fastify.kepegawaian_pns.countAllFilter(
+            const { total } = await fastify.kepegawaian_pns.countAllFilter(
               qwhere
             );
             totalDt = total;
           } else {
             exec = await fastify.kepegawaian_pns.find(limit, offset);
-            const {
-              total
-            } = await fastify.kepegawaian_pns.countAll();
+            const { total } = await fastify.kepegawaian_pns.countAll();
             totalDt = total;
           }
         } else {
@@ -192,9 +183,7 @@ module.exports = async function (fastify, opts) {
               status,
               qwhere
             );
-            const {
-              total
-            } = await fastify.kepegawaian_non_pns.countAll(
+            const { total } = await fastify.kepegawaian_non_pns.countAll(
               status
             );
             totalDt = total;
@@ -204,9 +193,7 @@ module.exports = async function (fastify, opts) {
               offset,
               status
             );
-            const {
-              total
-            } = await fastify.kepegawaian_non_pns.countAll(
+            const { total } = await fastify.kepegawaian_non_pns.countAll(
               status
             );
             totalDt = total;
@@ -224,17 +211,13 @@ module.exports = async function (fastify, opts) {
             qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nopegawai}%'`;
           }
           exec = await fastify.kepegawaian_pns.filter(limit, offset, qwhere);
-          const {
-            total
-          } = await fastify.kepegawaian_pns.countAllFilter(
+          const { total } = await fastify.kepegawaian_pns.countAllFilter(
             qwhere
           );
           totalDt = total;
         } else {
           exec = await fastify.kepegawaian_pns.find(limit, offset);
-          const {
-            total
-          } = await fastify.kepegawaian_pns.countAll();
+          const { total } = await fastify.kepegawaian_pns.countAll();
           totalDt = total;
         }
       }
@@ -263,9 +246,11 @@ module.exports = async function (fastify, opts) {
 
   // ^ find One
   fastify.get(
-    "/filter-rekapitulasi-pejabat-struktural", {
+    "/filter-rekapitulasi-pejabat-struktural",
+    {
       schema: {
-        description: "Endpoint ini digunakan untuk memfilter data Rekapitulasi Pejabat Struktural",
+        description:
+          "Endpoint ini digunakan untuk memfilter data Rekapitulasi Pejabat Struktural",
         tags: ["endpoint rekapitulasi pegawai pejabat"],
         querystring: {
           type: "object",
@@ -287,14 +272,14 @@ module.exports = async function (fastify, opts) {
             nrk: {
               type: "string",
             },
-            kecamatan_seksi: {
-              type: "string",
+            bidang_wilayah: {
+              type: "number",
             },
-            kelurahan: {
-              type: "string",
+            pelaksana: {
+              type: "number",
             },
             jabatan: {
-              type: "string",
+              type: "number",
             },
           },
           required: ["limit", "offset"],
@@ -315,6 +300,9 @@ module.exports = async function (fastify, opts) {
                 items: {
                   type: "object",
                   properties: {
+                    row_number: {
+                      type: "number",
+                    },
                     id: {
                       type: "number",
                     },
@@ -350,8 +338,8 @@ module.exports = async function (fastify, opts) {
         offset,
         nama,
         nrk,
-        kecamatan_seksi,
-        kelurahan,
+        bidang_wilayah,
+        pelaksana,
         jabatan,
         nip,
       } = request.query;
@@ -359,31 +347,31 @@ module.exports = async function (fastify, opts) {
       let totalDt = 0;
       let qwhere = "";
       if (nama) {
-        qwhere += ` AND kpns.nama ILIKE '%${nama}%'`;
+        qwhere += ` AND kp.nama ILIKE '%${nama}%'`;
       }
       if (nrk) {
-        qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nrk}%'`;
+        qwhere += ` AND kp.kepegawaian_nrk ILIKE '%${nrk}%'`;
       }
       if (nip) {
-        qwhere += ` AND kpns.kepegawaian_nip ILIKE '%${nip}%'`;
+        qwhere += ` AND kp.kepegawaian_nip ILIKE '%${nip}%'`;
       }
-      if (kecamatan_seksi) {
-        qwhere += ` AND kpns.kepegawaian_subbag_seksi_kecamatan ILIKE '%${kecamatan_seksi}%'`;
+
+      if (bidang_wilayah) {
+        qwhere += ` AND kp.kepegawaian_tempat_tugas = ${bidang_wilayah}`;
       }
       if (jabatan) {
-        qwhere += ` AND kpns.kepegawaian_jabatan ILIKE '%${jabatan}%'`;
+        qwhere += ` AND kp.kepegawaian_jabatan = ${jabatan}`;
       }
-      if (kelurahan) {
-        qwhere += ` AND kpns.kepegawaian_kelurahan ILIKE '%${kelurahan}%'`;
+      if (pelaksana) {
+        qwhere += ` AND kp.kepegawaian_subbag_seksi_kecamatan = ${pelaksana}`;
       }
       exec = await fastify.kepegawaian_pns.filterRekapitulasiPejabatStruktural(
         limit,
         offset,
         qwhere
       );
-      const {
-        total
-      } = await fastify.kepegawaian_pns.countAllFilter(qwhere);
+      const { total } =
+        await fastify.kepegawaian_pns.countAllFilterPejabatStruktural(qwhere);
       totalDt = total;
       try {
         if (exec) {
@@ -409,9 +397,11 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/findone/:id/:status", {
+    "/findone/:id/:status",
+    {
       schema: {
-        description: "Endpoint ini digunakan untuk mengambil detail data pribadi & kepegawaian berstatus PNS, PTT, PJLP berdasarkan id",
+        description:
+          "Endpoint ini digunakan untuk mengambil detail data pribadi & kepegawaian berstatus PNS, PTT, PJLP berdasarkan id",
         tags: ["endpoint kepegawaian"],
         params: {
           description: "Parameter yang digunakan",
@@ -663,10 +653,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        id,
-        status
-      } = request.params;
+      const { id, status } = request.params;
       let exec = null;
       if (!status || status == "PNS") {
         exec = await fastify.kepegawaian_pns.findone(id);
@@ -698,9 +685,11 @@ module.exports = async function (fastify, opts) {
 
   // ^ find keluarga by id status
   fastify.get(
-    "/find-data-keluarga/:id/:status", {
+    "/find-data-keluarga/:id/:status",
+    {
       schema: {
-        description: "Endpoint ini digunakan untuk mengambil data keluarga dari salah satu pegawai berstatus PNS, PTT, PJLP berdasarkan id & status",
+        description:
+          "Endpoint ini digunakan untuk mengambil data keluarga dari salah satu pegawai berstatus PNS, PTT, PJLP berdasarkan id & status",
         tags: ["endpoint kepegawaian"],
         params: {
           description: "Parameter yang digunakan",
@@ -757,10 +746,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        id,
-        status
-      } = request.params;
+      const { id, status } = request.params;
       let exec = null;
       if (!status || status == "PNS") {
         exec = await fastify.kepegawaian_pns.findKeluarga(id);
@@ -792,9 +778,11 @@ module.exports = async function (fastify, opts) {
 
   // ^ find pendidikan by id status
   fastify.get(
-    "/find-data-pendidikan/:id/:status", {
+    "/find-data-pendidikan/:id/:status",
+    {
       schema: {
-        description: "Endpoint ini digunakan untuk mengambil data pendidikan dari salah satu pegawai berstatus PNS, PTT, PJLP berdasarkan id & status",
+        description:
+          "Endpoint ini digunakan untuk mengambil data pendidikan dari salah satu pegawai berstatus PNS, PTT, PJLP berdasarkan id & status",
         tags: ["endpoint kepegawaian"],
         params: {
           description: "Parameter yang digunakan",
@@ -857,10 +845,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        id,
-        status
-      } = request.params;
+      const { id, status } = request.params;
       let exec = null;
       if (!status || status == "PNS") {
         exec = await fastify.kepegawaian_pns.findPendidikan(id);
@@ -892,9 +877,11 @@ module.exports = async function (fastify, opts) {
 
   // ^ count keluarga by id status
   fastify.get(
-    "/count-keluarga/:id/:status", {
+    "/count-keluarga/:id/:status",
+    {
       schema: {
-        description: "Endpoint ini digunakan untuk menghitung data keluarga dari salah satu pegawai berstatus PNS, PTT, PJLP berdasarkan id & status",
+        description:
+          "Endpoint ini digunakan untuk menghitung data keluarga dari salah satu pegawai berstatus PNS, PTT, PJLP berdasarkan id & status",
         tags: ["endpoint kepegawaian"],
         params: {
           description: "Parameter yang digunakan",
@@ -933,10 +920,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        id,
-        status
-      } = request.params;
+      const { id, status } = request.params;
       let exec = null;
       if (!status || status == "PNS") {
         exec = await fastify.kepegawaian_pns.countKeluarga(id);
@@ -968,9 +952,11 @@ module.exports = async function (fastify, opts) {
 
   // ^ find pendidikan terakhir by id status
   fastify.get(
-    "/get-pendidikan-terakhir/:id/:status", {
+    "/get-pendidikan-terakhir/:id/:status",
+    {
       schema: {
-        description: "Endpoint ini digunakan untuk mendapatkan data pendidikan terakhir dari salah satu pegawai berstatus PNS, PTT, PJLP berdasarkan id & status",
+        description:
+          "Endpoint ini digunakan untuk mendapatkan data pendidikan terakhir dari salah satu pegawai berstatus PNS, PTT, PJLP berdasarkan id & status",
         tags: ["endpoint kepegawaian"],
         params: {
           description: "Parameter yang digunakan",
@@ -1009,10 +995,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        id,
-        status
-      } = request.params;
+      const { id, status } = request.params;
       let exec = null;
       if (!status || status == "PNS") {
         exec = await fastify.kepegawaian_pns.findPendidikanTerakhir(id);
@@ -1043,9 +1026,11 @@ module.exports = async function (fastify, opts) {
 
   // ^ autocomplete
   fastify.get(
-    "/auto-search-pegawai", {
+    "/auto-search-pegawai",
+    {
       schema: {
-        description: "Endpoint ini digunakan untuk autocomplete kepegawaian berstatus PNS, PTT, PJLP",
+        description:
+          "Endpoint ini digunakan untuk autocomplete kepegawaian berstatus PNS, PTT, PJLP",
         tags: ["endpoint kepegawaian"],
         querystring: {
           type: "object",
@@ -1096,10 +1081,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        status,
-        nomor
-      } = request.query;
+      const { status, nomor } = request.query;
       let exec = null;
       let qwhere = "";
       if (status === "PNS") {
@@ -1173,9 +1155,11 @@ module.exports = async function (fastify, opts) {
 
   // ^ update by id status
   fastify.put(
-    "/update/:id/:status", {
+    "/update/:id/:status",
+    {
       schema: {
-        description: "Endpoint ini digunakan untuk mengubah data kepegawaian dari salah satu pegawai berstatus PNS, PTT, PJLP berdasarkan id & status",
+        description:
+          "Endpoint ini digunakan untuk mengubah data kepegawaian dari salah satu pegawai berstatus PNS, PTT, PJLP berdasarkan id & status",
         tags: ["endpoint kepegawaian"],
         params: {
           description: "update endpoint kepegawaian by Id",
@@ -1412,10 +1396,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        id,
-        status
-      } = request.params;
+      const { id, status } = request.params;
       const {
         nama,
         tempat_lahir,
@@ -1552,8 +1533,10 @@ module.exports = async function (fastify, opts) {
 
   // ^ update file by id status
   fastify.put(
-    "/update-file/:id/:status", {
-      preHandler: upload.fields([{
+    "/update-file/:id/:status",
+    {
+      preHandler: upload.fields([
+        {
           name: "foto",
           maxCount: 1,
         },
@@ -1589,61 +1572,59 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       console.log("request.files", request.files);
-      const {
-        id
-      } = request.params;
+      const { id } = request.params;
 
       try {
         const kepegawaian_sk_pangkat_terakhir = request.files[
-            "kepegawaian_sk_pangkat_terakhir"
-          ] ?
-          await truePath(
-            request.files["kepegawaian_sk_pangkat_terakhir"][0].path
-          ) :
-          "";
+          "kepegawaian_sk_pangkat_terakhir"
+        ]
+          ? await truePath(
+              request.files["kepegawaian_sk_pangkat_terakhir"][0].path
+            )
+          : "";
 
-        const kepegawaian_sk_pns = request.files["kepegawaian_sk_pns"] ?
-          await truePath(request.files["kepegawaian_sk_pns"][0].path) :
-          "";
-        const kepegawaian_sk_cpns = request.files["kepegawaian_sk_cpns"] ?
-          await truePath(request.files["kepegawaian_sk_cpns"][0].path) :
-          "";
+        const kepegawaian_sk_pns = request.files["kepegawaian_sk_pns"]
+          ? await truePath(request.files["kepegawaian_sk_pns"][0].path)
+          : "";
+        const kepegawaian_sk_cpns = request.files["kepegawaian_sk_cpns"]
+          ? await truePath(request.files["kepegawaian_sk_cpns"][0].path)
+          : "";
         const kepegawaian_diklat_pol_pp_ppns_file_sertifikat = request.files[
-            "kepegawaian_diklat_pol_pp_ppns_file_sertifikat"
-          ] ?
-          await truePath(
-            request.files["kepegawaian_diklat_pol_pp_ppns_file_sertifikat"][0]
-            .path
-          ) :
-          "";
+          "kepegawaian_diklat_pol_pp_ppns_file_sertifikat"
+        ]
+          ? await truePath(
+              request.files["kepegawaian_diklat_pol_pp_ppns_file_sertifikat"][0]
+                .path
+            )
+          : "";
         const kepegawaian_diklat_pol_pp_strutural_file_sertifikat = request
-          .files["kepegawaian_diklat_pol_pp_strutural_file_sertifikat"] ?
-          await truePath(
-            request.files[
-              "kepegawaian_diklat_pol_pp_strutural_file_sertifikat"
-            ][0].path
-          ) :
-          "";
+          .files["kepegawaian_diklat_pol_pp_strutural_file_sertifikat"]
+          ? await truePath(
+              request.files[
+                "kepegawaian_diklat_pol_pp_strutural_file_sertifikat"
+              ][0].path
+            )
+          : "";
         const kepegawaian_diklat_pol_pp_dasar_file_sertifikat = request.files[
-            "kepegawaian_diklat_pol_pp_dasar_file_sertifikat"
-          ] ?
-          await truePath(
-            request.files[
-              "kepegawaian_diklat_pol_pp_dasar_file_sertifikat"
-            ][0].path
-          ) :
-          "";
+          "kepegawaian_diklat_pol_pp_dasar_file_sertifikat"
+        ]
+          ? await truePath(
+              request.files[
+                "kepegawaian_diklat_pol_pp_dasar_file_sertifikat"
+              ][0].path
+            )
+          : "";
         const kepegawaian_diklat_fungsional_pol_pp_file_sertifikat = request
-          .files["kepegawaian_diklat_fungsional_pol_pp_file_sertifikat"] ?
-          await truePath(
-            request.files[
-              "kepegawaian_diklat_fungsional_pol_pp_file_sertifikat"
-            ][0].path
-          ) :
-          "";
-        const foto = request.files["foto"] ?
-          await truePath(request.files["foto"][0].path) :
-          "";
+          .files["kepegawaian_diklat_fungsional_pol_pp_file_sertifikat"]
+          ? await truePath(
+              request.files[
+                "kepegawaian_diklat_fungsional_pol_pp_file_sertifikat"
+              ][0].path
+            )
+          : "";
+        const foto = request.files["foto"]
+          ? await truePath(request.files["foto"][0].path)
+          : "";
         // await fastify.kepegawaian_pns.updateFile(
         //   id,
         //   foto,
@@ -1721,9 +1702,11 @@ module.exports = async function (fastify, opts) {
   /* ----------------------------------- rekapitulasi ---------------------------------- */
 
   fastify.delete(
-    "/delete-rekapitulasi-pegawai/:id", {
+    "/delete-rekapitulasi-pegawai/:id",
+    {
       schema: {
-        description: "This is an endpoint for DELETING an existing endpoint data rekapitulasi pegawai pejabat struktural.",
+        description:
+          "This is an endpoint for DELETING an existing endpoint data rekapitulasi pegawai pejabat struktural.",
         tags: ["endpoint rekapitulasi pegawai pejabat"],
         params: {
           description: "endpoint rekapitulasi pegawai pejabat struktural by Id",
@@ -1735,7 +1718,8 @@ module.exports = async function (fastify, opts) {
           },
         },
         body: {
-          description: "Payload for deleted data endpoint rekapitulasi pegawai pejabat struktural",
+          description:
+            "Payload for deleted data endpoint rekapitulasi pegawai pejabat struktural",
           type: "object",
           properties: {
             deleted_by: {
@@ -1760,12 +1744,8 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        id
-      } = request.params;
-      const {
-        deleted_by
-      } = request.body;
+      const { id } = request.params;
+      const { deleted_by } = request.body;
 
       try {
         await fastify.kepegawaian_pns.del(id, deleted_by);
@@ -1783,7 +1763,8 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/rekapitulasi-jumlah-pegawai-polpp", {
+    "/rekapitulasi-jumlah-pegawai-polpp",
+    {
       schema: {
         description: "This is an endpoint for fetching a jumlah pegawai polpp",
         tags: ["endpoint rekapitulasi pegawai pejabat"],
@@ -1848,10 +1829,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        tempat_tugas,
-        seksi_kecamatan
-      } = request.query;
+      const { tempat_tugas, seksi_kecamatan } = request.query;
       const exec = await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp(
         tempat_tugas,
         seksi_kecamatan
@@ -1880,9 +1858,11 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/rekapitulasi-jumlah-pegawai-polpp-by-pendidikan", {
+    "/rekapitulasi-jumlah-pegawai-polpp-by-pendidikan",
+    {
       schema: {
-        description: "This is an endpoint for fetching a jumlah pegawai polpp by pendidikan",
+        description:
+          "This is an endpoint for fetching a jumlah pegawai polpp by pendidikan",
         tags: ["endpoint rekapitulasi pegawai pejabat"],
         querystring: {
           description: "Find one jumlah pegawai polpp",
@@ -1938,11 +1918,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        tempat_tugas,
-        seksi_kecamatan,
-        kelurahan
-      } = request.query;
+      const { tempat_tugas, seksi_kecamatan, kelurahan } = request.query;
       const exec =
         await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_pendidikan(
           tempat_tugas,
@@ -1983,9 +1959,11 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/rekapitulasi-jumlah-pegawai-polpp-by-golongan", {
+    "/rekapitulasi-jumlah-pegawai-polpp-by-golongan",
+    {
       schema: {
-        description: "This is an endpoint for fetching a jumlah pegawai polpp by golongan",
+        description:
+          "This is an endpoint for fetching a jumlah pegawai polpp by golongan",
         tags: ["endpoint rekapitulasi pegawai pejabat"],
         querystring: {
           description: "Find one jumlah pegawai polpp",
@@ -2041,11 +2019,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        tempat_tugas,
-        seksi_kecamatan,
-        kelurahan
-      } = request.query;
+      const { tempat_tugas, seksi_kecamatan, kelurahan } = request.query;
       const exec =
         await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_golongan(
           tempat_tugas,
@@ -2086,9 +2060,11 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/rekapitulasi-jumlah-pegawai-polpp-by-diklat", {
+    "/rekapitulasi-jumlah-pegawai-polpp-by-diklat",
+    {
       schema: {
-        description: "This is an endpoint for fetching a jumlah pegawai polpp by diklat",
+        description:
+          "This is an endpoint for fetching a jumlah pegawai polpp by diklat",
         tags: ["endpoint rekapitulasi pegawai pejabat"],
         querystring: {
           description: "Find one jumlah pegawai polpp",
@@ -2142,11 +2118,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        tempat_tugas,
-        seksi_kecamatan,
-        kelurahan
-      } = request.query;
+      const { tempat_tugas, seksi_kecamatan, kelurahan } = request.query;
       const exec =
         await fastify.kepegawaian_rekapitulasi.jumlah_pegawai_polpp_by_diklat(
           tempat_tugas,
@@ -2177,9 +2149,11 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/rekapitulasi-pegawai-jft/find", {
+    "/rekapitulasi-pegawai-jft/find",
+    {
       schema: {
-        description: "This is an endpoint for fetching a jumlah pegawai polpp by golongan",
+        description:
+          "This is an endpoint for fetching a jumlah pegawai polpp by golongan",
         tags: ["endpoint rekapitulasi pegawai pejabat"],
         querystring: {
           description: "Find one jumlah pegawai polpp",
@@ -2257,16 +2231,8 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        limit,
-        offset,
-        nama,
-        nrk,
-        bidang_wilayah,
-        pelaksana,
-        jabatan
-      } =
-      request.query;
+      const { limit, offset, nama, nrk, bidang_wilayah, pelaksana, jabatan } =
+        request.query;
       const exec = await fastify.kepegawaian_rekapitulasi.find_rekapitulasi_jft(
         limit,
         offset,
@@ -2276,16 +2242,14 @@ module.exports = async function (fastify, opts) {
         pelaksana,
         jabatan
       );
-      const {
-        count
-      } =
-      await fastify.kepegawaian_rekapitulasi.count_rekapitulasi_jft(
-        nama,
-        nrk,
-        bidang_wilayah,
-        pelaksana,
-        jabatan
-      );
+      const { count } =
+        await fastify.kepegawaian_rekapitulasi.count_rekapitulasi_jft(
+          nama,
+          nrk,
+          bidang_wilayah,
+          pelaksana,
+          jabatan
+        );
       let total = count;
 
       try {
@@ -2312,9 +2276,11 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/rekapitulasi-pegawai-jft/unduh", {
+    "/rekapitulasi-pegawai-jft/unduh",
+    {
       schema: {
-        description: "This is an endpoint for fetching a jumlah pegawai polpp by golongan",
+        description:
+          "This is an endpoint for fetching a jumlah pegawai polpp by golongan",
         tags: ["endpoint rekapitulasi pegawai pejabat"],
         querystring: {
           description: "Find one jumlah pegawai polpp",
@@ -2346,13 +2312,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        nama,
-        nrk,
-        bidang_wilayah,
-        pelaksana,
-        jabatan
-      } = request.query;
+      const { nama, nrk, bidang_wilayah, pelaksana, jabatan } = request.query;
       let headerData = [];
       let data = [];
       try {
@@ -2416,9 +2376,11 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.put(
-    "/update-status-kenaikan-pangkat/:id", {
+    "/update-status-kenaikan-pangkat/:id",
+    {
       schema: {
-        description: "This is an endpoint for updating an existing status kenaikan pangkat",
+        description:
+          "This is an endpoint for updating an existing status kenaikan pangkat",
         tags: ["endpoint rekapitulasi pegawai pejabat"],
         params: {
           description: "update status kenaikan pangkat by Id",
@@ -2458,13 +2420,8 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        id
-      } = request.params;
-      const {
-        status_kenaikan_pangkat,
-        updated_by
-      } = request.body;
+      const { id } = request.params;
+      const { status_kenaikan_pangkat, updated_by } = request.body;
 
       try {
         await fastify.kepegawaian_rekapitulasi.update_rekapitulasi_kenaikan_pangkat(
@@ -2486,9 +2443,11 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/rekapitulasi-pegawai-naik-pangkat/find", {
+    "/rekapitulasi-pegawai-naik-pangkat/find",
+    {
       schema: {
-        description: "This is an endpoint for fetching a rekapitulasi pegawai naik pangkat",
+        description:
+          "This is an endpoint for fetching a rekapitulasi pegawai naik pangkat",
         tags: ["endpoint rekapitulasi pegawai pejabat"],
         querystring: {
           description: "Find one jumlah pegawai polpp",
@@ -2627,20 +2586,18 @@ module.exports = async function (fastify, opts) {
           id_jabatan_kelurahan,
           tahun_jnp
         );
-      const {
-        count
-      } =
-      await fastify.kepegawaian_rekapitulasi.count_rekapitulasi_kenaikan_pangkat(
-        nama,
-        nrk,
-        nip,
-        id_pangkat,
-        id_status_kenaikan_pangkat,
-        id_tempat_tugas,
-        id_seksi_kecamatan,
-        id_jabatan_kelurahan,
-        tahun_jnp
-      );
+      const { count } =
+        await fastify.kepegawaian_rekapitulasi.count_rekapitulasi_kenaikan_pangkat(
+          nama,
+          nrk,
+          nip,
+          id_pangkat,
+          id_status_kenaikan_pangkat,
+          id_tempat_tugas,
+          id_seksi_kecamatan,
+          id_jabatan_kelurahan,
+          tahun_jnp
+        );
 
       try {
         if (exec) {
@@ -2666,7 +2623,8 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/rekapitulasi-pegawai-naik-pangkat/findone/:id", {
+    "/rekapitulasi-pegawai-naik-pangkat/findone/:id",
+    {
       schema: {
         description: "This is an endpoint for fetching a pegawai",
         tags: ["endpoint rekapitulasi pegawai pejabat"],
@@ -2741,9 +2699,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        id
-      } = request.params;
+      const { id } = request.params;
       const exec =
         await fastify.kepegawaian_rekapitulasi.findone_rekapitulasi_kenaikan_pangkat(
           id
@@ -2772,9 +2728,11 @@ module.exports = async function (fastify, opts) {
   );
 
   fastify.get(
-    "/rekapitulasi-pegawai-naik-pangkat/unduh", {
+    "/rekapitulasi-pegawai-naik-pangkat/unduh",
+    {
       schema: {
-        description: "This is an endpoint for fetching a rekapitulasi pegawai naik pangkat",
+        description:
+          "This is an endpoint for fetching a rekapitulasi pegawai naik pangkat",
         tags: ["endpoint rekapitulasi pegawai pejabat"],
         querystring: {
           description: "Find one jumlah pegawai polpp",
@@ -2911,7 +2869,8 @@ module.exports = async function (fastify, opts) {
 
   // create keluarga PNS
   fastify.post(
-    "/create-keluarga-PNS", {
+    "/create-keluarga-PNS",
+    {
       schema: {
         description: "This is an endpoint for creating data keluarga pns",
         tags: ["endpoint kepegawaian"],
@@ -2991,9 +2950,7 @@ module.exports = async function (fastify, opts) {
         id_pegawai,
       } = request.body;
       try {
-        const {
-          id
-        } = await fastify.kepegawaian_pns.createKeluargaPNS(
+        const { id } = await fastify.kepegawaian_pns.createKeluargaPNS(
           hubungan,
           nama,
           tempat_lahir,
@@ -3019,7 +2976,8 @@ module.exports = async function (fastify, opts) {
 
   // update keluarga PNS
   fastify.put(
-    "/update-keluarga-PNS/:id", {
+    "/update-keluarga-PNS/:id",
+    {
       schema: {
         description: "This is an endpoint for updating data keluarga pns",
         tags: ["endpoint kepegawaian"],
@@ -3073,9 +3031,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        id
-      } = request.params;
+      const { id } = request.params;
       const {
         hubungan,
         nama,
@@ -3109,7 +3065,8 @@ module.exports = async function (fastify, opts) {
 
   // delete keluarga PNS
   fastify.delete(
-    "/delete-keluarga-PNS/:id", {
+    "/delete-keluarga-PNS/:id",
+    {
       schema: {
         description: "This is an endpoint for deleting keluarga pns",
         tags: ["endpoint kepegawaian"],
@@ -3139,9 +3096,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        id
-      } = request.params;
+      const { id } = request.params;
       try {
         await fastify.kepegawaian_pns.delKelPNS(id, "");
         reply.send({
@@ -3159,7 +3114,8 @@ module.exports = async function (fastify, opts) {
 
   // create keluarga non pns
   fastify.post(
-    "/create-keluarga-non-PNS", {
+    "/create-keluarga-non-PNS",
+    {
       schema: {
         description: "This is an endpoint for creating data keluarga non pns",
         tags: ["endpoint kepegawaian"],
@@ -3239,9 +3195,7 @@ module.exports = async function (fastify, opts) {
         id_pegawai,
       } = request.body;
       try {
-        const {
-          id
-        } = await fastify.kepegawaian_non_pns.createKeluargaNonPNS(
+        const { id } = await fastify.kepegawaian_non_pns.createKeluargaNonPNS(
           hubungan,
           nama,
           tempat_lahir,
@@ -3267,7 +3221,8 @@ module.exports = async function (fastify, opts) {
 
   //update keluarga non pns
   fastify.put(
-    "/update-keluarga-non-PNS/:id", {
+    "/update-keluarga-non-PNS/:id",
+    {
       schema: {
         description: "This is an endpoint for updating data keluarga non pns",
         tags: ["endpoint kepegawaian"],
@@ -3321,9 +3276,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        id
-      } = request.params;
+      const { id } = request.params;
       const {
         hubungan,
         nama,
@@ -3357,7 +3310,8 @@ module.exports = async function (fastify, opts) {
 
   //delete keluarga non pns
   fastify.delete(
-    "/delete-keluarga-non-PNS/:id", {
+    "/delete-keluarga-non-PNS/:id",
+    {
       schema: {
         description: "This is an endpoint for deleting keluarga non pns",
         tags: ["endpoint kepegawaian"],
@@ -3387,9 +3341,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        id
-      } = request.params;
+      const { id } = request.params;
       try {
         await fastify.kepegawaian_non_pns.delKelNonPNS(id, "");
         reply.send({
@@ -3407,7 +3359,8 @@ module.exports = async function (fastify, opts) {
 
   //create pendidikan pns
   fastify.post(
-    "/create-pendidikan-PNS", {
+    "/create-pendidikan-PNS",
+    {
       schema: {
         description: "This is an endpoint for creating data pendidikan pns",
         tags: ["endpoint kepegawaian"],
@@ -3477,9 +3430,7 @@ module.exports = async function (fastify, opts) {
         id_pegawai,
       } = request.body;
       try {
-        const {
-          id
-        } = await fastify.kepegawaian_pns.createPendidikanPNS(
+        const { id } = await fastify.kepegawaian_pns.createPendidikanPNS(
           jenis_pendidikan,
           nama_sekolah,
           nomor_ijazah,
@@ -3507,7 +3458,8 @@ module.exports = async function (fastify, opts) {
 
   //update pendidikan pns
   fastify.put(
-    "/update-pendidikan-PNS/:id", {
+    "/update-pendidikan-PNS/:id",
+    {
       schema: {
         description: "This is an endpoint for updating data pendidikan pns",
         tags: ["endpoint kepegawaian"],
@@ -3567,9 +3519,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        id
-      } = request.params;
+      const { id } = request.params;
       const {
         jenis_pendidikan,
         nama_sekolah,
@@ -3607,7 +3557,8 @@ module.exports = async function (fastify, opts) {
 
   //deleted pendidikan pns
   fastify.delete(
-    "/delete-pendidikan-PNS/:id", {
+    "/delete-pendidikan-PNS/:id",
+    {
       schema: {
         description: "This is an endpoint for deleting pendidikan pns",
         tags: ["endpoint kepegawaian"],
@@ -3637,9 +3588,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        id
-      } = request.params;
+      const { id } = request.params;
       try {
         await fastify.kepegawaian_pns.delPendidikanPNS(id, "");
         reply.send({
@@ -3657,7 +3606,8 @@ module.exports = async function (fastify, opts) {
 
   //create pendidikan non pns
   fastify.post(
-    "/create-pendidikan-non-PNS", {
+    "/create-pendidikan-non-PNS",
+    {
       schema: {
         description: "This is an endpoint for creating data pendidikan non pns",
         tags: ["endpoint kepegawaian"],
@@ -3751,9 +3701,7 @@ module.exports = async function (fastify, opts) {
         id_pegawai,
       } = request.body;
       try {
-        const {
-          id
-        } = await fastify.kepegawaian_non_pns.createPendidikanNonPNS(
+        const { id } = await fastify.kepegawaian_non_pns.createPendidikanNonPNS(
           jenis_pendidikan,
           nama_sekolah,
           nomor_ijazah,
@@ -3781,7 +3729,8 @@ module.exports = async function (fastify, opts) {
 
   //updated pendidikan non pns
   fastify.put(
-    "/update-pendidikan-non-PNS/:id", {
+    "/update-pendidikan-non-PNS/:id",
+    {
       schema: {
         description: "This is an endpoint for updating data pendidikan non pns",
         tags: ["endpoint kepegawaian"],
@@ -3841,9 +3790,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        id
-      } = request.params;
+      const { id } = request.params;
       const {
         jenis_pendidikan,
         nama_sekolah,
@@ -3881,7 +3828,8 @@ module.exports = async function (fastify, opts) {
 
   //deleted pendidikan non pns
   fastify.delete(
-    "/delete-pendidikan-non-PNS/:id", {
+    "/delete-pendidikan-non-PNS/:id",
+    {
       schema: {
         description: "This is an endpoint for deleting pendidikan non pns",
         tags: ["endpoint kepegawaian"],
@@ -3911,9 +3859,7 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const {
-        id
-      } = request.params;
+      const { id } = request.params;
       try {
         await fastify.kepegawaian_non_pns.delPendidikanNonPNS(id, "");
         reply.send({
