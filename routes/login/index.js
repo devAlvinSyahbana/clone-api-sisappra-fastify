@@ -154,34 +154,43 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { no_pegawai, kata_sandi } = request.body;
-      const exec = await fastify.login.findone_sign_in(no_pegawai);
-
-      const objres = {
-        id: exec.id,
-        id_pegawai: exec.id_pegawai,
-        no_pegawai: exec.no_pegawai,
-        email: exec.email,
-        hak_akses: exec.hak_akses,
-        status_pengguna: exec.status_pengguna,
-      };
 
       try {
-        if (await fastify.bcrypt.compare(kata_sandi, exec.kata_sandi)) {
-          try {
-            let token = fastify.jwt.sign({ foo: "bar" });
-            await fastify.login.create_token(exec.id, token);
+        const { jmlh } = await fastify.login.findone_no_pegawai(no_pegawai);
+        
+        if (parseInt(jmlh) != 0) {
+          const value = await fastify.login.findone_pegawai(no_pegawai);
+          const exec = await fastify.login.findone_sign_in(no_pegawai);
+  
+          const objres = {
+            id: value.id,
+            id_pegawai: exec.id_pegawai,
+            no_pegawai: exec.no_pegawai,
+            email: exec.email,
+            hak_akses: exec.hak_akses,
+            status_pengguna: exec.status_pengguna,
+          };
 
-            reply.send({
-              message: "success",
-              code: 200,
-              data: objres,
-              api_token: token,
-            });
-          } catch (error) {
-            reply.send({ message: error.message, code: 500 });
+          if (await fastify.bcrypt.compare(kata_sandi, exec.kata_sandi)) {
+            try {
+              let token = fastify.jwt.sign({ foo: "bar" });
+              await fastify.login.create_token(exec.id, token);
+  
+              reply.send({
+                message: "success",
+                code: 200,
+                data: objres,
+                api_token: token,
+              });
+            } catch (error) {
+              reply.send({ message: error.message, code: 500 });
+            }
+
+          } else {
+            reply.send({ message: "kata sandi salah!", code: 204 });
           }
-        } else {
-          reply.send({ message: "not allowed", code: 204 });
+        } else{
+          reply.send({ message: "pegawai tidak terdaftar!", code: 204 });       
         }
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -252,7 +261,7 @@ module.exports = async function (fastify, opts) {
           const exec = await fastify.login.findone_sign_in(no_pegawai);
 
           const objres = {
-            id: exec.id,
+            id: value.id,
             id_pegawai: exec.id_pegawai,
             no_pegawai: exec.no_pegawai,
             email: exec.email,
