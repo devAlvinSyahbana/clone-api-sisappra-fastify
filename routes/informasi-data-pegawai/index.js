@@ -1,11 +1,13 @@
 const kepegawaian_pns = require("../../services/kepegawaian_service/kepegawaian_pns");
 const kepegawaian_non_pns = require("../../services/kepegawaian_service/kepegawaian_non_pns");
+const kepegawaian_foto_full_body = require("../../services/kepegawaian_service/kepegawaian_foto_full_body");
 const multer = require("fastify-multer");
 const XLSX = require("xlsx");
 
 module.exports = async function (fastify, opts) {
   fastify.register(kepegawaian_pns);
   fastify.register(kepegawaian_non_pns);
+  fastify.register(kepegawaian_foto_full_body);
   //------------ Define the Storage to Store files------------
   var filename = "";
   const storage = multer.diskStorage({
@@ -454,6 +456,9 @@ module.exports = async function (fastify, opts) {
                   foto: {
                     type: "string",
                   },
+                  foto_full_body: {
+                    type: "string",
+                  },
                   kepegawaian_pangkat: {
                     type: "number",
                   },
@@ -481,6 +486,13 @@ module.exports = async function (fastify, opts) {
 
       try {
         if (exec) {
+          const get_full_body_photo =
+            await fastify.kepegawaian_foto_full_body.findone(
+              ` AND kflb.id_pegawai = ${id} AND kflb.status_pegawai = '${status}'`
+            );
+          if (get_full_body_photo) {
+            exec.foto_full_body = get_full_body_photo.path_foto;
+          }
           reply.send({
             message: "success",
             code: 200,
@@ -1457,6 +1469,10 @@ module.exports = async function (fastify, opts) {
           maxCount: 1,
         },
         {
+          name: "foto_full_body",
+          maxCount: 1,
+        },
+        {
           name: "kepegawaian_diklat_fungsional_pol_pp_file_sertifikat",
           maxCount: 1,
         },
@@ -1540,6 +1556,9 @@ module.exports = async function (fastify, opts) {
         const foto = request.files["foto"]
           ? await truePath(request.files["foto"][0].path)
           : "";
+        const foto_full_body = request.files["foto_full_body"]
+          ? await truePath(request.files["foto_full_body"][0].path)
+          : "";
 
         (await kepegawaian_sk_pangkat_terakhir) !== ""
           ? (vals += `kepegawaian_sk_pangkat_terakhir = '${kepegawaian_sk_pangkat_terakhir}', `)
@@ -1574,6 +1593,34 @@ module.exports = async function (fastify, opts) {
             message: "success",
             code: 200,
           });
+        } else {
+          if (foto_full_body !== "") {
+            const cek_data =
+              await fastify.kepegawaian_foto_full_body.countAllFilter(
+                ` AND kflb.id_pegawai = ${id} AND kflb.status_pegawai = '${status}'`
+              );
+            if (cek_data.total < 1) {
+              await fastify.kepegawaian_foto_full_body.createFile(
+                id,
+                status,
+                foto_full_body
+              );
+            } else {
+              const current_data =
+                await fastify.kepegawaian_foto_full_body.findone(
+                  ` AND kflb.id_pegawai = ${id} AND kflb.status_pegawai = '${status}'`
+                );
+              await fastify.kepegawaian_foto_full_body.updateFile(
+                current_data.id,
+                "",
+                `path_foto = '${foto_full_body}', `
+              );
+            }
+            reply.send({
+              message: "success",
+              code: 200,
+            });
+          }
         }
       } catch (error) {
         reply.send({
