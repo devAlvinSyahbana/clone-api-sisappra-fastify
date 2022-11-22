@@ -17,17 +17,16 @@ const kepegawaian = (db) => {
         return query;
     };
 
-
     const get_golongan = () => {
         const query = db.any(
-            "SELECT z.* from (SELECT kepegawaian_golongan as golongan, COUNT(*) FROM public.kepegawaian_pns GROUP BY kepegawaian_golongan union SELECT kepegawaian_golongan, COUNT(*) FROM public.kepegawaian_non_pns GROUP BY kepegawaian_golongan order by golongan asc) as z where z.golongan is not null"
+            "SELECT g.nama as golongan, z.count from (SELECT kepegawaian_golongan as golongan, COUNT(*) FROM public.kepegawaian_pns GROUP BY kepegawaian_golongan union SELECT kepegawaian_golongan, COUNT(*) FROM public.kepegawaian_non_pns GROUP BY kepegawaian_golongan ) as z left join master_golongan g on z.golongan = g.id  where z.golongan is not null order by g.urutan_tingkat_golongan desc"
         );
         return query;
     };
 
     const get_eselon = () => {
         const query = db.any(
-            "SELECT z.* from (SELECT kepegawaian_eselon as eselon, COUNT(*) FROM public.kepegawaian_pns GROUP BY kepegawaian_eselon union SELECT kepegawaian_eselon, COUNT(*) FROM public.kepegawaian_non_pns GROUP BY kepegawaian_eselon order by eselon asc) as z where z.eselon is not null"
+            "select e.nama as eselon, sum(t.count) as count from (SELECT kepegawaian_eselon as eselon, COUNT(*) FROM public.kepegawaian_pns GROUP BY kepegawaian_eselon union SELECT kepegawaian_eselon, COUNT(*) FROM public.kepegawaian_non_pns GROUP BY kepegawaian_eselon order by eselon asc) t left join master_eselon e on t.eselon = e.id group by e.nama, urutan_tingkat_eselon order by e.urutan_tingkat_eselon"
         );
         return query;
     };
