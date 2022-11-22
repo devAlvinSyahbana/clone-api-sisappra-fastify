@@ -486,11 +486,15 @@ module.exports = async function (fastify, opts) {
 
       try {
         if (exec) {
-          const get_full_body_photo =
-            await fastify.kepegawaian_foto_full_body.findone(
+          const cek_foto_full_body =
+            await fastify.kepegawaian_foto_full_body.countAllFilter(
               ` AND kflb.id_pegawai = ${id} AND kflb.status_pegawai = '${status}'`
             );
-          if (get_full_body_photo) {
+          if (cek_foto_full_body?.total > 0) {
+            const get_full_body_photo =
+              await fastify.kepegawaian_foto_full_body.findone(
+                ` AND kflb.id_pegawai = ${id} AND kflb.status_pegawai = '${status}'`
+              );
             exec.foto_full_body = get_full_body_photo.path_foto;
           }
           reply.send({
