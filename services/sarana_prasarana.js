@@ -135,12 +135,12 @@ const sarana_prasarana = (db) => {
   };
 
   return {
-    find_all_sarana_prasarana,
     findone,
     create,
     update,
     del,
     find_jenis_sarana_prasarana,
+    find_all_sarana_prasarana,
     find_status_sarana_prasarana,
     find_kondisi_sarana_prasarana,
     filter,

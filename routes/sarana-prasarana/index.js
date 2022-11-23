@@ -50,19 +50,7 @@ module.exports = async function (fastify, opts) {
               message: { type: "string" },
               code: { type: "string" },
               data: {
-                type: "object",
-                properties: {
-                  id: { type: "number" },
-                  jenis_sarana_prasarana_id: { type: "number" },
-                  jenis_sarana_prasarana_name: { type: "string" },
-                  status_sarana_prasarana_id: { type: "number" },
-                  status_sarana_prasarana_name: { type: "string" },
-                  jumlah: { type: "number" },
-                  kondisi_id: { type: "number" },
-                  kondisi_name: { type: "string" },
-                  keterangan: { type: "string" },
-                  dokumentasi: { type: "string" },
-                },
+                type: "array",
               },
             },
           },
@@ -140,7 +128,7 @@ module.exports = async function (fastify, opts) {
     }
   );
 
-  
+
 
   fastify.get(
     "/findjenis/:jenis_sarana_prasarana",
