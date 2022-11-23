@@ -42,7 +42,7 @@ const sarana_prasarana = (db) => {
   };
   const find_all_sarana_prasarana = () => {
     const query = db.any(
-      "SELECT jenis_sarana_prasarana.jenis_sarana_prasarana, status_sarana_prasarana.status_sarana_prasarana, jumlah, kondisi_sarana_prasarana.kondisi_sarana_prasarana, keterangan, file_dokumentasi FROM public.sarana_prasarana LEFT JOIN jenis_sarana_prasarana ON sarana_prasarana.jenis_sarana_prasarana = jenis_sarana_prasarana.id LEFT JOIN kondisi_sarana_prasarana ON sarana_prasarana.kondisi = kondisi_sarana_prasarana.id LEFT JOIN status_sarana_prasarana ON sarana_prasarana.status_sarana_prasarana = status_sarana_prasarana.id"
+      "SELECT jenis_sarana_prasarana.id, jenis_sarana_prasarana.jenis_sarana_prasarana, status_sarana_prasarana.status_sarana_prasarana, jumlah, kondisi_sarana_prasarana.kondisi_sarana_prasarana, keterangan, file_dokumentasi FROM public.sarana_prasarana LEFT JOIN jenis_sarana_prasarana ON sarana_prasarana.jenis_sarana_prasarana = jenis_sarana_prasarana.id LEFT JOIN kondisi_sarana_prasarana ON sarana_prasarana.kondisi = kondisi_sarana_prasarana.id LEFT JOIN status_sarana_prasarana ON sarana_prasarana.status_sarana_prasarana = status_sarana_prasarana.id"
     );
     return query;
   };
