@@ -32,6 +32,59 @@ module.exports = async function (fastify, opts) {
   }
 
   fastify.get(
+    "/all",
+    {
+      schema: {
+        description:
+          "This is an endpoint for fetching all sarana_prasarana",
+        tags: ["sarana-prasarana"],
+        params: {
+          description: "Find all sarana_prasarana",
+          type: "object",
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+              data: {
+                type: "object",
+                properties: {
+                  id: { type: "number" },
+                  jenis_sarana_prasarana_id: { type: "number" },
+                  jenis_sarana_prasarana_name: { type: "string" },
+                  status_sarana_prasarana_id: { type: "number" },
+                  status_sarana_prasarana_name: { type: "string" },
+                  jumlah: { type: "number" },
+                  kondisi_id: { type: "number" },
+                  kondisi_name: { type: "string" },
+                  keterangan: { type: "string" },
+                  dokumentasi: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+      const exec = await fastify.sarana_prasarana.find_all_sarana_prasarana();
+      try {
+        if (exec) {
+          reply.send({ message: "success", code: 200, data: exec });
+        } else {
+          reply.send({ message: "success", code: 204 });
+        }
+      } catch (error) {
+        reply.send({ message: error, code: 500 });
+      }
+    }
+  );
+
+  fastify.get(
     "/findone/:id",
     {
       schema: {
@@ -86,6 +139,8 @@ module.exports = async function (fastify, opts) {
       }
     }
   );
+
+  
 
   fastify.get(
     "/findjenis/:jenis_sarana_prasarana",
