@@ -5,7 +5,19 @@ const kepegawaian = (db) => {
 
     const get_wilayah_kepegawaian = () => {
         const query = db.any(
-            `SELECT tp.nama as wilayah, sum(jumlah) as count from 
+            `(SELECT 'PROVINSI' as wilayah, sum(jumlah) as count from 
+            (SELECT kp.kepegawaian_tempat_tugas as wilayah, COUNT(kp.kepegawaian_tempat_tugas) as jumlah 
+            FROM kepegawaian_pns kp
+            GROUP by kp.kepegawaian_tempat_tugas 
+            UNION ALL
+            SELECT knp.kepegawaian_tempat_tugas as wilayah, COUNT(knp.kepegawaian_tempat_tugas) as jumlah
+            FROM kepegawaian_non_pns knp 
+            GROUP BY knp.kepegawaian_tempat_tugas ) as z 
+            LEFT JOIN master_tempat_pelaksanaan tp on z.wilayah = tp.id 
+            WHERE tp.kategori = 'Bidang'
+            group by tp.kategori)
+            union all
+            (SELECT tp.nama as wilayah, sum(jumlah) as count from 
             (SELECT kp.kepegawaian_tempat_tugas as wilayah, COUNT(kp.kepegawaian_tempat_tugas) as jumlah 
             FROM kepegawaian_pns kp
             GROUP by kp.kepegawaian_tempat_tugas 
@@ -16,7 +28,7 @@ const kepegawaian = (db) => {
             LEFT JOIN master_tempat_pelaksanaan tp on z.wilayah = tp.id 
             WHERE tp.kategori = 'Wilayah'
             GROUP BY tp.nama, tp.id
-            order by tp.id`
+            order by tp.id)`
         );
         return query;
     };
