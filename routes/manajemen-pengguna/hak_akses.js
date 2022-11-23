@@ -384,7 +384,7 @@ module.exports = async function (fastify, opts) {
 
   // get count data by id
   fastify.get(
-    "/hak-akses/count-total-data", {
+    "/hak-akses/count-total-data/:id_hak_akses", {
     schema: {
       description: "Endpoint ini digunakan untuk mengambil jumlah total data hak akses",
       tags: ["hak akses"],
