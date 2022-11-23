@@ -35,30 +35,30 @@ const sarana_prasarana = (db) => {
   const find_jenis_sarana_prasarana = (jenis_sarana_prasarana) => {
     const query = db.any(
       "select id,jenis_sarana_prasarana from jenis_sarana_prasarana where is_deleted = 0 and jenis_sarana_prasarana ilike '%" +
-        jenis_sarana_prasarana +
-        "%' order by jenis_sarana_prasarana asc"
+      jenis_sarana_prasarana +
+      "%' order by jenis_sarana_prasarana asc"
     );
     return query;
   };
   const find_all_sarana_prasarana = () => {
     const query = db.any(
-        "SELECT jenis_sarana_prasarana.jenis_sarana_prasarana, status_sarana_prasarana.status_sarana_prasarana, jumlah, kondisi_sarana_prasarana.kondisi_sarana_prasarana, keterangan, file_dokumentasi, pelaksana FROM public.sarana_prasarana LEFT JOIN jenis_sarana_prasarana ON sarana_prasarana.jenis_sarana_prasarana = jenis_sarana_prasarana.id LEFT JOIN kondisi_sarana_prasarana ON sarana_prasarana.kondisi = kondisi_sarana_prasarana.id LEFT JOIN status_sarana_prasarana ON sarana_prasarana.status_sarana_prasarana = status_sarana_prasarana.id"
+      "SELECT jenis_sarana_prasarana.jenis_sarana_prasarana, status_sarana_prasarana.status_sarana_prasarana, jumlah, kondisi_sarana_prasarana.kondisi_sarana_prasarana, keterangan, file_dokumentasi FROM public.sarana_prasarana LEFT JOIN jenis_sarana_prasarana ON sarana_prasarana.jenis_sarana_prasarana = jenis_sarana_prasarana.id LEFT JOIN kondisi_sarana_prasarana ON sarana_prasarana.kondisi = kondisi_sarana_prasarana.id LEFT JOIN status_sarana_prasarana ON sarana_prasarana.status_sarana_prasarana = status_sarana_prasarana.id"
     );
     return query;
-};
+  };
   const find_kondisi_sarana_prasarana = (kondisi_sarana_prasarana) => {
     const query = db.any(
       "select id,kondisi_sarana_prasarana from kondisi_sarana_prasarana where is_deleted = 0 and kondisi_sarana_prasarana ilike '%" +
-        kondisi_sarana_prasarana +
-        "%' order by kondisi_sarana_prasarana asc"
+      kondisi_sarana_prasarana +
+      "%' order by kondisi_sarana_prasarana asc"
     );
     return query;
   };
   const find_status_sarana_prasarana = (status_sarana_prasarana) => {
     const query = db.any(
       "select id,status_sarana_prasarana from status_sarana_prasarana where is_deleted = 0 and status_sarana_prasarana ilike '%" +
-        status_sarana_prasarana +
-        "%' order by status_sarana_prasarana asc"
+      status_sarana_prasarana +
+      "%' order by status_sarana_prasarana asc"
     );
     return query;
   };
@@ -66,12 +66,12 @@ const sarana_prasarana = (db) => {
   const filter = (limit, offset, qwhere) => {
     const query = db.any(
       "select sp.id, jsp.jenis_sarana_prasarana, ssp.status_sarana_prasarana, sp.jumlah, ksp.kondisi_sarana_prasarana as kondisi , sp.keterangan, sp.file_dokumentasi as dokumentasi from sarana_prasarana sp left join jenis_sarana_prasarana jsp on sp.jenis_sarana_prasarana = jsp.id left join status_sarana_prasarana ssp on sp.status_sarana_prasarana  = ssp.id left join kondisi_sarana_prasarana ksp on sp.kondisi = ksp.id where sp.is_deleted = 0" +
-        qwhere +
-        " order by sp.created_at desc" +
-        " LIMIT " +
-        limit +
-        " OFFSET " +
-        (parseInt(offset) - 1)
+      qwhere +
+      " order by sp.created_at desc" +
+      " LIMIT " +
+      limit +
+      " OFFSET " +
+      (parseInt(offset) - 1)
     );
 
     return query;
@@ -80,7 +80,7 @@ const sarana_prasarana = (db) => {
   const countAllFilter = (qwhere) => {
     const query = db.one(
       "SELECT COUNT(sp.id) as total FROM sarana_prasarana sp  WHERE sp.is_deleted = 0" +
-        qwhere
+      qwhere
     );
 
     return query;
@@ -122,14 +122,16 @@ const sarana_prasarana = (db) => {
       [id, deleted_by]
     );
 
-    return { id };
+    return {
+      id
+    };
   };
 
   const unduh = (qwhere) => {
     const query = db.any(
       "select jsp.jenis_sarana_prasarana, ssp.status_sarana_prasarana, sp.jumlah, ksp.kondisi_sarana_prasarana as kondisi, sp.keterangan from sarana_prasarana sp left join jenis_sarana_prasarana jsp on sp.jenis_sarana_prasarana = jsp.id left join status_sarana_prasarana ssp on sp.status_sarana_prasarana  = ssp.id left join kondisi_sarana_prasarana ksp on sp.kondisi = ksp.id where sp.is_deleted = 0" +
-        qwhere +
-        " order by jsp.jenis_sarana_prasarana ASC"
+      qwhere +
+      " order by jsp.jenis_sarana_prasarana ASC"
     );
     return query;
   };
