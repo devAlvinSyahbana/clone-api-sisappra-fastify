@@ -10,7 +10,7 @@ const kepegawaian = (db) => {
             FROM kepegawaian_pns kp
             GROUP by kp.kepegawaian_tempat_tugas 
             UNION ALL
-            SELECT knp.kepegawaian_tempat_tugas as wilayah, COUNT(knp.kepegawaian_pendidikan_pada_sk) as jumlah
+            SELECT knp.kepegawaian_tempat_tugas as wilayah, COUNT(knp.kepegawaian_tempat_tugas) as jumlah
             FROM kepegawaian_non_pns knp 
             GROUP BY knp.kepegawaian_tempat_tugas ) as z 
             LEFT JOIN master_tempat_pelaksanaan tp on z.wilayah = tp.id 
