@@ -136,7 +136,7 @@ const kepegawaian_non_pns = (db) => {
 
   const findone = (id) => {
     const query = db.one(
-      "SELECT kpnns.* FROM kepegawaian_non_pns kpnns WHERE kpnns.id = $1 AND kpnns.is_deleted = 0",
+      "SELECT kpnns.*, kpnns.kepegawaian_nptt_npjlp as kepegawaian_nrk FROM kepegawaian_non_pns kpnns WHERE kpnns.id = $1 AND kpnns.is_deleted = 0",
       [id]
     );
 
