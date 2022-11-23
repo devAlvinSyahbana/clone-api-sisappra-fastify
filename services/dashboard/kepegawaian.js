@@ -3,6 +3,24 @@ const fp = require("fastify-plugin");
 
 const kepegawaian = (db) => {
 
+    const get_wilayah_kepegawaian = () => {
+        const query = db.any(
+            `SELECT tp.nama as wilayah, sum(jumlah) as count from 
+            (SELECT kp.kepegawaian_tempat_tugas as wilayah, COUNT(kp.kepegawaian_tempat_tugas) as jumlah 
+            FROM kepegawaian_pns kp
+            GROUP by kp.kepegawaian_tempat_tugas 
+            UNION ALL
+            SELECT knp.kepegawaian_tempat_tugas as wilayah, COUNT(knp.kepegawaian_tempat_tugas) as jumlah
+            FROM kepegawaian_non_pns knp 
+            GROUP BY knp.kepegawaian_tempat_tugas ) as z 
+            LEFT JOIN master_tempat_pelaksanaan tp on z.wilayah = tp.id 
+            WHERE tp.kategori = 'Wilayah'
+            GROUP BY tp.nama, tp.id
+            order by tp.id`
+        );
+        return query;
+    };
+
     const get_status_kepegawaian = () => {
         const query = db.any(
             "SELECT kepegawaian_status_pegawai as status_kepegawaian, COUNT(*) FROM public.kepegawaian_pns  GROUP BY kepegawaian_status_pegawai union SELECT kepegawaian_status_pegawai, COUNT(*) FROM public.kepegawaian_non_pns GROUP BY kepegawaian_status_pegawai order by count asc"
@@ -46,6 +64,7 @@ const kepegawaian = (db) => {
     };
 
     return {
+        get_wilayah_kepegawaian,
         get_status_kepegawaian,
         get_pendidikan_terakhir,
         get_golongan,
