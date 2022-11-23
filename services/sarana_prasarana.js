@@ -40,6 +40,12 @@ const sarana_prasarana = (db) => {
     );
     return query;
   };
+  const find_all_sarana_prasarana = () => {
+    const query = db.any(
+        "SELECT jenis_sarana_prasarana.jenis_sarana_prasarana, status_sarana_prasarana.status_sarana_prasarana, jumlah, kondisi_sarana_prasarana.kondisi_sarana_prasarana, keterangan, file_dokumentasi, pelaksana FROM public.sarana_prasarana LEFT JOIN jenis_sarana_prasarana ON sarana_prasarana.jenis_sarana_prasarana = jenis_sarana_prasarana.id LEFT JOIN kondisi_sarana_prasarana ON sarana_prasarana.kondisi = kondisi_sarana_prasarana.id LEFT JOIN status_sarana_prasarana ON sarana_prasarana.status_sarana_prasarana = status_sarana_prasarana.id"
+    );
+    return query;
+};
   const find_kondisi_sarana_prasarana = (kondisi_sarana_prasarana) => {
     const query = db.any(
       "select id,kondisi_sarana_prasarana from kondisi_sarana_prasarana where is_deleted = 0 and kondisi_sarana_prasarana ilike '%" +
@@ -134,6 +140,7 @@ const sarana_prasarana = (db) => {
     update,
     del,
     find_jenis_sarana_prasarana,
+    find_all_sarana_prasarana,
     find_status_sarana_prasarana,
     find_kondisi_sarana_prasarana,
     filter,
