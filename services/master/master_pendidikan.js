@@ -56,8 +56,7 @@ const master_pendidikan = (db) => {
 
   const filter_pendidikan = (qwhere) => {
     const query = db.any(
-      "SELECT id, urutan_tingkat_pendidikan, nama as pendidikan FROM master_pendidikan WHERE is_deleted = 0" +
-        qwhere
+        "SELECT id, nama as pendidikan, urutan_tingkat_pendidikan FROM master_pendidikan WHERE is_deleted = 0 AND nama ILIKE '%"+qwhere+"%'",
     );
     if (query) {
       return query;
