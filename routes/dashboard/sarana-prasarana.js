@@ -8,6 +8,18 @@ module.exports = async function (fastify, opts) {
         "/sum-jenis-sarana_prasarana", {
             schema: {
                 description: "This is an endpoint for fetching all sarana prasarana per jenis",
+                // params: {
+                //     description: "Find jenis_sarana_prasarana by kondisi",
+                //     type: "object",
+                // },
+                querystring: {
+                    type: "object",
+                    properties: {
+                        kondisi: {
+                            type: "string"
+                        },
+                    },
+                },
                 tags: ["jenis_sarana_prasarana"],
                 response: {
                     200: {
@@ -41,7 +53,14 @@ module.exports = async function (fastify, opts) {
             },
         },
         async (request, reply) => {
-            const exec = await fastify.sarana_prasarana.get_jenis_sarana_prasarana();
+            const {
+                kondisi
+            } = request.query;
+            let qwhere = "";
+            if (kondisi) {
+                qwhere += ` kondisi_sarana_prasarana.kondisi_sarana_prasarana = '${kondisi}'`;
+            }
+            const exec = await fastify.sarana_prasarana.get_jenis_sarana_prasarana(qwhere);
 
             try {
                 if (exec) {
