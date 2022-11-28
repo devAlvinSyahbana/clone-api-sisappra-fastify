@@ -261,6 +261,9 @@ module.exports = async function (fastify, opts) {
                                     level: {
                                         type: "string"
                                     },
+                                    tanggal_buat: {
+                                        type: "string"
+                                    },
                                 },
                             },
                         },
