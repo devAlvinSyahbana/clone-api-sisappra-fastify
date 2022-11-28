@@ -26,10 +26,10 @@ module.exports = async function (fastify, opts) {
                                         jenis_sarana_prasarana: {
                                             type: "string"
                                         },
-                                        year: {
-                                            type: "number"
+                                        kondisi_sarana_prasarana: {
+                                            type: "string"
                                         },
-                                        count: {
+                                        jumlah: {
                                             type: "number"
                                         }
                                     },
