@@ -25,6 +25,9 @@ module.exports = async function (fastify, opts) {
                     nama_hak_akses: { type: "string" },
                     kode: { type: "string" },
                     nama_permission: { type: "string" },
+                    wilayah_bidang: { type: "string" },
+                    kecamatan: { type: "string" },
+                    jabatan: { type: "string" },
                   },
                 },
               },
@@ -75,6 +78,9 @@ module.exports = async function (fastify, opts) {
                   nama_hak_akses: { type: "string" },
                   kode: { type: "string" },
                   nama_permission: { type: "string" },
+                  wilayah_bidang: { type: "string" },
+                  kecamatan: { type: "string" },
+                  jabatan: { type: "string" },
                 },
               },
             },
@@ -125,6 +131,9 @@ module.exports = async function (fastify, opts) {
                   nama_hak_akses: { type: "string" },
                   kode: { type: "string" },
                   nama_permission: { type: "string" },
+                  wilayah_bidang: { type: "string" },
+                  kecamatan: { type: "string" },
+                  jabatan: { type: "string" },
                 },
               },
             },
@@ -175,6 +184,9 @@ module.exports = async function (fastify, opts) {
                   nama_hak_akses: { type: "string" },
                   kode: { type: "string" },
                   nama_permission: { type: "string" },
+                  wilayah_bidang: { type: "string" },
+                  kecamatan: { type: "string" },
+                  jabatan: { type: "string" },
                 },
               },
             },
@@ -211,6 +223,9 @@ module.exports = async function (fastify, opts) {
             nama_hak_akses: { type: "string" },
             created_by: { type: "number" },
             id_modul_permission: { type: "number" },
+            wilayah_bidang: { type: "string" },
+            kecamatan: { type: "string" },
+            jabatan: { type: "string" },
           },
         },
         response: {
@@ -226,10 +241,10 @@ module.exports = async function (fastify, opts) {
       },
     },
     async (request, reply) => {
-      const { nama_hak_akses, id_modul_permission, created_by } = request.body;
+      const { nama_hak_akses, wilayah_bidang, kecamatan, jabatan, id_modul_permission, created_by } = request.body;
 
       try {
-        await fastify.hak_akses.create(nama_hak_akses, id_modul_permission, created_by);
+        await fastify.hak_akses.create(nama_hak_akses, wilayah_bidang, kecamatan, jabatan, id_modul_permission, created_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -257,6 +272,9 @@ module.exports = async function (fastify, opts) {
             nama_hak_akses: { type: "string" },
             id_modul_permission: { type: "number" },
             updated_by: { type: "number" },
+            wilayah_bidang: { type: "string" },
+            kecamatan: { type: "string" },
+            jabatan: { type: "string" },
           },
         },
         response: {
@@ -273,10 +291,10 @@ module.exports = async function (fastify, opts) {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const { nama_hak_akses, id_modul_permission, updated_by } = request.body;
+      const { nama_hak_akses, wilayah_bidang, kecamatan, jabatan, id_modul_permission, updated_by } = request.body;
 
       try {
-        await fastify.hak_akses.update(id, nama_hak_akses, id_modul_permission, updated_by);
+        await fastify.hak_akses.update(id, nama_hak_akses, wilayah_bidang, kecamatan, jabatan, id_modul_permission, updated_by);
         reply.send({ message: "success", code: 200 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
@@ -384,7 +402,7 @@ module.exports = async function (fastify, opts) {
 
   // get count data by id
   fastify.get(
-    "/hak-akses/count-total-data", {
+    "/hak-akses/count-total-data/:id_hak_akses", {
     schema: {
       description: "Endpoint ini digunakan untuk mengambil jumlah total data hak akses",
       tags: ["hak akses"],
