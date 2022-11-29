@@ -3,6 +3,13 @@ const fp = require("fastify-plugin");
 
 const dashboard_titik_rawan = (db) => {
 
+    const titik_rawan = (qwhere) => {
+        const query = db.any(
+            "SELECT rawan_terhadap, mkota.nama as nama_kota, mkec.nama as nama_kec, mkel.nama as nama_kel, lokasi, lat, long, kategori FROM public.dashboard_titik_rawan dtr right join master_kota mkota on mkota.kode = dtr.kota right join master_kecamatan mkec on mkec.kode = dtr.kecamatan right join master_kelurahan mkel on mkel.kode = dtr.kelurahan where"+ qwhere
+        );
+        return query;
+    };
+
     const titik_rawan_pmks = () => {
         const query = db.any(
             "SELECT rawan_terhadap, mkota.nama as nama_kota, mkec.nama as nama_kec, mkel.nama as nama_kel, lokasi, lat, long, kategori FROM public.dashboard_titik_rawan dtr right join master_kota mkota on mkota.kode = dtr.kota right join master_kecamatan mkec on mkec.kode = dtr.kecamatan right join master_kelurahan mkel on mkel.kode = dtr.kelurahan where rawan_terhadap = 'PMKS'"
@@ -54,6 +61,7 @@ const dashboard_titik_rawan = (db) => {
     };
 
     return {
+        titik_rawan,
         titik_rawan_pmks,
         titik_rawan_pkl,
         titik_rawan_banjir,
