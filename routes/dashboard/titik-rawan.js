@@ -2,7 +2,97 @@ const dashboard_titik_rawan = require("../../services/dashboard/titik-rawan");
 
 module.exports = async function (fastify, opts) {
     fastify.register(dashboard_titik_rawan);
+    fastify.get(
+        "/titik-rawan-by-kejadian", {
+            schema: {
+                description: "This is an endpoint for fetching all dashboard_titik_rawan per jenis pmks",
+                tags: ["dashboard_titik_rawan"],
+                querystring: {
+                    type: "object",
+                    properties: {
+                        kejadian: {
+                            type: "string"
+                        },
+                    },
+                },
+                response: {
+                    200: {
+                        properties: {
+                            message: {
+                                type: "string"
+                            },
+                            code: {
+                                type: "string"
+                            },
+                            data: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        rawan_terhadap: {
+                                            type: "string"
+                                        },
+                                        nama_kota: {
+                                            type: "string"
+                                        },
+                                        nama_kec: {
+                                            type: "string"
+                                        },
+                                        nama_kel: {
+                                            type: "string"
+                                        },
+                                        lokasi: {
+                                            type: "string"
+                                        },
+                                        lat: {
+                                            type: "string"
+                                        },
+                                        long: {
+                                            type: "string"
+                                        },
+                                        kategori: {
+                                            type: "string"
+                                        }
+                                    },
+                                }
+                            }
+                        },
+                    },
+                },
+            },
+        },
+        async (request, reply) => {
+            const {
+                kejadian
+            } = request.query;
+            let qwhere = "";
+            if (kejadian) {
+                qwhere += ` rawan_terhadap = '${kejadian}'`;
+            }
+            const exec = await fastify.dashboard_titik_rawan.titik_rawan(qwhere);
 
+            try {
+                if (exec) {
+                    reply.send({
+                        message: "success",
+                        code: 200,
+                        data: exec
+                    });
+                } else {
+                    reply.send({
+                        message: "success",
+                        code: 204
+                    });
+                }
+
+            } catch (error) {
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
+            }
+        }
+    );
     // ^  pkms
     fastify.get(
         "/titik-rawan-pmks", {
