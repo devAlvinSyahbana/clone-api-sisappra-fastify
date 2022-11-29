@@ -27,7 +27,7 @@ const akses_kontrol = (db) => {
 
   const filter_no_limit_offset = (qwhere) => {
     const query = db.any(
-      "SELECT ak.id, ak.modul, ak.kode, ak.level, ak.created_at as tanggal_buat FROM akses_kontrol ak WHERE ak.is_deleted = 0"
+      "SELECT ak.id, ak.modul, ak.kode, ak.level, ak.created_at as tanggal_buat FROM akses_kontrol ak WHERE ak.is_deleted = 0 " + qwhere
     );
 
     return query;
