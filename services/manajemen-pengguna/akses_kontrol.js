@@ -25,6 +25,14 @@ const akses_kontrol = (db) => {
     return query;
   };
 
+  const filter_no_limit_offset = (qwhere) => {
+    const query = db.any(
+      "SELECT ak.id, ak.modul, ak.kode, ak.level, ak.created_at as tanggal_buat FROM akses_kontrol ak WHERE ak.is_deleted = 0"
+    );
+
+    return query;
+  };
+
   const filter = (limit, offset, qwhere) => {
     const query = db.any(
       "SELECT ak.id, ak.modul, ak.kode, ak.level, ak.created_at as tanggal_buat FROM akses_kontrol ak WHERE ak.is_deleted = 0" +
@@ -115,6 +123,7 @@ const akses_kontrol = (db) => {
     update,
     del,
     filterModulPermission,
+    filter_no_limit_offset
   };
 }
 
