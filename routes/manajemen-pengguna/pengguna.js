@@ -587,13 +587,13 @@ module.exports = async function (fastify, opts) {
                 ];
                 let qwhere = "";
                 if (nama_lengkap) {
-                    qwhere += ` AND pgn.nama_lengkap ILIKE '%${nama_lengkap}%'`;
+                    qwhere += ` AND nama_lengkap ILIKE '%${nama_lengkap}%'`;
                 }
                 if (email) {
                     qwhere += ` AND pgn.email ILIKE '%${email}%'`;
                 }
                 if (hak_akses) {
-                    qwhere += ` AND pgn.kepegawaian_nip = ${hak_akses}`;
+                    qwhere += ` AND pgn.hak_akses = ${hak_akses}`;
                 }
 
                 const getData = await fastify.pengguna.getDataUnduhManajemenPengguna(qwhere);

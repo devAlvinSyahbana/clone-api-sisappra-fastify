@@ -25,9 +25,17 @@ const akses_kontrol = (db) => {
     return query;
   };
 
+  const filter_no_limit_offset = (qwhere) => {
+    const query = db.any(
+      "SELECT ak.id, ak.modul, ak.kode, ak.level, ak.created_at as tanggal_buat FROM akses_kontrol ak WHERE ak.is_deleted = 0 " + qwhere
+    );
+
+    return query;
+  };
+
   const filter = (limit, offset, qwhere) => {
     const query = db.any(
-      "SELECT ak.id, ak.modul FROM akses_kontrol ak WHERE ak.is_deleted = 0" +
+      "SELECT ak.id, ak.modul, ak.kode, ak.level, ak.created_at as tanggal_buat FROM akses_kontrol ak WHERE ak.is_deleted = 0" +
       qwhere +
       " LIMIT " +
       limit +
@@ -37,19 +45,6 @@ const akses_kontrol = (db) => {
 
     return query;
   };
-
-  // const filter = (limit, offset, qwhere) => {
-  //     const query = db.any(
-  //       "SELECT * FROM akses_kontrol WHERE is_deleted = 0 AND level = '' AND modul ILIKE '%{modul}%'" +
-  //       qwhere +
-  //       " LIMIT " +
-  //       limit +
-  //       " OFFSET " +
-  //       (parseInt(offset) - 1)
-  //     );
-
-  //     return query;
-  //   };
 
   const countAllFilter = (qwhere) => {
     const query = db.one(
@@ -128,6 +123,7 @@ const akses_kontrol = (db) => {
     update,
     del,
     filterModulPermission,
+    filter_no_limit_offset
   };
 }
 

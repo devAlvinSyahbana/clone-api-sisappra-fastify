@@ -4,7 +4,7 @@ const hak_akses = (db) => {
 
   const find = () => {
     const query = db.any(
-      "SELECT ha.id, ha.nama as nama_hak_akses, ha.kode, mp.nama_permission FROM hak_akses ha left join modul_permission mp on ha.modul_permission = mp.id WHERE ha.is_deleted = 0 ORDER BY ha.created_at DESC",
+      "SELECT ha.id, ha.nama as nama_hak_akses, ha.kode, ha.wilayah_bidang, ha.kecamatan, ha.jabatan, mp.nama_permission FROM hak_akses ha left join modul_permission mp on ha.modul_permission = mp.id WHERE ha.is_deleted = 0 ORDER BY ha.created_at DESC",
     );
 
     return query;
@@ -12,7 +12,7 @@ const hak_akses = (db) => {
 
   const findone = (id) => {
     const query = db.one(
-      "SELECT ha.id, ha.nama as nama_hak_akses, ha.kode, mp.nama_permission FROM hak_akses ha left join modul_permission mp on ha.modul_permission = mp.id WHERE  ha.id = $1 AND ha.is_deleted = 0 ORDER BY ha.created_at DESC",
+      "SELECT ha.id, ha.nama as nama_hak_akses, ha.kode, ha.wilayah_bidang, ha.kecamatan, ha.jabatan, mp.nama_permission FROM hak_akses ha left join modul_permission mp on ha.modul_permission = mp.id WHERE  ha.id = $1 AND ha.is_deleted = 0 ORDER BY ha.created_at DESC",
       [id]
     );
 
@@ -21,7 +21,7 @@ const hak_akses = (db) => {
 
   const findone_by_nama_hak_akses = (nama_hak_akses) => {
     const query = db.one(
-      "SELECT ha.id, ha.nama as nama_hak_akses, ha.kode, mp.nama_permission FROM hak_akses ha left join modul_permission mp on ha.modul_permission = mp.id WHERE  ha.nama = $1 AND ha.is_deleted = 0 ORDER BY ha.created_at DESC",
+      "SELECT ha.id, ha.nama as nama_hak_akses, ha.kode, ha.wilayah_bidang, ha.kecamatan, ha.jabatan, mp.nama_permission FROM hak_akses ha left join modul_permission mp on ha.modul_permission = mp.id WHERE  ha.nama = $1 AND ha.is_deleted = 0 ORDER BY ha.created_at DESC",
       [nama_hak_akses]
     );
 
@@ -30,7 +30,7 @@ const hak_akses = (db) => {
 
   const findone_by_kode = (kode) => {
     const query = db.one(
-      "SELECT ha.id, ha.nama as nama_hak_akses, ha.kode, mp.nama_permission FROM hak_akses ha left join modul_permission mp on ha.modul_permission = mp.id WHERE  ha.kode = $1 AND ha.is_deleted = 0 ORDER BY ha.created_at DESC",
+      "SELECT ha.id, ha.nama as nama_hak_akses, ha.kode, ha.wilayah_bidang, ha.kecamatan, ha.jabatan, mp.nama_permission FROM hak_akses ha left join modul_permission mp on ha.modul_permission = mp.id WHERE  ha.kode = $1 AND ha.is_deleted = 0 ORDER BY ha.created_at DESC",
       [kode]
     );
 
@@ -38,7 +38,7 @@ const hak_akses = (db) => {
   };
 
 
-  const create = async (nama_hak_akses, modul_permission, created_by) => {
+  const create = async (nama_hak_akses, wilayah_bidang, kecamatan, jabatan, modul_permission, created_by) => {
     const { max } = await db.one(
       "SELECT MAX(id) FROM hak_akses"
     );
@@ -51,18 +51,18 @@ const hak_akses = (db) => {
     }
 
     const query = db.one(
-      "INSERT INTO hak_akses (nama, kode, modul_permission,  is_deleted, created_by) VALUES ($1, $2, $3, 0, $4) RETURNING id",
-      [nama_hak_akses, kode, modul_permission, created_by]
+      "INSERT INTO hak_akses (nama, kode, wilayah_bidang, kecamatan, jabatan, modul_permission, is_deleted, created_by) VALUES ($1, $2, $3, $4, $5, $6, 0, $7) RETURNING id",
+      [nama_hak_akses, kode, wilayah_bidang, kecamatan, jabatan, modul_permission, created_by]
     );
 
     return query;
   };
 
 
-  const update = (id, nama_hak_akses, modul_permission, updated_by) => {
+  const update = (id, nama_hak_akses, wilayah_bidang, kecamatan, jabatan, modul_permission, updated_by) => {
     db.one(
-      "UPDATE hak_akses SET nama = $1, modul_permission = $2, updated_by = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $4 RETURNING id",
-      [nama_hak_akses, modul_permission, updated_by, id]
+      "UPDATE hak_akses SET nama = $1, wilayah_bidang = $2, kecamatan = $3, jabatan = $4, modul_permission = $5, updated_by = $6, updated_at = CURRENT_TIMESTAMP WHERE id = $7 RETURNING id",
+      [nama_hak_akses, wilayah_bidang, kecamatan, jabatan, modul_permission, updated_by, id]
     );
   };
 
