@@ -19,16 +19,28 @@ const master_kelurahan = (db) => {
     return query;
   };
 
+  // const findone_by_kelurahan = (kecamatan, kelurahan) => {
+  //   if (kecamatan == undefined){kecamatan = ""}
+  //   if (kelurahan == undefined){kelurahan = ""}
+
+  //   let a = kelurahan + "%";
+  //   let b = kecamatan + "%";
+
+  //   const query = db.any(
+  //     "SELECT mk.id, mk.kode as kode_kelurahan, mk.nama as kelurahan, mk.kode_kecamatan, mkec.nama as kecamatan FROM master_kelurahan mk JOIN master_kecamatan mkec on mk.kode_kecamatan = mkec.kode WHERE mk.nama ILIKE $1 AND mkec.nama ILIKE $2 AND mk.is_deleted = 0",
+  //     [a, b]
+  //   );
+
+  //   return query;
+  // };
+
   const findone_by_kelurahan = (kecamatan, kelurahan) => {
     if (kecamatan == undefined){kecamatan = ""}
     if (kelurahan == undefined){kelurahan = ""}
 
-    let a = kelurahan + "%";
-    let b = kecamatan + "%";
-
     const query = db.any(
-      "SELECT mk.id, mk.kode as kode_kelurahan, mk.nama as kelurahan, mk.kode_kecamatan, mkec.nama as kecamatan FROM master_kelurahan mk JOIN master_kecamatan mkec on mk.kode_kecamatan = mkec.kode WHERE mk.nama ILIKE $1 AND mkec.nama ILIKE $2 AND mk.is_deleted = 0",
-      [a, b]
+      "SELECT mk.id, mk.kode as kode_kelurahan, mk.nama as kelurahan, mk.kode_kecamatan, mkec.nama as kecamatan FROM master_kelurahan mk JOIN master_kecamatan mkec on mk.kode_kecamatan = mkec.kode WHERE mk.nama ILIKE '%"+kelurahan+"%' AND mkec.nama ILIKE '%"+kecamatan+"%' AND mk.is_deleted = 0",
+     
     );
 
     return query;
