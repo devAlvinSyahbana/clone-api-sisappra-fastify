@@ -289,4 +289,122 @@ module.exports = async function (fastify, opts) {
         }
     );
 
+    // get semua data akses kontrol mapping by filter by id_hak_akses
+    fastify.get(
+        "/akses-kontrol-mapping/filter/:id_hak_akses", {
+        schema: {
+            description: "Endpoint ini digunakan untuk memfilter akses kontrol mapping",
+            tags: ["akses kontrol mapping"],
+            querystring: {
+                type: "object",
+                properties: {
+                    limit: {
+                        type: "integer",
+                        default: 10,
+                    },
+                    offset: {
+                        type: "integer",
+                        default: 1,
+                    },
+                    id_hak_akses: {
+                        type: "number",
+                    },
+                },
+                required: ["limit", "offset"],
+            },
+            response: {
+                200: {
+                    description: "Success Response",
+                    type: "object",
+                    properties: {
+                        message: {
+                            type: "string"
+                        },
+                        code: {
+                            type: "string"
+                        },
+                        data: {
+                            type: "array",
+                            items: {
+                                type: "object",
+                                properties: {
+                                    id: {
+                                        type: "number"
+                                    },
+                                    id_hak_akses: {
+                                        type: "number"
+                                    },
+                                    id_akses_kontrol: {
+                                        type: "number"
+                                    },
+                                    id_permission: {
+                                        type: "number"
+                                    },
+                                    value_permission: {
+                                        type: "boolean"
+                                    },
+                                },
+                            },
+                        },
+                        total_data: {
+                            type: "number"
+                        },
+                    },
+                },
+            },
+        },
+    },
+        async (request, reply) => {
+            const {
+                limit,
+                offset,
+                id_hak_akses,
+                id_akses_kontrol,
+                id_permission,
+                value_permission
+            } = request.query;
+            let exec = null;
+            let totalDt = 0;
+            let qwhere = "";
+            if (id_hak_akses) {
+                qwhere += ` AND id_hak_akses = ${id_hak_akses}`;
+            }
+            if (id_akses_kontrol) {
+                qwhere += ` AND id_akses_kontrol = ${id_akses_kontrol}`;
+            }
+            if (id_permission) {
+                qwhere += ` AND id_permission = ${id_permission}`;
+            }
+            if (value_permission) {
+                qwhere += ` AND value_permission ILIKE '%${tgl_bergabung}%'`;
+            }
+            exec = await fastify.akses_kontrol_mapping.filter(limit, offset, qwhere);
+            const {
+                total
+            } = await fastify.akses_kontrol_mapping.countAllFilter(
+                qwhere
+            );
+            totalDt = total;
+            try {
+                if (exec) {
+                    reply.send({
+                        message: "success",
+                        code: 200,
+                        data: exec,
+                        total_data: totalDt,
+                    });
+                } else {
+                    reply.send({
+                        message: "success",
+                        code: 204
+                    });
+                }
+            } catch (error) {
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
+            }
+        }
+    )
 }
