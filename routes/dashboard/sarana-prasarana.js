@@ -91,7 +91,7 @@ module.exports = async function (fastify, opts) {
                                         kondisi_sarana_prasarana: {
                                             type: "string"
                                         },
-                                        jumlah: {
+                                        jumlah_tidak_layak: {
                                             type: "number"
                                         }
                                     },
