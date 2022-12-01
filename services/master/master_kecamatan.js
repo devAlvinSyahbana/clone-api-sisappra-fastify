@@ -20,12 +20,12 @@ const master_kecamatan = (db) => {
   };
 
   const findone_by_kecamatan = (kota, kecamatan) => {
-    if (kota == undefined){kota = ""}
-    if (kecamatan == undefined){kecamatan = ""}
- 
+    if (kota == undefined) { kota = "" }
+    if (kecamatan == undefined) { kecamatan = "" }
+
     const query = db.any(
-      "SELECT mk.id, mk.kode as kode_kecamatan, mk.nama as kecamatan, mk.kode_kota, mkot.nama as kota FROM master_kecamatan mk JOIN master_kota mkot on mk.kode_kota = mkot.kode WHERE mk.nama ilike '%"+kecamatan+"%' AND mkot.nama ilike '%"+kota+"%' AND mk.is_deleted = 0 " ,
-     
+      "SELECT mk.id, mk.kode as kode_kecamatan, mk.nama as kecamatan, mk.kode_kota, mkot.nama as kota FROM master_kecamatan mk JOIN master_kota mkot on mk.kode_kota = mkot.kode WHERE mk.nama ilike '%" + kecamatan + "%' AND mkot.nama ilike '%" + kota + "%' AND mk.is_deleted = 0 ",
+
     );
 
     return query;
@@ -34,20 +34,20 @@ const master_kecamatan = (db) => {
   const find_by_kode_kota = (kode_kota) => {
 
     const query = db.any(
-      "SELECT mk.id, mk.kode as kode_kecamatan, mk.nama as kecamatan, mk.kode_kota, mkot.nama as kota FROM master_kecamatan mk JOIN master_kota mkot on mk.kode_kota = mkot.kode WHERE mk.kode_kota ilike $1 AND mk.is_deleted = 0 " ,
+      "SELECT mk.id, mk.kode as kode_kecamatan, mk.nama as kecamatan, mk.kode_kota, mkot.nama as kota FROM master_kecamatan mk JOIN master_kota mkot on mk.kode_kota = mkot.kode WHERE mk.kode_kota ilike $1 AND mk.is_deleted = 0 ",
       [kode_kota]
     );
 
     return query;
   };
 
-  const create = async(kode_kota, kecamatan, created_by) => {
+  const create = async (kode_kota, kecamatan, created_by) => {
     const { max } = await db.one(
       "SELECT MAX(id) FROM master_kecamatan"
     );
 
     let a = "";
-    if (max == undefined ) {
+    if (max == undefined) {
       a = "KEC1";
     } else {
       a = "KEC" + (parseInt(max) + 1);
@@ -65,7 +65,7 @@ const master_kecamatan = (db) => {
   const update = (id, kecamatan, kode_kota, updated_by) => {
     db.one(
       "UPDATE master_kecamatan SET nama = $1, kode_kota = $2, updated_by = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $4 RETURNING id",
-      [kecamatan, kode_kota, updated_by,  id]
+      [kecamatan, kode_kota, updated_by, id]
     );
   };
 
@@ -82,7 +82,7 @@ const master_kecamatan = (db) => {
 
   const filter = (q) => {
     const query = db.any(
-      "SELECT id, nama as kecamatan FROM master_kecamatan WHERE is_deleted = 0 AND nama ILIKE '%"+q+"%'",
+      "SELECT id, nama as kecamatan FROM master_kecamatan WHERE is_deleted = 0 AND nama ILIKE '%" + q + "%'",
     );
 
     return query;
