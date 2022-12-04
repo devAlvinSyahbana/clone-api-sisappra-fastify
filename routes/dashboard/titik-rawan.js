@@ -29,6 +29,9 @@ module.exports = async function (fastify, opts) {
                                 items: {
                                     type: "object",
                                     properties: {
+                                        id: {
+                                            type: "integer"
+                                        },
                                         rawan_terhadap: {
                                             type: "string"
                                         },
