@@ -25,9 +25,9 @@ module.exports = async function (fastify, opts) {
                     nama_hak_akses: { type: "string" },
                     kode: { type: "string" },
                     nama_permission: { type: "string" },
-                    wilayah_bidang: { type: "string" },
-                    kecamatan: { type: "string" },
-                    jabatan: { type: "string" },
+                    wilayah_bidang: { type: "number" },
+                    kecamatan: { type: "number" },
+                    jabatan: { type: "number" },
                   },
                 },
               },
@@ -78,9 +78,9 @@ module.exports = async function (fastify, opts) {
                   nama_hak_akses: { type: "string" },
                   kode: { type: "string" },
                   nama_permission: { type: "string" },
-                  wilayah_bidang: { type: "string" },
-                  kecamatan: { type: "string" },
-                  jabatan: { type: "string" },
+                  wilayah_bidang: { type: "number" },
+                  kecamatan: { type: "number" },
+                  jabatan: { type: "number" },
                 },
               },
             },
@@ -131,9 +131,9 @@ module.exports = async function (fastify, opts) {
                   nama_hak_akses: { type: "string" },
                   kode: { type: "string" },
                   nama_permission: { type: "string" },
-                  wilayah_bidang: { type: "string" },
-                  kecamatan: { type: "string" },
-                  jabatan: { type: "string" },
+                  wilayah_bidang: { type: "number" },
+                  kecamatan: { type: "number" },
+                  jabatan: { type: "number" },
                 },
               },
             },
@@ -184,9 +184,9 @@ module.exports = async function (fastify, opts) {
                   nama_hak_akses: { type: "string" },
                   kode: { type: "string" },
                   nama_permission: { type: "string" },
-                  wilayah_bidang: { type: "string" },
-                  kecamatan: { type: "string" },
-                  jabatan: { type: "string" },
+                  wilayah_bidang: { type: "number" },
+                  kecamatan: { type: "number" },
+                  jabatan: { type: "number" },
                 },
               },
             },
@@ -223,9 +223,9 @@ module.exports = async function (fastify, opts) {
             nama_hak_akses: { type: "string" },
             created_by: { type: "number" },
             id_modul_permission: { type: "number" },
-            wilayah_bidang: { type: "string" },
-            kecamatan: { type: "string" },
-            jabatan: { type: "string" },
+            wilayah_bidang: { type: "number" },
+            kecamatan: { type: "number" },
+            jabatan: { type: "number" },
           },
         },
         response: {
@@ -245,7 +245,12 @@ module.exports = async function (fastify, opts) {
 
       try {
         await fastify.hak_akses.create(nama_hak_akses, wilayah_bidang, kecamatan, jabatan, id_modul_permission, created_by);
-        reply.send({ message: "success", code: 200 });
+        const exec = await fastify.hak_akses.findone_by_nama_hak_akses(nama_hak_akses);
+        if (exec) {
+          reply.send({ message: "success", code: 200, data: exec });
+        } else {
+          reply.send({ message: "success", code: 204 });
+        }
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
       }
@@ -272,9 +277,9 @@ module.exports = async function (fastify, opts) {
             nama_hak_akses: { type: "string" },
             id_modul_permission: { type: "number" },
             updated_by: { type: "number" },
-            wilayah_bidang: { type: "string" },
-            kecamatan: { type: "string" },
-            jabatan: { type: "string" },
+            wilayah_bidang: { type: "number" },
+            kecamatan: { type: "number" },
+            jabatan: { type: "number" },
           },
         },
         response: {
@@ -376,6 +381,9 @@ module.exports = async function (fastify, opts) {
                     nama_hak_akses: { type: "string" },
                     kode: { type: "string" },
                     nama_permission: { type: "string" },
+                    wilayah_bidang: { type: "number" },
+                    kecamatan: { type: "number" },
+                    jabatan: { type: "number" },
                   },
                 },
               },

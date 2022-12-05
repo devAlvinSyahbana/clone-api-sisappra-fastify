@@ -72,6 +72,27 @@ const akses_kontrol_mapping = (db) => {
         return { id };
     };
 
+    const filter = (limit, offset, qwhere) => {
+        const query = db.any(
+            "SELECT id, id_hak_akses, id_akses_kontrol, id_permission, value_permission FROM akses_kontrol_mapping WHERE is_deleted = 0" +
+            qwhere +
+            " LIMIT " +
+            limit +
+            " OFFSET " +
+            (parseInt(offset) - 1)
+        );
+
+        return query;
+    };
+
+    const countAllFilter = (qwhere) => {
+        const query = db.one(
+            `select count(id) as total from akses_kontrol_mapping where is_deleted = 0${qwhere}`
+        );
+
+        return query;
+    };
+
 
     return {
         find,
@@ -79,6 +100,8 @@ const akses_kontrol_mapping = (db) => {
         create,
         update,
         del,
+        filter,
+        countAllFilter,
     };
 }
 

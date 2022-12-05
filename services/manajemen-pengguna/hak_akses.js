@@ -79,7 +79,7 @@ const hak_akses = (db) => {
 
   const filter = (q) => {
     const query = db.any(
-      "SELECT ha.id, ha.nama as nama_hak_akses, ha.kode, mp.nama_permission FROM hak_akses ha left join modul_permission mp on ha.modul_permission = mp.id WHERE ha.nama ILIKE '%" + q + "%' AND ha.is_deleted = 0",
+      "SELECT ha.id, ha.nama as nama_hak_akses, ha.kode, ha.wilayah_bidang, ha.kecamatan, ha.jabatan, mp.nama_permission FROM hak_akses ha left join modul_permission mp on ha.modul_permission = mp.id WHERE ha.nama ILIKE '%" + q + "%' AND ha.is_deleted = 0",
     );
 
     return query;

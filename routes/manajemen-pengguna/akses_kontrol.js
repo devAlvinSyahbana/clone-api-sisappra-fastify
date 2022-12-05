@@ -119,6 +119,109 @@ module.exports = async function (fastify, opts) {
         }
     )
 
+    fastify.get(
+        "/akses-kontrol/find-all", {
+        schema: {
+            description: "Endpoint ini digunakan untuk memfilter akses kontrol",
+            tags: ["akses kontrol"],
+            querystring: {
+                type: "object",
+                properties: {
+                    modul: {
+                        type: "string",
+                    },
+                },
+            },
+            response: {
+                200: {
+                    description: "Success Response",
+                    type: "object",
+                    properties: {
+                        message: {
+                            type: "string"
+                        },
+                        code: {
+                            type: "string"
+                        },
+                        data: {
+                            type: "array",
+                            items: {
+                                type: "object",
+                                properties: {
+                                    id: {
+                                        type: "number"
+                                    },
+                                    modul: {
+                                        type: "string"
+                                    },
+                                    kode: {
+                                        type: "string"
+                                    },
+                                    level: {
+                                        type: "string"
+                                    },
+                                    tanggal_buat: {
+                                        type: "string"
+                                    },
+                                },
+                            },
+                        },
+                        total_data: {
+                            type: "number"
+                        },
+                    },
+                },
+            },
+        },
+    },
+        async (request, reply) => {
+            const {
+                modul,
+                kode,
+                level
+            } = request.query;
+            let exec = null;
+            let totalDt = 0;
+            let qwhere = "";
+            if (modul) {
+                qwhere += ` AND modul ILIKE '%${modul}%'`;
+            }
+            if (kode) {
+                qwhere += ` AND kode ILIKE '%${kode}%'`;
+            }
+            if (level) {
+                qwhere += ` AND level ILIKE '%${level}%'`;
+            }
+            exec = await fastify.akses_kontrol.filter_no_limit_offset(qwhere);
+            const {
+                total
+            } = await fastify.akses_kontrol.countAllFilter(
+                qwhere
+            );
+            totalDt = total;
+            try {
+                if (exec) {
+                    reply.send({
+                        message: "success",
+                        code: 200,
+                        data: exec,
+                        total_data: totalDt,
+                    });
+                } else {
+                    reply.send({
+                        message: "success",
+                        code: 204
+                    });
+                }
+            } catch (error) {
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
+            }
+        }
+    )
+
     // fastify.get(
     //     "/akses-kontrol/find",
     //     {

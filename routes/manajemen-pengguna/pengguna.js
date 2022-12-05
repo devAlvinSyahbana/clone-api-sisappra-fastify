@@ -238,7 +238,7 @@ module.exports = async function (fastify, opts) {
                                         type: "string"
                                     },
                                     hak_akses: {
-                                        type: "number"
+                                        type: "string"
                                     },
                                     terakhir_login: {
                                         type: "string"
@@ -273,7 +273,7 @@ module.exports = async function (fastify, opts) {
             let totalDt = 0;
             let qwhere = "";
             if (nama_lengkap) {
-                qwhere += ` AND pgn.nama_lengkap ILIKE '%${nama_lengkap}%'`;
+                qwhere += ` AND nama_lengkap ILIKE '%${nama_lengkap}%'`;
             }
             if (hak_akses) {
                 qwhere += ` AND pgn.hak_akses = ${hak_akses}`;
@@ -284,13 +284,45 @@ module.exports = async function (fastify, opts) {
             if (tgl_bergabung) {
                 qwhere += ` AND pgn.tgl_bergabung ILIKE '%${tgl_bergabung}%'`;
             }
-            exec = await fastify.pengguna.filterNamaPegawai(limit, offset, qwhere);
-            const {
-                total
-            } = await fastify.pengguna.countAllFilter(
-                qwhere
-            );
-            totalDt = total;
+            const requestdata = await fastify.pengguna.filterNamaPegawai(limit, offset, qwhere);
+            if (requestdata && requestdata.length > 0) {
+                // kondisi mengambil data pengguna non idp
+                exec = requestdata
+                const {
+                    total
+                } = await fastify.pengguna.countAllFilter(
+                    qwhere
+                );
+                totalDt = total;
+            } else { // kondisi mengambil data pengguna non idp
+                qwhere = ""
+                let qwhere1 = ""
+                let qwhere2 = ""
+                if (nama_lengkap) {
+                    qwhere1 += ` AND kp.nama ILIKE '%${nama_lengkap}%'`;
+                    qwhere2 += ` AND knp.nama ILIKE '%${nama_lengkap}%'`;
+                }
+                if (hak_akses) {
+                    qwhere1 += ` AND pgn.hak_akses = ${hak_akses}`;
+                    qwhere2 += ` AND pgn.hak_akses = ${hak_akses}`;
+                }
+                if (terakhir_login) {
+                    qwhere1 += ` AND pgn.terakhir_login ILIKE '%${terakhir_login}%'`;
+                    qwhere2 += ` AND pgn.terakhir_login ILIKE '%${terakhir_login}%'`;
+                }
+                if (tgl_bergabung) {
+                    qwhere1 += ` AND pgn.tgl_bergabung ILIKE '%${tgl_bergabung}%'`;
+                    qwhere2 += ` AND pgn.tgl_bergabung ILIKE '%${tgl_bergabung}%'`;
+                }
+                const requestdataidp = await fastify.pengguna.filterPegawaiPengguna(limit, offset, qwhere1, qwhere2);
+                exec = requestdataidp
+                const {
+                    total
+                } = await fastify.pengguna.countfilterPegawaiPengguna(
+                    qwhere1, qwhere2
+                );
+                totalDt = total;
+            }
             try {
                 if (exec) {
                     reply.send({
@@ -579,11 +611,12 @@ module.exports = async function (fastify, opts) {
                 // Definisikan header
                 headerPengguna = [
                     "Id",
+                    "No Pegawai",
                     "Nama Lengkap",
                     "Email",
                     "Hak Akses",
-                    "tgl bergabung",
-                    "terakhir login",
+                    "Tanggal Bergabung",
+                    "Terakhir Login",
                 ];
                 let qwhere = "";
                 if (nama_lengkap) {
@@ -683,4 +716,112 @@ module.exports = async function (fastify, opts) {
             }
         }
     );
+
+    // filter data pengguna
+    fastify.get(
+        "/filter-data-pengguna2", {
+        schema: {
+            description: "Endpoint ini digunakan untuk memfilter data pengguna",
+            tags: ["manajemen pengguna"],
+            querystring: {
+                type: "object",
+                properties: {
+                    limit: {
+                        type: "integer",
+                        default: 10,
+                    },
+                    offset: {
+                        type: "integer",
+                        default: 1,
+                    },
+                    nama_lengkap: {
+                        type: "string",
+                    },
+                    hak_akses: {
+                        type: "number",
+                    },
+                },
+                required: ["limit", "offset"],
+            },
+            response: {
+                200: {
+                    description: "Success Response",
+                    type: "object",
+                    properties: {
+                        message: {
+                            type: "string"
+                        },
+                        code: {
+                            type: "string"
+                        },
+                        data: {
+                            type: "array",
+                            items: {
+                                type: "object",
+                                properties: {
+                                    id: {
+                                        type: "number"
+                                    },
+                                    no_pegawai: {
+                                        type: "string"
+                                    },
+                                    nama_lengkap: {
+                                        type: "string"
+                                    },
+                                    email: {
+                                        type: "string"
+                                    },
+                                    hak_akses: {
+                                        type: "string"
+                                    },
+                                    terakhir_login: {
+                                        type: "string"
+                                    },
+                                    tanggal_bergabung: {
+                                        type: "string"
+                                    },
+                                },
+                            },
+                        },
+                        total_data: {
+                            type: "number"
+                        },
+                    },
+                },
+            },
+        },
+    },
+        async (request, reply) => {
+            const {
+                limit,
+                offset,
+                nama_lengkap,
+                hak_akses,
+            } = request.query;
+
+            exec = await fastify.pengguna.filterPegawaiPengguna(limit, offset, nama_lengkap, hak_akses);
+            const { total } = await fastify.pengguna.countfilterPegawaiPengguna(nama_lengkap, hak_akses);
+            let totalDt = total;
+            try {
+                if (exec) {
+                    reply.send({
+                        message: "success",
+                        code: 200,
+                        data: exec,
+                        total_data: totalDt,
+                    });
+                } else {
+                    reply.send({
+                        message: "success",
+                        code: 204
+                    });
+                }
+            } catch (error) {
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
+            }
+        }
+    )
 }
