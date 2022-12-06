@@ -518,7 +518,7 @@ module.exports = async function (fastify, opts) {
         }
     );
 
-       // update data pengguna hak akses
+    // update data pengguna hak akses
     fastify.put(
         "/hapus-hak-akses-pengguna/:id", {
         schema: {
@@ -534,9 +534,9 @@ module.exports = async function (fastify, opts) {
                 },
             },
             body: {
-                description: "Payload for updating a data pengguna",
+                description: "Payload for updating a data pengguna to public",
                 type: "object",
-                properties: {     
+                properties: {
                     status_pengguna: {
                         type: "number"
                     },
