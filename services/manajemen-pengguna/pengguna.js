@@ -119,6 +119,21 @@ const pengguna = (db) => {
     );
   };
 
+  const updateHakAkesPengguna = async (
+    id,
+    status_pengguna,
+    updated_by,
+  ) => {
+    await db.one(
+      "UPDATE pengguna SET hak_akses = 1, status_pengguna = $1, updated_by = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING id",
+      [
+        status_pengguna,
+        updated_by,
+        id,
+      ]
+    );
+  };
+
   const del = async (id) => {
     await db.one(
       "UPDATE pengguna SET is_deleted = 1, deleted_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING id",
@@ -168,6 +183,7 @@ const pengguna = (db) => {
     create,
     filterNamaPegawai,
     update,
+    updateHakAkesPengguna,
     del,
     getDataUnduhManajemenPengguna,
     updateFoto,
