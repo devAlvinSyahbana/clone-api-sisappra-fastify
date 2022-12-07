@@ -518,6 +518,70 @@ module.exports = async function (fastify, opts) {
         }
     );
 
+    // update data pengguna hak akses
+    fastify.put(
+        "/hapus-hak-akses-pengguna/:id", {
+        schema: {
+            description: "This is an endpoint for updating data pengguna to public",
+            tags: ["manajemen pengguna"],
+            params: {
+                description: "update data pengguna to public by Id",
+                type: "object",
+                properties: {
+                    id: {
+                        type: "number",
+                    },
+                },
+            },
+            body: {
+                description: "Payload for updating a data pengguna to public",
+                type: "object",
+                properties: {
+                    status_pengguna: {
+                        type: "number"
+                    },
+                    updated_by: {
+                        type: "number"
+                    },
+                },
+            },
+            response: {
+                200: {
+                    description: "Success Response",
+                    type: "object",
+                    properties: {
+                        id: {
+                            type: "number"
+                        },
+                    },
+                },
+            },
+        },
+    },
+        async (request, reply) => {
+            const {
+                id
+            } = request.params;
+            const {
+                status_pengguna,
+                updated_by,
+            } = request.body;
+            try {
+                const exec = await fastify.pengguna.updateHakAkesPengguna(
+                    id,
+                    status_pengguna,
+                    updated_by,
+                );
+                reply.code(201).send(exec);
+            } catch (error) {
+                reply.send({
+                    message: error.message,
+                    code: 500
+                });
+            }
+        }
+    );
+
     // delete data pengguna
     fastify.delete(
         "/delete/:id", {
