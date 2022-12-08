@@ -188,7 +188,7 @@ module.exports = async function (fastify, opts) {
 
     // update data akses kontrol mapping
     fastify.put(
-        "akses-kontrol-mapping/update/:id",
+        "/akses-kontrol-mapping/update/:id",
         {
             schema: {
                 description:

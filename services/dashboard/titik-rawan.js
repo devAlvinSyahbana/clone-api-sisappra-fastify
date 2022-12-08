@@ -5,7 +5,7 @@ const dashboard_titik_rawan = (db) => {
 
     const titik_rawan = (qwhere) => {
         const query = db.any(
-            "SELECT rawan_terhadap, mkota.nama as nama_kota, mkec.nama as nama_kec, mkel.nama as nama_kel, lokasi, lat, long, kategori FROM public.dashboard_titik_rawan dtr right join master_kota mkota on mkota.kode = dtr.kota right join master_kecamatan mkec on mkec.kode = dtr.kecamatan right join master_kelurahan mkel on mkel.kode = dtr.kelurahan where"+ qwhere
+            "SELECT dtr.id, rawan_terhadap, mkota.nama as nama_kota, mkec.nama as nama_kec, mkel.nama as nama_kel, lokasi, lat, long, kategori FROM public.dashboard_titik_rawan dtr right join master_kota mkota on mkota.kode = dtr.kota right join master_kecamatan mkec on mkec.kode = dtr.kecamatan right join master_kelurahan mkel on mkel.kode = dtr.kelurahan where"+ qwhere
         );
         return query;
     };

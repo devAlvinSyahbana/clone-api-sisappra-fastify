@@ -245,7 +245,12 @@ module.exports = async function (fastify, opts) {
 
       try {
         await fastify.hak_akses.create(nama_hak_akses, wilayah_bidang, kecamatan, jabatan, id_modul_permission, created_by);
-        reply.send({ message: "success", code: 200 });
+        const exec = await fastify.hak_akses.findone_by_nama_hak_akses(nama_hak_akses);
+        if (exec) {
+          reply.send({ message: "success", code: 200, data: exec });
+        } else {
+          reply.send({ message: "success", code: 204 });
+        }
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
       }

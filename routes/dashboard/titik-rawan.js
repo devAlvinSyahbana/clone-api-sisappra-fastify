@@ -29,6 +29,9 @@ module.exports = async function (fastify, opts) {
                                 items: {
                                     type: "object",
                                     properties: {
+                                        id: {
+                                            type: "integer"
+                                        },
                                         rawan_terhadap: {
                                             type: "string"
                                         },
@@ -67,7 +70,7 @@ module.exports = async function (fastify, opts) {
             } = request.query;
             let qwhere = "";
             if (kejadian) {
-                qwhere += ` rawan_terhadap = '${kejadian}'`;
+                qwhere += ` kategori = '${kejadian}'`;
             }
             const exec = await fastify.dashboard_titik_rawan.titik_rawan(qwhere);
 
