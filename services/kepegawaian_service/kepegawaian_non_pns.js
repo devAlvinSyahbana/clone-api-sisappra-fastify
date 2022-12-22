@@ -3,7 +3,7 @@ const fp = require("fastify-plugin");
 const kepegawaian_non_pns = (db) => {
   const autocompliteFill = (qwhere) => {
     const query = db.any(
-      "SELECT kpnns.id, kpnns.nama, kpnns.kepegawaian_nptt_npjlp as no_pegawai FROM kepegawaian_non_pns kpnns WHERE kpnns.is_deleted = 0" +
+      "SELECT kpnns.id, personil.nama, kpnns.nptt as no_pegawai FROM public.t_data_pegawai_nptt kpnns LEFT JOIN public.t_personil personil ON kpnns.personil_id = personil.id WHERE kpnns.is_deleted = 0" +
       qwhere
     );
 
@@ -22,7 +22,7 @@ const kepegawaian_non_pns = (db) => {
 
   const countKeluarga = (id) => {
     const query = db.one(
-      "SELECT COUNT(id) as total FROM kepegawaian_non_pns_keluarga WHERE is_deleted = 0 AND id_pegawai = " +
+      "SELECT COUNT(id) as total FROM t_keluarga WHERE personil_id = " +
       id
     );
 
@@ -65,7 +65,7 @@ const kepegawaian_non_pns = (db) => {
 
   const findKeluarga = (id) => {
     const query = db.any(
-      "SELECT klgr.id, klgr.hubungan, klgr.nama, klgr.tempat_lahir, klgr.tgl_lahir, CASE WHEN klgr.jenis_kelamin = 'L' THEN 'Laki-laki' ELSE 'Perempuan' END AS jenis_kelamin FROM kepegawaian_non_pns_keluarga klgr WHERE klgr.is_deleted = 0 AND klgr.id_pegawai = " +
+      "SELECT klgr.id, hub.status as hubungan, klgr.nama, klgr.tempat_lahir, to_char(klgr.tgl_lahir, 'dd Mon YYYY') as tgl_lahir, jk.jenis_kelamin FROM t_keluarga klgr LEFT JOIN m_status_hubungan hub ON klgr.status_hubungan_id = hub.id LEFT JOIN m_j_kelamin jk ON klgr.j_kelamin_id = jk.id WHERE klgr.personil_id = " +
       id
     );
 
@@ -74,7 +74,7 @@ const kepegawaian_non_pns = (db) => {
 
   const findoneKeluarga = (id) => {
     const query = db.one(
-      "SELECT klgr.* FROM kepegawaian_non_pns_keluarga klgr WHERE klgr.is_deleted = 0 AND klgr.id = " +
+      "SELECT klgr.id, hub.id as hubungan_id, hub.status as hubungan, klgr.nama, klgr.tempat_lahir, to_char(klgr.tgl_lahir, 'dd Mon YYYY') as tgl_lahir, jk.id as jenis_kelamin_id, jk.jenis_kelamin FROM t_keluarga klgr LEFT JOIN m_status_hubungan hub ON klgr.status_hubungan_id = hub.id LEFT JOIN m_j_kelamin jk ON klgr.j_kelamin_id = jk.id WHERE klgr.id = " +
       id
     );
     if (query) {
@@ -159,131 +159,100 @@ const kepegawaian_non_pns = (db) => {
   };
 
   const update = (
+    kepegawaian_nptt,//nptt
     id,
+    ptt_gelombang,
+    no_sk_gubernur,
+    tgl_kontrak,
+    tmt_sampai_dengan,
+    tipe_tempat_tugas,
+    kepegawaian_tempat_tugas,
+    kepegawaian_npwp,
+    kepegawaian_no_rekening,
+    kepegawaian_no_bpjs_askes,
+    no_bpjs_ketenagakerjaan,
+    file_path,
+    file_path_sk_gubernur,
+    id_bidang,
+    id_seksi,
+    kepegawaian_golongan,
+    kepegawaian_jabatan,
+    kepegawaian_nrk,
     nama,
     tempat_lahir,
     tgl_lahir,
-    jenis_kelamin,
-    agama,
     nik,
     no_kk,
     status_perkawinan,
+    umur,
     no_hp,
     sesuai_ktp_alamat,
-    sesuai_ktp_rtrw,
-    sesuai_ktp_provinsi,
-    sesuai_ktp_kabkota,
-    sesuai_ktp_kecamatan,
+    sesuai_ktp_rt,
+    sesuai_ktp_rw,
     sesuai_ktp_kelurahan,
+    sesuai_ktp_kecamatan,
+    sesuai_ktp_kabkota,
+    sesuai_ktp_provinsi,
+    alamat_domisili_personil_id,
     domisili_alamat,
     domisili_rtrw,
     domisili_provinsi,
     domisili_kabkota,
     domisili_kecamatan,
     domisili_kelurahan,
-    kepegawaian_nptt_npjlp,
-    kepegawaian_nip,
-    kepegawaian_pangkat,
-    kepegawaian_golongan,
-    kepegawaian_tmtpangkat,
-    kepegawaian_pendidikan_pada_sk,
-    kepegawaian_jabatan,
-    kepegawaian_eselon,
-    kepegawaian_tempat_tugas,
-    kepegawaian_subbag_seksi_kecamatan,
-    kepegawaian_kelurahan,
-    kepegawaian_status_pegawai,
-    kepegawaian_no_rekening,
-    kepegawaian_no_karpeg,
-    kepegawaian_no_kasirkasur,
-    kepegawaian_no_taspen,
-    kepegawaian_npwp,
-    kepegawaian_no_bpjs_askes,
-    kepegawaian_tmt_cpns,
-    kepegawaian_tmt_pns,
-    kepegawaian_tgl_sk_pns,
-    kepegawaian_no_sk_pangkat_terakhir,
-    kepegawaian_tgl_sk_pangkat_terakhir,
-    kepegawaian_diklat_pol_pp_dasar_no_sertifikat,
-    kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat,
-    kepegawaian_diklat_pol_pp_strutural_no_sertifikat,
-    kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat,
-    kepegawaian_diklat_pol_pp_ppns_no_sertifikat,
-    kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat,
-    kepegawaian_diklat_fungsional_pol_pp_no_sertifikat,
-    kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat,
     updated_by
   ) => {
     db.one(
-      "UPDATE kepegawaian_non_pns SET nama = $1, tempat_lahir = $2, tgl_lahir = $3, jenis_kelamin = $4, agama = $5, nik = $6, no_kk = $7, status_perkawinan = $8, no_hp = $9, sesuai_ktp_alamat = $10, sesuai_ktp_rtrw = $11, sesuai_ktp_provinsi = $12, sesuai_ktp_kabkota = $13, sesuai_ktp_kecamatan = $14, sesuai_ktp_kelurahan = $15, domisili_alamat = $16, domisili_rtrw = $17, domisili_provinsi = $18, domisili_kabkota = $19, domisili_kecamatan = $20, domisili_kelurahan = $21, kepegawaian_nptt_npjlp = $22, kepegawaian_nip = $23, kepegawaian_pangkat = $24, kepegawaian_golongan = $25, kepegawaian_tmtpangkat = $26, kepegawaian_pendidikan_pada_sk = $27, kepegawaian_jabatan = $28, kepegawaian_eselon = $29, kepegawaian_tempat_tugas = $30, kepegawaian_subbag_seksi_kecamatan = $31, kepegawaian_kelurahan = $32, kepegawaian_status_pegawai = $33, kepegawaian_no_rekening = $34, kepegawaian_no_karpeg = $35, kepegawaian_no_kasirkasur = $36, kepegawaian_no_taspen = $37, kepegawaian_npwp = $38, kepegawaian_no_bpjs_askes = $39, kepegawaian_tmt_cpns = $40, kepegawaian_tmt_pns = $41, kepegawaian_tgl_sk_pns = $42, kepegawaian_no_sk_pangkat_terakhir = $43, kepegawaian_tgl_sk_pangkat_terakhir = $44,  kepegawaian_diklat_pol_pp_dasar_no_sertifikat = $45, kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat = $46, kepegawaian_diklat_pol_pp_strutural_no_sertifikat = $47, kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat = $48,  kepegawaian_diklat_pol_pp_ppns_no_sertifikat = $49, kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat = $50,  kepegawaian_diklat_fungsional_pol_pp_no_sertifikat = $51, kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat = $52, updated_by = $53, updated_at = CURRENT_TIMESTAMP WHERE id = $54 RETURNING id",
+      "BEGIN TRANSACTION; UPDATE t_data_pegawai_nptt SET nptt = $1, ptt_gelombang = $2, no_skgubernur = $3, tgl_kontrak = TO_DATE($4, YYYYMMDD), tmt_sampai_dengan = $5, tipe_tempat_tugas = $6, id_tempat_tugas = $7, kepegawaian_npwp = $8, norek_dki = $9, no_bpjs_kes = $10, no_bpjs_ketenagakerjaan = $11, file_path = $12, file_path_sk_gubernur = $13, id_bidang = $14, id_seksi = $15, kepegawaian_golongan = $16, kepegawaian_jabatan = $17 FROM t_data_pegawai_nptt nptt, t_personil per  WHERE nptt.id = $54 AND nptt.personil_id = per.id RETURNING nptt.id; UPDATE t_personil set nama = $19, tempat_lahir = $20, tgl_lahir = TO_DATE($21, 'YYYYMMDD'), j_kelamin_id = $22, agama_id = $23 nik = $24, no_kk = $25, status_kawin_id = $26, umur = $27,  nohp = $28, alamat_ktp = $29, no_rt = $30, no_rw = $31, kelurahan = $32, kecamatan = $33, kab_kota = $34, provinsi = $35, domisili_alamat = $37, domisili_rtrw = $38, domisili_provinsi = $39, domisili_kabkota = $40,  domisili_kecamatan = $41, domisili_kelurahan = $42 FROM t_data_pegawai_nptt nptt, t_personil per  WHERE nptt.id = $43 AND nptt.personil_id = per.id RETURNING per.id; COMMIT;",
       [
+        kepegawaian_nptt,
+        ptt_gelombang,
+        no_sk_gubernur,
+        tgl_kontrak,
+        tmt_sampai_dengan,
+        tipe_tempat_tugas,
+        kepegawaian_tempat_tugas,
+        kepegawaian_npwp,
+        kepegawaian_no_rekening,
+        kepegawaian_no_bpjs_askes,
+        no_bpjs_ketenagakerjaan,
+        file_path,
+        file_path_sk_gubernur,
+        id_bidang,
+        id_seksi,
+        kepegawaian_golongan,
+        kepegawaian_jabatan,
+        kepegawaian_nrk,
         nama,
         tempat_lahir,
-        tgl_lahir ? tgl_lahir : null,
+        tgl_lahir,
         jenis_kelamin,
         agama,
         nik,
         no_kk,
         status_perkawinan,
+        umur,
         no_hp,
         sesuai_ktp_alamat,
-        sesuai_ktp_rtrw,
-        sesuai_ktp_provinsi,
-        sesuai_ktp_kabkota,
-        sesuai_ktp_kecamatan,
+        sesuai_ktp_rt,
+        sesuai_ktp_rw,
         sesuai_ktp_kelurahan,
+        sesuai_ktp_kecamatan,
+        sesuai_ktp_kabkota,
+        sesuai_ktp_provinsi,
+        alamat_domisili_personil_id,
         domisili_alamat,
         domisili_rtrw,
         domisili_provinsi,
         domisili_kabkota,
         domisili_kecamatan,
         domisili_kelurahan,
-        kepegawaian_nptt_npjlp,
-        kepegawaian_nip,
-        kepegawaian_pangkat,
-        kepegawaian_golongan,
-        kepegawaian_tmtpangkat ? kepegawaian_tmtpangkat : null,
-        kepegawaian_pendidikan_pada_sk,
-        kepegawaian_jabatan,
-        kepegawaian_eselon,
-        kepegawaian_tempat_tugas,
-        kepegawaian_subbag_seksi_kecamatan,
-        kepegawaian_kelurahan,
-        kepegawaian_status_pegawai,
-        kepegawaian_no_rekening,
-        kepegawaian_no_karpeg,
-        kepegawaian_no_kasirkasur,
-        kepegawaian_no_taspen,
-        kepegawaian_npwp,
-        kepegawaian_no_bpjs_askes,
-        kepegawaian_tmt_cpns ? kepegawaian_tmt_cpns : null,
-        kepegawaian_tmt_pns ? kepegawaian_tmt_pns : null,
-        kepegawaian_tgl_sk_pns ? kepegawaian_tgl_sk_pns : null,
-        kepegawaian_no_sk_pangkat_terakhir,
-        kepegawaian_tgl_sk_pangkat_terakhir
-          ? kepegawaian_tgl_sk_pangkat_terakhir
-          : null,
-        kepegawaian_diklat_pol_pp_dasar_no_sertifikat,
-        kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat
-          ? kepegawaian_diklat_pol_pp_dasar_tgl_sertifikat
-          : null,
-        kepegawaian_diklat_pol_pp_strutural_no_sertifikat,
-        kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat
-          ? kepegawaian_diklat_pol_pp_strutural_tgl_sertifikat
-          : null,
-        kepegawaian_diklat_pol_pp_ppns_no_sertifikat,
-        kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat
-          ? kepegawaian_diklat_pol_pp_ppns_tgl_sertifikat
-          : null,
-        kepegawaian_diklat_fungsional_pol_pp_no_sertifikat,
-        kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat ?
-        kepegawaian_diklat_fungsional_pol_pp_tgl_sertifikat :
-        null,
         updated_by,
         id,
       ]
     );
   };
+
 
   const del = async (id, deleted_by) => {
     await db.one(
@@ -306,27 +275,28 @@ const kepegawaian_non_pns = (db) => {
     id_pegawai
   ) => {
     const query = db.one(
-      "INSERT INTO kepegawaian_non_pns_keluarga (hubungan, nama, tempat_lahir, tgl_lahir, jenis_kelamin, id_pegawai) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
-      [hubungan, nama, tempat_lahir, tgl_lahir, jenis_kelamin, id_pegawai]
+      "INSERT INTO t_keluarga (status_hubungan_id, nama, tempat_lahir, tgl_lahir, j_kelamin_id, personil_id) VALUES (CAST($1 AS INTEGER), $2, $3, TO_DATE($4, 'YYYYMMDD'), CAST($5 AS INTEGER), $6) RETURNING id",
+      [
+        hubungan,
+        nama,
+        tempat_lahir,
+        tgl_lahir,
+        jenis_kelamin,
+        id_pegawai,
+      ]
     );
 
     return query;
   };
 
-  const updateKeluargaNonPNS = (
-    id,
-    hubungan,
-    nama,
-    tempat_lahir,
-    tgl_lahir,
-    jenis_kelamin,
-    id_pegawai
-  ) => {
+
+  const updateKeluargaNonPNS = (id, hubungan, nama, tempat_lahir, tgl_lahir, jenis_kelamin, id_pegawai) => {
     db.one(
-      "UPDATE kepegawaian_non_pns_keluarga SET hubungan = $1, nama = $2, tempat_lahir = $3, tgl_lahir = $4, jenis_kelamin = $5, id_pegawai = $6, updated_at = CURRENT_TIMESTAMP WHERE id = $7 RETURNING id",
+      "UPDATE t_keluarga SET status_hubungan_id = $1, nama = $2, tempat_lahir = $3, tgl_lahir = $4, j_kelamin_id = $5, personil_id = $6 WHERE id = $7 RETURNING id",
       [hubungan, nama, tempat_lahir, tgl_lahir, jenis_kelamin, id_pegawai, id]
     );
   };
+
 
   const delKelNonPNS = async (id, deleted_by) => {
     await db.one(
@@ -368,32 +338,13 @@ const kepegawaian_non_pns = (db) => {
   };
 
   //update pendidikan non pns
-  const updatePendidikanNonPNS = (
-    id,
-    jenis_pendidikan,
-    nama_sekolah,
-    nomor_ijazah,
-    tgl_ijazah,
-    jurusan,
-    fakultas,
-    file_ijazah,
-    id_pegawai
-  ) => {
+  const updatePendidikanNonPNS = (id, jenis_pendidikan, nama_sekolah, nomor_ijazah, tgl_ijazah, jurusan, fakultas,  id_pegawai) => {
     db.one(
-      "UPDATE kepegawaian_non_pns_pendidikan SET jenis_pendidikan = $1, nama_sekolah = $2, nomor_ijazah = $3, tgl_ijazah = $4, jurusan = $5, fakultas = $6, file_ijazah = $7, id_pegawai = $8, updated_at = CURRENT_TIMESTAMP WHERE id = $9 RETURNING id",
-      [
-        jenis_pendidikan,
-        nama_sekolah,
-        nomor_ijazah,
-        tgl_ijazah,
-        jurusan,
-        fakultas,
-        file_ijazah,
-        id_pegawai,
-        id,
-      ]
+      "UPDATE t_pendidikan_formal SET jenis_pendidikan_id = $1, nama_sekolah = $2, nomor_ijazah = $3, tgl_ijazah = $4, jurusan = $5, fakultas = $6, personil_id = $7, WHERE id = $8 RETURNING id",
+      [jenis_pendidikan, nama_sekolah, nomor_ijazah, tgl_ijazah, jurusan, fakultas,  id_pegawai, id]
     );
   };
+
 
   //delete pendidikan non pns
   const delPendidikanNonPNS = async (id, deleted_by) => {
