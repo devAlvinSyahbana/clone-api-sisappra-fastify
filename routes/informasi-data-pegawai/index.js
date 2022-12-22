@@ -1103,10 +1103,10 @@ module.exports = async function (fastify, opts) {
       let exec = null;
       let qwhere = "";
       if (status === "PNS") {
-        qwhere += ` AND personil.nrk ILIKE '%${nomor}%'`;
+        qwhere += ` AND kpns.kepegawaian_nrk ILIKE '%${nomor}%'`;
         exec = await fastify.kepegawaian_pns.autocompliteFill(qwhere);
       } else {
-        qwhere += ` AND kpnns.nptt ILIKE '%${nomor}%'`;
+        qwhere += ` AND kpnns.kepegawaian_nptt_npjlp ILIKE '%${nomor}%'`;
         exec = await fastify.kepegawaian_non_pns.autocompliteFill(qwhere);
       }
       try {
