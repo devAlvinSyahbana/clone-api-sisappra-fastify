@@ -56,6 +56,12 @@ const master_jenis_pelanggaran = (db) => {
     };
   };
 
+  const filter = (q) => {
+    const query = db.any("SELECT id, nama as jenis_pelanggaran, kode_penertiban FROM master_jenis_pelanggaran WHERE is_deleted = 0 AND nama ILIKE '%" + q + "%'");
+
+    return query;
+  };
+
   return {
     find,
     findone,
@@ -63,6 +69,7 @@ const master_jenis_pelanggaran = (db) => {
     create,
     update,
     del,
+    filter,
   };
 };
 

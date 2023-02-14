@@ -266,6 +266,7 @@ module.exports = async function (fastify, opts) {
         },
       },
     },
+
     async (request, reply) => {
       const { id } = request.params;
       const { deleted_by } = request.body;
@@ -275,6 +276,56 @@ module.exports = async function (fastify, opts) {
         reply.send({ message: "success", code: 204 });
       } catch (error) {
         reply.send({ message: error.message, code: 500 });
+      }
+    }
+  );
+  fastify.get(
+    "/filter/:q",
+    {
+      schema: {
+        description: "This is an endpoint for filtering a master jenis pelanggaran",
+        tags: ["master jenis pelanggaran"],
+        params: {
+          description: "Filter master jenis pelanggaran by search",
+          type: "object",
+          properties: {
+            q: { type: "string" },
+          },
+        },
+        response: {
+          200: {
+            description: "Success Response",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+              code: { type: "string" },
+              data: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    id: { type: "number" },
+                    jenis_pelanggaran: { type: "string" },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { q } = request.params;
+      const exec = await fastify.master_jenis_pelanggaran.filter(q);
+
+      try {
+        if (exec) {
+          reply.send({ message: "success", code: 200, data: exec });
+        } else {
+          reply.send({ message: "success", code: 204 });
+        }
+      } catch (error) {
+        reply.send({ message: error, code: 500 });
       }
     }
   );
